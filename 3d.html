@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Enhanced 3D Scene - Corrected Objects</title>
+    <style>
+        @view-transition {
+            navigation: auto;
+        }
+
+        ::view-transition-new(root) {
+            animation: fadeInPage 0.5s ease-in both;
+        }
+
+        @keyframes fadeInPage {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        :root {
+            --bg-color: #1a1a2e;
+            --ground-color-1: rgba(26, 26, 46, 0.9);
+            --ground-color-2: rgba(15, 15, 35, 0.9);
+            --grid-color: rgba(255, 255, 255, 0.08);
+            --text-color: #e0e0fc;
+            --control-bg: rgba(0, 0, 20, 0.8);
+            --button-bg: #4a4a70;
+            --button-hover-bg: #6a6a90;
+            --highlight-color: #e0e0fc;
+
+            --scene-perspective: 1500px;
+            --scene-anim-duration: 60s;
+
+            --cube-size: 120px;
+            --cube-anim-duration: 10s;
+            --cube-pos-x: -250px;
+            --cube-pos-y: -50px;
+            --cube-pos-z: 0px;
+
+            --sphere-radius: 70px;
+            --sphere-segments: 20;
+            --sphere-anim-duration: 6s;
+            --sphere-pos-x: 250px;
+            --sphere-pos-y: -50px;
+            --sphere-pos-z: 0px;
+
+            --carousel-radius: 280px;
+            --carousel-item-width: 120px;
+            --carousel-item-height: 160px;
+            --carousel-anim-duration: 25s;
+            --carousel-pos-x: 0px;
+            --carousel-pos-y: 100px;
+            --carousel-pos-z: 150px;
+
+            --hover-scale: 1.1;
+            --transition-speed: 0.5s;
+            --transition-timing: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        /* --- General Setup --- */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg-color);
+            color: var(--text-color);
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            perspective: var(--scene-perspective);
+            /* Apply perspective to body */
+            display: flex;
+            align-items: center;
+            /* Center scene vertically */
+            justify-content: center;
+            /* Center scene horizontally */
+            min-height: 100vh;
+        }
+
+        /* --- Controls --- */
+        .controls {
+            position: fixed;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            background: var(--control-bg);
+            padding: 10px 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .carousel-controls {
+            border-left: 1px solid #555;
+            padding-left: 15px;
+        }
+
+        button {
+            padding: 6px 12px;
+            background: var(--button-bg);
+            color: var(--text-color);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            font-size: 0.9rem;
+        }
+
+        button:hover {
+            background: var(--button-hover-bg);
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        .controls label {
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        .controls input[type="range"] {
+            cursor: pointer;
+            max-width: 100px;
+        }
+
+        .controls span {
+            font-weight: bold;
+            min-width: 20px;
+            text-align: right;
+        }
+
+        /* --- Scene & Ground --- */
+        .scene {
+            width: 90vw;
+            /* Use viewport units */
+            height: 80vh;
+            max-width: 1200px;
+            max-height: 800px;
+            position: relative;
+            transform-style: preserve-3d;
+            /* Children inherit 3D context */
+        }
+
+        .ground {
+            position: absolute;
+            width: 1500px;
+            height: 1500px;
+            background: linear-gradient(var(--ground-color-1),
+                    var(--ground-color-2));
+            /* Subtle grid using radial gradients */
+            background-image: linear-gradient(var(--ground-color-1),
+                    var(--ground-color-2)),
+                radial-gradient(circle, var(--grid-color) 1px, transparent 1px),
+                radial-gradient(circle, var(--grid-color) 1px, transparent 1px);
+            background-size: 1px 1px, 50px 50px, 50px 50px;
+            /* Base gradient + two grid sizes */
+            background-position: 0 0, 0 0, 25px 25px;
+            /* Offset second grid */
+            top: 61%;
+            /* Position relative to scene center */
+            left: 50%;
+            transform-origin: center center;
+            transform: translate(-50%, -50%) rotateX(90deg) translateZ(-200px);
+            /* Adjust Z to lower ground */
+            box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.5);
+            /* Inner shadow for depth */
+        }
+
+        /* --- General Object Container --- */
+        .objects-wrapper {
+            position: absolute;
+            top: 43%;
+            left: 50%;
+            width: 1px;
+            /* Make it sizeless */
+            height: 1px;
+            transform-style: preserve-3d;
+        }
+
+        .object-container {
+            position: absolute;
+            transform-style: preserve-3d;
+            transition: transform var(--transition-speed) var(--transition-timing);
+            /* For explode/reset */
+            cursor: grab;
+        }
+
+        .object-container:active {
+            cursor: grabbing;
+        }
+
+        /* --- Cube Styling --- */
+        .cube-container {
+            transform: translate3d(var(--cube-pos-x),
+                    var(--cube-pos-y),
+                    var(--cube-pos-z));
+            width: var(--cube-size);
+            height: var(--cube-size);
+        }
+
+        .cube {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: cubeSpin var(--cube-anim-duration) infinite linear;
+            transition: transform var(--transition-speed) var(--transition-timing);
+        }
+
+        @keyframes cubeSpin {
+            from {
+                transform: rotateY(0deg) rotateX(0deg);
+            }
+
+            to {
+                transform: rotateY(360deg) rotateX(360deg);
+            }
+        }
+
+        .cube__face {
+            position: absolute;
+            width: var(--cube-size);
+            height: var(--cube-size);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: radial-gradient(circle at center,
+                    rgba(0, 120, 255, 0.6),
+                    rgba(0, 50, 150, 0.8));
+            color: var(--highlight-color);
+            font-size: calc(var(--cube-size) * 0.15);
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* backface-visibility: hidden; */
+            transition: all var(--transition-speed) ease;
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.4);
+        }
+
+        .cube__face span {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 5px;
+            border-radius: 3px;
+        }
+
+        .cube__face--front {
+            transform: translateZ(calc(var(--cube-size) / 2));
+        }
+
+        .cube__face--back {
+            transform: rotateY(180deg) translateZ(calc(var(--cube-size) / 2));
+        }
+
+        .cube__face--right {
+            transform: rotateY(90deg) translateZ(calc(var(--cube-size) / 2));
+        }
+
+        .cube__face--left {
+            transform: rotateY(-90deg) translateZ(calc(var(--cube-size) / 2));
+        }
+
+        .cube__face--top {
+            transform: rotateX(90deg) translateZ(calc(var(--cube-size) / 2));
+        }
+
+        .cube__face--bottom {
+            transform: rotateX(-90deg) translateZ(calc(var(--cube-size) / 2));
+        }
+
+        .cube-container:hover .cube {
+            transform: scale3d(var(--hover-scale),
+                    var(--hover-scale),
+                    var(--hover-scale));
+            animation-play-state: paused;
+        }
+
+        .cube-container:hover .cube__face {
+            border-color: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 20px rgba(0, 120, 255, 0.7),
+                inset 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* --- Sphere Styling (Segmented) --- */
+        .sphere-container {
+            transform: translate3d(var(--sphere-pos-x),
+                    var(--sphere-pos-y),
+                    var(--sphere-pos-z));
+            width: calc(var(--sphere-radius) * 2);
+            height: calc(var(--sphere-radius) * 2);
+            animation: float var(--sphere-anim-duration) infinite ease-in-out alternate;
+        }
+
+        @keyframes float {
+            from {
+                transform: translate3d(var(--sphere-pos-x),
+                        calc(var(--sphere-pos-y) - 15px),
+                        var(--sphere-pos-z));
+            }
+
+            to {
+                transform: translate3d(var(--sphere-pos-x),
+                        calc(var(--sphere-pos-y) + 15px),
+                        var(--sphere-pos-z));
+            }
+        }
+
+        .sphere {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transform: rotateX(-15deg);
+            animation: sphereSpin 15s infinite linear;
+        }
+
+        @keyframes sphereSpin {
+            from {
+                transform: rotateX(-15deg) rotateY(0deg);
+            }
+
+            to {
+                transform: rotateX(-15deg) rotateY(360deg);
+            }
+        }
+
+        .sphere-segment {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 12px;
+            height: 12px;
+            margin-left: -6px;
+            margin-top: -6px;
+            border-radius: 50%;
+            background: radial-gradient(circle,
+                    rgba(255, 100, 200, 0.9),
+                    rgba(100, 50, 150, 0.7));
+            box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+            pointer-events: none;
+        }
+
+        .sphere-highlight {
+            position: absolute;
+            top: 15%;
+            left: 25%;
+            width: 30%;
+            height: 30%;
+            border-radius: 50%;
+            background: radial-gradient(circle,
+                    rgba(255, 255, 255, 0.6) 0%,
+                    rgba(255, 255, 255, 0) 70%);
+            transform: translateZ(calc(var(--sphere-radius) * 1.1));
+            pointer-events: none;
+        }
+
+        .sphere-container:hover .sphere {
+            animation-play-state: paused;
+            transform: rotateX(-5deg) scale(var(--hover-scale));
+        }
+
+        /* --- 3D Carousel Styling --- */
+        .carousel-container {
+            transform: translate3d(var(--carousel-pos-x),
+                    var(--carousel-pos-y),
+                    var(--carousel-pos-z));
+            width: calc(var(--carousel-item-width) * 1.2);
+            height: calc(var(--carousel-item-height) * 1.2);
+        }
+
+        .carousel {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 1s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+
+        .carousel__item {
+            position: absolute;
+            top: 10%;
+            /* Adjust vertical position slightly */
+            left: calc(50% - var(--carousel-item-width) / 2);
+            width: var(--carousel-item-width);
+            height: var(--carousel-item-height);
+            /* backface-visibility: hidden; */
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: 8px;
+            overflow: hidden;
+            background: rgba(50, 50, 80, 0.7);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+            transform-origin: center center;
+            transition: transform 0.5s ease, opacity 0.5s ease,
+                border-color 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .carousel__item img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            user-select: none;
+        }
+
+        .carousel__item:not(.active-item) {
+            opacity: 0.5;
+            /* transform: scale(0.9); Apply scale in positioning now */
+            cursor: pointer;
+            /* Indicate clickability for non-active */
+        }
+
+        .carousel__item.active-item {
+            border-color: var(--highlight-color);
+            opacity: 1;
+            cursor: default;
+        }
+
+        .carousel__item:hover {
+            /* Hover effect should override default non-active state */
+            transform: scale(1.05) !important;
+            /* Use important or higher specificity if needed */
+            border-color: var(--highlight-color) !important;
+            opacity: 1 !important;
+            z-index: 5;
+        }
+
+        /* --- General Animation/Effect Classes (JS controlled) --- */
+        .anim-paused * {
+            animation-play-state: paused !important;
+        }
+
+        .glow {
+            animation: glowPulse 1.5s infinite alternate ease-in-out;
+        }
+
+        @keyframes glowPulse {
+            from {
+                box-shadow: 0 0 10px rgba(255, 255, 255, 0.5),
+                    inset 0 0 5px rgba(255, 255, 255, 0.2);
+            }
+
+            to {
+                box-shadow: 0 0 35px rgba(255, 255, 255, 0.9),
+                    inset 0 0 15px rgba(255, 255, 255, 0.4);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="controls">
+        <div class="control-group">
+            <button id="toggleAnimationsBtn" title="Pause/Resume Animations">
+                ⏯️ Animations
+            </button>
+            <button id="changeColorsBtn" title="Randomize Object Colors">
+                🎨 Colors
+            </button>
+        </div>
+        <div class="control-group">
+            <button id="explodeBtn" title="Scatter Objects">💥 Explode</button>
+            <button id="resetBtn" title="Reset Scene State">🔄 Reset</button>
+        </div>
+        <div class="control-group carousel-controls">
+            <button id="prevBtn" title="Previous Carousel Item">⬅️ Prev</button>
+            <button id="nextBtn" title="Next Carousel Item">Next ➡️</button>
+        </div>
+        <div class="control-group">
+            <label for="sceneRotationSlider">Scene Y-Rotation:</label>
+            <input type="range" id="sceneRotationSlider" min="0" max="360" value="0" step="1" />
+            <span id="sceneRotationValue">0</span>°
+        </div>
+    </header>
+
+    <main class="scene">
+        <div class="ground"></div>
+        <div class="objects-wrapper">
+            <!-- === Cube === -->
+            <div class="object-container cube-container">
+                <div class="cube">
+                    <div class="cube__face cube__face--front"><span>Front</span></div>
+                    <div class="cube__face cube__face--back"><span>Back</span></div>
+                    <div class="cube__face cube__face--right"><span>Right</span></div>
+                    <div class="cube__face cube__face--left"><span>Left</span></div>
+                    <div class="cube__face cube__face--top"><span>Top</span></div>
+                    <div class="cube__face cube__face--bottom"><span>Bottom</span></div>
+                </div>
+            </div>
+
+            <!-- === Sphere (Segmented) === -->
+            <div class="object-container sphere-container">
+                <div class="sphere">
+                    <!-- Segments will be generated by JS -->
+                </div>
+            </div>
+
+            <!-- === 3D Carousel === -->
+            <div class="object-container carousel-container">
+                <div class="carousel">
+                    <div class="carousel__item">
+                        <img src="https://picsum.photos/seed/item1/120/160" alt="Item 1" />
+                    </div>
+                    <div class="carousel__item">
+                        <img src="https://picsum.photos/seed/item2/120/160" alt="Item 2" />
+                    </div>
+                    <div class="carousel__item">
+                        <img src="https://picsum.photos/seed/item3/120/160" alt="Item 3" />
+                    </div>
+                    <div class="carousel__item">
+                        <img src="https://picsum.photos/seed/item4/120/160" alt="Item 4" />
+                    </div>
+                    <div class="carousel__item">
+                        <img src="https://picsum.photos/seed/item5/120/160" alt="Item 5" />
+                    </div>
+                    <div class="carousel__item">
+                        <img src="https://picsum.photos/seed/item6/120/160" alt="Item 6" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Objects Wrapper -->
+    </main>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // --- Element References ---
+            const scene = document.querySelector(".scene");
+            const cubeContainer = document.querySelector(".cube-container");
+            const sphereContainer = document.querySelector(".sphere-container");
+            const sphere = document.querySelector(".sphere");
+            const carouselContainer = document.querySelector(".carousel-container");
+            const carousel = document.querySelector(".carousel");
+            const carouselItems = document.querySelectorAll(".carousel__item");
+            const root = document.documentElement; // For getting CSS variables
+
+            // Controls
+            const toggleAnimationsBtn = document.getElementById(
+                "toggleAnimationsBtn"
+            );
+            const changeColorsBtn = document.getElementById("changeColorsBtn");
+            const explodeBtn = document.getElementById("explodeBtn");
+            const resetBtn = document.getElementById("resetBtn");
+            const prevBtn = document.getElementById("prevBtn");
+            const nextBtn = document.getElementById("nextBtn");
+            const sceneRotationSlider = document.getElementById(
+                "sceneRotationSlider"
+            );
+            const sceneRotationValue =
+                document.getElementById("sceneRotationValue");
+
+            // --- State Variables ---
+            let animationsPaused = false;
+            let currentCarouselIndex = 0; // Use index instead of angle
+            const numCarouselItems = carouselItems.length;
+            const carouselAngleIncrement = 360 / numCarouselItems;
+
+            // Generate Sphere Segments (longitude and latitude)
+            function createSphere() {
+                const sphereRadius = parseFloat(
+                    getComputedStyle(root).getPropertyValue("--sphere-radius")
+                );
+                const sphereSegments = parseInt(
+                    getComputedStyle(root).getPropertyValue("--sphere-segments")
+                );
+                sphere.innerHTML = "";
+
+                // More segments for a smoother sphere
+                const latSegments = Math.max(6, Math.floor(sphereSegments / 1.5));
+                const lonSegments = Math.max(12, sphereSegments);
+
+                for (let lat = 0; lat <= latSegments; lat++) {
+                    const theta = (lat * Math.PI) / latSegments - Math.PI / 2;
+                    const y = Math.sin(theta);
+                    const r = Math.cos(theta);
+
+                    for (let lon = 0; lon < lonSegments; lon++) {
+                        const phi = (lon * 2 * Math.PI) / lonSegments;
+                        const x = r * Math.cos(phi);
+                        const z = r * Math.sin(phi);
+
+                        const segment = document.createElement("div");
+                        segment.classList.add("sphere-segment");
+                        segment.style.transform = `translate3d(${x * sphereRadius}px, ${y * sphereRadius
+                            }px, ${z * sphereRadius}px)`;
+                        // Color by latitude for a nice effect
+                        const hue = 280 + (lat * 60) / latSegments;
+                        segment.style.background = `radial-gradient(circle, hsla(${hue},80%,70%,0.85), hsla(${hue},70%,40%,0.7))`;
+                        sphere.appendChild(segment);
+                    }
+                }
+                // Add highlight
+                const highlight = document.createElement("div");
+                highlight.classList.add("sphere-highlight");
+                sphere.appendChild(highlight);
+            }
+            createSphere();
+
+            // Position Carousel Items
+            function positionCarousel() {
+                const radius = parseFloat(
+                    getComputedStyle(root).getPropertyValue("--carousel-radius")
+                );
+                carouselItems.forEach((item, index) => {
+                    const angle = index * carouselAngleIncrement;
+                    item.style.transform = `rotateY(${angle}deg) translateZ(${radius}px) scale(0.9)`;
+                    item.dataset.angle = angle;
+                    item.dataset.index = index;
+                    item.addEventListener("click", () => {
+                        if (!item.classList.contains("active-item")) {
+                            rotateCarouselToIndex(index);
+                        }
+                    });
+                });
+                updateCarouselActiveItem();
+            }
+            positionCarousel();
+
+            // --- Event Listeners ---
+
+            toggleAnimationsBtn.addEventListener("click", () => {
+                animationsPaused = !animationsPaused;
+                scene.classList.toggle("anim-paused", animationsPaused);
+                toggleAnimationsBtn.textContent = animationsPaused
+                    ? "▶️ Animations"
+                    : "⏯️ Animations";
+                toggleAnimationsBtn.title = animationsPaused
+                    ? "Resume Animations"
+                    : "Pause Animations";
+            });
+
+            changeColorsBtn.addEventListener("click", () => {
+                document
+                    .querySelectorAll(".cube__face")
+                    .forEach((face) => (face.style.background = getRandomGradient()));
+                document
+                    .querySelectorAll(".sphere-segment")
+                    .forEach(
+                        (segment) => (segment.style.background = getRandomGradient())
+                    );
+                carouselItems.forEach(
+                    (item) => (item.style.borderColor = getRandomColor(0.7))
+                );
+            });
+
+            explodeBtn.addEventListener("click", () => {
+                applyRandomTransform(cubeContainer, 500, 200);
+                applyRandomTransform(sphereContainer, 500, 200);
+                applyRandomTransform(carouselContainer, 600, 150);
+                document
+                    .querySelectorAll(
+                        ".cube__face, .sphere-segment, .carousel__item"
+                    )
+                    .forEach((el) => el.classList.add("glow"));
+            });
+
+            resetBtn.addEventListener("click", () => {
+                const elementsToReset = document.querySelectorAll(
+                    ".object-container, .cube__face,  .sphere-segment, .carousel__item,  .carousel"
+                );
+                elementsToReset.forEach((el) => {
+                    el.removeAttribute("style");
+                    el.classList.remove("glow");
+                });
+                // Re-apply essentials
+                createSphere(); // Recreate sphere segments
+                positionCarousel(); // Reposition carousel items
+                scene.style.transform = `rotateY(${sceneRotationSlider.value}deg)`;
+
+                if (animationsPaused) {
+                    // Reset animation state visual
+                    animationsPaused = false;
+                    scene.classList.remove("anim-paused");
+                    toggleAnimationsBtn.textContent = "⏯️ Animations";
+                    toggleAnimationsBtn.title = "Pause Animations";
+                }
+                // Reset carousel index
+                currentCarouselIndex = 0;
+                rotateCarousel();
+            });
+
+            prevBtn.addEventListener("click", () => rotateCarouselBy(-1)); // Prev = left
+            nextBtn.addEventListener("click", () => rotateCarouselBy(1));  // Next = right
+
+            sceneRotationSlider.addEventListener("input", (e) => {
+                const angle = e.target.value;
+                scene.style.transform = `rotateY(${angle}deg)`;
+                sceneRotationValue.textContent = angle;
+            });
+
+            // --- Helper Functions ---
+            function getRandomColor(alpha = 0.7) {
+                const r = Math.floor(Math.random() * 255);
+                const g = Math.floor(Math.random() * 255);
+                const b = Math.floor(Math.random() * 255);
+                return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+            }
+            function getRandomGradient() {
+                const angle = Math.floor(Math.random() * 360);
+                return `linear-gradient(${angle}deg, ${getRandomColor(
+                    0.8
+                )}, ${getRandomColor(0.6)})`;
+            }
+            function applyRandomTransform(
+                element,
+                maxTranslate = 300,
+                maxRotate = 180
+            ) {
+                const tx = (Math.random() - 0.5) * 2 * maxTranslate;
+                const ty = ((Math.random() - 0.5) * 2 * maxTranslate) / 2;
+                const tz = (Math.random() - 0.5) * 2 * maxTranslate;
+                const rx = (Math.random() - 0.5) * 2 * maxRotate;
+                const ry = (Math.random() - 0.5) * 2 * maxRotate;
+                const rz = (Math.random() - 0.5) * 2 * maxRotate;
+                element.style.transform = `translate3d(${tx}px, ${ty}px, ${tz}px) rotateX(${rx}deg) rotateY(${ry}deg) rotateZ(${rz}deg)`;
+            }
+
+            function rotateCarouselBy(direction) {
+                currentCarouselIndex = (currentCarouselIndex + direction + numCarouselItems) % numCarouselItems;
+                rotateCarousel();
+            }
+
+            function rotateCarouselToIndex(targetIndex) {
+                currentCarouselIndex = targetIndex;
+                rotateCarousel();
+            }
+
+            function rotateCarousel() {
+                const angle = currentCarouselIndex * carouselAngleIncrement;
+                carousel.style.transform = `rotateY(${-angle}deg)`;
+                updateCarouselActiveItem();
+            }
+
+            function updateCarouselActiveItem() {
+                const radius = parseFloat(
+                    getComputedStyle(root).getPropertyValue("--carousel-radius")
+                );
+                carouselItems.forEach((item, idx) => {
+                    const itemAngle = idx * carouselAngleIncrement;
+                    item.classList.remove("active-item");
+                    item.style.transform = `rotateY(${itemAngle}deg) translateZ(${radius}px) scale(0.9)`;
+                    if (idx === currentCarouselIndex) {
+                        item.classList.add("active-item");
+                        item.style.transform = `rotateY(${itemAngle}deg) translateZ(${radius}px) scale(1)`;
+                    }
+                });
+            }
+        }); // End DOMContentLoaded
+    </script>
+</body>
+
+</html>

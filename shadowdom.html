@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shadow DOM Deep Dive</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            border: 1px solid #e1e8ed;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e1e8ed;
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 1.2em;
+        }
+
+        .section-content {
+            padding: 20px;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            margin: 15px 0;
+            border-left: 4px solid #4299e1;
+        }
+
+        /* The <pre> tag inside ensures whitespace is respected */
+        .code-block pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .demo-area {
+            background: #f7fafc;
+            border: 2px dashed #cbd5e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .highlight {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-weight: bold;
+            color: #856404;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        /* Global styles that will be BLOCKED by Shadow DOM */
+        p {
+            color: red !important;
+        }
+
+        h3 {
+            color: blue !important;
+        }
+
+        button {
+            background: yellow !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌑 Shadow DOM Architecture Deep Dive</h1>
+            <p>Understanding the complete structure and syntax</p>
+        </div>
+
+        <div class="content">
+            <!-- 1. BASIC STRUCTURE -->
+            <div class="section">
+                <div class="section-header">🏗️ 1. Basic Shadow DOM Structure</div>
+                <div class="section-content">
+                    <div class="code-block">
+                        <pre>// ANATOMY OF SHADOW DOM
+const host = document.querySelector('#my-element');   // Shadow Host
+const shadowRoot = host.attachShadow({mode: 'open'}); // Shadow Root
+shadowRoot.innerHTML = '&lt;p&gt;Shadow content&lt;/p&gt;';     // Shadow Tree</pre>
+                    </div>
+
+                    <div class="info-box">
+                        <strong>Key Components:</strong><br>
+                        • <strong>Shadow Host:</strong> The regular DOM element that contains the shadow DOM<br>
+                        • <strong>Shadow Root:</strong> The root node of the shadow tree<br>
+                        • <strong>Shadow Tree:</strong> The DOM tree inside the shadow root<br>
+                        • <strong>Shadow Boundary:</strong> Where the shadow DOM ends and regular DOM begins
+                    </div>
+
+                    <div class="demo-area">
+                        <h4>Live Demo:</h4>
+                        <div id="basic-host">👻 This will be replaced by shadow content</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. SHADOW DOM MODES -->
+            <div class="section">
+                <div class="section-header">🔐 2. Shadow DOM Modes</div>
+                <div class="section-content">
+                    <div class="code-block">
+                        <pre>// OPEN MODE (accessible from outside)
+const openShadow = element.attachShadow({mode: 'open'});
+console.log(element.shadowRoot); // Returns the shadow root
+
+// CLOSED MODE (not accessible from outside)
+const closedShadow = element.attachShadow({mode: 'closed'});
+console.log(element.shadowRoot); // Returns null</pre>
+                    </div>
+
+                    <div class="demo-area">
+                        <div id="open-host">Open Shadow Host</div>
+                        <div id="closed-host">Closed Shadow Host</div>
+                        <button onclick="testShadowAccess()">Test Shadow Access</button>
+                        <div id="access-results"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. CSS IN SHADOW DOM -->
+            <div class="section">
+                <div class="section-header">🎨 3. CSS Syntax and Encapsulation</div>
+                <div class="section-content">
+                    <div class="code-block">
+                        <pre>// CSS INSIDE SHADOW DOM
+shadowRoot.innerHTML = `
+  &lt;style&gt;
+    /* :host - styles the shadow host itself */
+    :host {
+      display: block;
+      background: lightblue;
+    }
+    
+    /* :host() - conditional host styling */
+    :host(.active) {
+      border: 2px solid red;
+    }
+    
+    /* :host-context() - styles based on host's ancestors */
+    :host-context(.dark-theme) {
+      background: black;
+      color: white;
+    }
+    
+    /* Regular styles - only affect shadow content */
+    p { color: green; }
+    
+    /* ::slotted() - styles slotted content */
+    ::slotted(span) {
+      font-weight: bold;
+    }
+  &lt;/style&gt;
+  &lt;p&gt;This paragraph will be green, not red!&lt;/p&gt;
+  &lt;slot&gt;&lt;/slot&gt;
+`;</pre>
+                    </div>
+
+                    <div class="info-box">
+                        <strong>Special CSS Selectors:</strong><br>
+                        • <code>:host</code> - Selects the shadow host<br>
+                        • <code>:host(selector)</code> - Host with specific selector<br>
+                        • <code>:host-context(selector)</code> - Host within specific context<br>
+                        • <code>::slotted(selector)</code> - Styles slotted content
+                    </div>
+
+                    <div class="demo-area">
+                        <h4>CSS Encapsulation Demo:</h4>
+                        <p>This paragraph is styled by global CSS (should be red)</p>
+                        <div id="css-demo-host" class="active">
+                            <span>This content will be slotted</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. SLOT MECHANISM -->
+            <div class="section">
+                <div class="section-header">🔌 4. Slot Mechanism</div>
+                <div class="section-content">
+                    <div class="code-block">
+                        <pre>// SLOTS - CONTENT PROJECTION
+
+// In Shadow DOM template:
+`&lt;div class="card"&gt;
+    &lt;header&gt;
+        &lt;slot name="title"&gt;Default Title&lt;/slot&gt;
+    &lt;/header&gt;
+    &lt;main&gt;
+        &lt;slot&gt;Default content&lt;/slot&gt; &lt;!-- unnamed/default slot --&gt;
+    &lt;/main&gt;
+    &lt;footer&gt;
+        &lt;slot name="actions"&gt;Default actions&lt;/slot&gt;
+    &lt;/footer&gt;
+&lt;/div&gt;`
+
+// In Light DOM (regular HTML):
+`&lt;my-card&gt;
+    &lt;h2 slot="title"&gt;Custom Title&lt;/h2&gt;
+    &lt;p&gt;This goes to default slot&lt;/p&gt;
+    &lt;div slot="actions"&gt;
+        &lt;button&gt;Action 1&lt;/button&gt;
+        &lt;button&gt;Action 2&lt;/button&gt;
+    &lt;/div&gt;
+&lt;/my-card&gt;`</pre>
+                    </div>
+
+                    <div class="demo-area">
+                        <h4>Slot Demo:</h4>
+                        <slot-card>
+                            <h3 slot="title">Custom Card Title</h3>
+                            <p>This content goes into the default slot.</p>
+                            <div slot="actions">
+                                <button onclick="alert('Action!')">Custom Action</button>
+                            </div>
+                        </slot-card>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. JAVASCRIPT API -->
+            <div class="section">
+                <div class="section-header">⚡ 5. JavaScript API and Methods</div>
+                <div class="section-content">
+                    <div class="code-block">
+                        <pre>// COMPLETE JAVASCRIPT API
+class MyComponent extends HTMLElement {
+    constructor() {
+        super();
+        // Create shadow root
+        this.shadow = this.attachShadow({
+            mode: 'open',
+            delegatesFocus: true // Optional: delegates focus to first focusable element
+        });
+    }
+
+    connectedCallback() {
+        // Called when element is added to DOM
+        this.render();
+        this.setupEventListeners();
+    }
+
+    disconnectedCallback() {
+        // Called when element is removed from DOM
+        this.cleanup();
+    }
+
+    static get observedAttributes() {
+        // Which attributes to watch for changes
+        return ['data-value', 'disabled'];
+    }
+
+    attributeChangedCallback(name, oldValue, newValue) {
+        // Called when observed attributes change
+        if (name === 'data-value') {
+            this.updateValue(newValue);
+        }
+    }
+    
+    // Custom methods
+    render() {
+        this.shadow.innerHTML = `
+            &lt;style&gt;/* styles here */&lt;/style&gt;
+            &lt;div&gt;Content here&lt;/div&gt;
+        `;
+    }
+
+    // Event handling
+    setupEventListeners() {
+        this.shadow.addEventListener('click', this.handleClick.bind(this));
+        
+        // Custom events
+        this.dispatchEvent(new CustomEvent('componentReady', {
+            detail: { component: this },
+            bubbles: true
+        }));
+    }
+}</pre>
+                    </div>
+
+                    <div class="demo-area">
+                        <h4>Interactive Component Demo:</h4>
+                        <interactive-demo data-value="Hello World"></interactive-demo>
+                        <br><br>
+                        <button onclick="updateDemo()">Update Component</button>
+                        <button onclick="inspectDemo()">Inspect Component</button>
+                        <div id="demo-output"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6. STYLING FROM OUTSIDE -->
+            <div class="section">
+                <div class="section-header">🎯 6. Styling Shadow DOM from Outside</div>
+                <div class="section-content">
+                    <div class="code-block">
+                        <pre>// CSS CUSTOM PROPERTIES (CSS Variables)
+
+// Inside Shadow DOM:
+`&lt;style&gt;
+    :host {
+        /* Define default values */
+        --primary-color: blue;
+        --text-size: 16px;
+    }
+    .content {
+        color: var(--primary-color);
+        font-size: var(--text-size);
+        /* Fallback if not provided */
+        background: var(--bg-color, white);
+    }
+&lt;/style&gt;`
+
+// From outside (regular CSS):
+`&lt;style&gt;
+    my-component {
+        --primary-color: red;
+        --text-size: 20px;
+        --bg-color: lightgray;
+    }
+&lt;/style&gt;`</pre>
+                    </div>
+
+                    <div class="demo-area">
+                        <h4>External Styling Demo:</h4>
+                        <themeable-component>Content that can be themed</themeable-component>
+                        <br><br>
+                        <button onclick="changeTheme('dark')">Dark Theme</button>
+                        <button onclick="changeTheme('light')">Light Theme</button>
+                        <button onclick="changeTheme('colorful')">Colorful Theme</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 7. EVENT HANDLING -->
+            <div class="section">
+                <div class="section-header">🎯 7. Event Handling and Propagation</div>
+                <div class="section-content">
+                    <div class="code-block">
+                        <pre>// EVENT HANDLING IN SHADOW DOM
+this.shadow.addEventListener('click', (e) => {
+    console.log('Clicked inside shadow DOM');
+    
+    // Custom events
+    this.dispatchEvent(new CustomEvent('myCustomEvent', {
+        detail: { data: 'some data' },
+        bubbles: true, // Bubbles through shadow boundary
+        composed: true // Crosses shadow boundaries
+    }));
+});
+
+// Event delegation
+this.shadow.addEventListener('click', (e) => {
+    if (e.target.matches('.button')) {
+        this.handleButtonClick(e);
+    }
+});
+
+// Focus events
+this.shadow.addEventListener('focusin', (e) => {
+    console.log('Focus entered shadow DOM');
+});</pre>
+                    </div>
+
+                    <div class="demo-area">
+                        <h4>Event Demo:</h4>
+                        <event-demo></event-demo>
+                        <div id="event-log"
+                            style="background: #f0f0f0; padding: 10px; border-radius: 4px; margin-top: 10px; max-height: 200px; overflow-y: auto;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 8. DEBUGGING -->
+            <div class="section">
+                <div class="section-header">🔍 8. Debugging Shadow DOM</div>
+                <div class="section-content">
+                    <div class="code-block">
+                        <pre>// DEBUGGING TECHNIQUES
+
+// 1. Access shadow roots in console
+document.querySelector('my-component').shadowRoot;
+
+// 2. Query inside shadow DOM
+document.querySelector('my-component').shadowRoot.querySelector('.internal-element');
+
+// 3. Check if element has shadow root
+element.shadowRoot !== null;
+
+// 4. Get all slotted elements
+const slot = shadowRoot.querySelector('slot');
+const slottedElements = slot.assignedElements();
+
+// 5. DevTools: Enable "Show user agent shadow DOM" in DevTools settings</pre>
+                    </div>
+
+                    <div class="info-box">
+                        <strong>DevTools Tips:</strong><br>
+                        • Open DevTools → Settings → Preferences → Elements → Show user agent shadow DOM<br>
+                        • Use $0.shadowRoot in console to access selected element's shadow<br>
+                        • Shadow DOM appears as #shadow-root in Elements panel<br>
+                        • Use "Pierce" option in Elements search to search inside shadow DOM
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- All JavaScript remains the same ---
+        // ... (script content from original file) ...
+        // 1. BASIC SHADOW DOM SETUP
+        const basicHost = document.querySelector('#basic-host');
+        const basicShadow = basicHost.attachShadow({
+            mode: 'open'
+        });
+        basicShadow.innerHTML = `
+            <style>
+                p { 
+                    color: purple !important; 
+                    background: lightyellow; 
+                    padding: 10px; 
+                    border-radius: 4px;
+                }
+            </style>
+            <p>🎉 This paragraph is PURPLE (shadow DOM blocks global red styling)!</p>
+        `;
+
+        // 2. SHADOW DOM MODES DEMO
+        const openHost = document.querySelector('#open-host');
+        const openShadow = openHost.attachShadow({
+            mode: 'open'
+        });
+        openShadow.innerHTML = '<p style="color: green;">Open Shadow Content</p>';
+
+        const closedHost = document.querySelector('#closed-host');
+        const closedShadow = closedHost.attachShadow({
+            mode: 'closed'
+        });
+        closedShadow.innerHTML = '<p style="color: orange;">Closed Shadow Content</p>';
+
+        function testShadowAccess() {
+            const results = document.querySelector('#access-results');
+            results.innerHTML = `
+                <h5>Shadow Root Access Test:</h5>
+                <p><strong>Open host shadowRoot:</strong> ${openHost.shadowRoot ? 'Accessible ✅' : 'Not accessible ❌'}</p>
+                <p><strong>Closed host shadowRoot:</strong> ${closedHost.shadowRoot ? 'Accessible ✅' : 'Not accessible ❌'}</p>
+            `;
+        }
+
+        // 3. CSS DEMO
+        const cssHost = document.querySelector('#css-demo-host');
+        const cssShadow = cssHost.attachShadow({
+            mode: 'open'
+        });
+        cssShadow.innerHTML = `
+            <style>
+                :host {
+                    display: block;
+                    background: lightblue;
+                    padding: 15px;
+                    border-radius: 8px;
+                    margin: 10px 0;
+                }
+                
+                :host(.active) {
+                    border: 3px solid red;
+                }
+                
+                p {
+                    color: green !important;
+                    font-weight: bold;
+                }
+                
+                ::slotted(span) {
+                    background: yellow;
+                    padding: 2px 6px;
+                    border-radius: 3px;
+                    font-weight: bold;
+                }
+            </style>
+            <p>This paragraph is GREEN (shadow styles win over global red)!</p>
+            <p>Host has 'active' class, so it has red border.</p>
+            <slot></slot>
+        `;
+
+        // 4. SLOT CARD COMPONENT
+        class SlotCard extends HTMLElement {
+            constructor() {
+                super();
+                const shadow = this.attachShadow({
+                    mode: 'open'
+                });
+                shadow.innerHTML = `
+                    <style>
+                        .card {
+                            border: 1px solid #ddd;
+                            border-radius: 8px;
+                            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                            background: white;
+                            overflow: hidden;
+                        }
+                        
+                        .header {
+                            background: #f8f9fa;
+                            padding: 15px;
+                            border-bottom: 1px solid #e9ecef;
+                        }
+                        
+                        .body {
+                            padding: 15px;
+                        }
+                        
+                        .footer {
+                            background: #f8f9fa;
+                            padding: 10px 15px;
+                            border-top: 1px solid #e9ecef;
+                        }
+                        
+                        ::slotted(h3[slot="title"]) {
+                            margin: 0;
+                            color: #333;
+                        }
+                        
+                        ::slotted(button) {
+                            background: #007bff;
+                            color: white;
+                            border: none;
+                            padding: 8px 16px;
+                            border-radius: 4px;
+                            cursor: pointer;
+                        }
+                    </style>
+                    <div class="card">
+                        <div class="header">
+                            <slot name="title">Default Title</slot>
+                        </div>
+                        <div class="body">
+                            <slot>Default content goes here</slot>
+                        </div>
+                        <div class="footer">
+                            <slot name="actions">
+                                <button>Default Action</button>
+                            </slot>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        customElements.define('slot-card', SlotCard);
+
+        // 5. INTERACTIVE DEMO COMPONENT
+        class InteractiveDemo extends HTMLElement {
+            constructor() {
+                super();
+                this.shadow = this.attachShadow({
+                    mode: 'open'
+                });
+                this.counter = 0;
+                this.render();
+                this.setupEvents();
+            }
+
+            static get observedAttributes() {
+                return ['data-value'];
+            }
+
+            attributeChangedCallback(name, oldValue, newValue) {
+                if (name === 'data-value' && oldValue !== newValue) {
+                    this.render();
+                }
+            }
+
+            render() {
+                const value = this.getAttribute('data-value') || 'No value';
+                this.shadow.innerHTML = `
+                    <style>
+                        .demo {
+                            border: 2px solid #4CAF50;
+                            border-radius: 8px;
+                            padding: 20px;
+                            background: #f0f8ff;
+                        }
+                        
+                        .counter {
+                            font-size: 24px;
+                            font-weight: bold;
+                            color: #2196F3;
+                            margin: 10px 0;
+                        }
+                        
+                        button {
+                            background: #4CAF50;
+                            color: white;
+                            border: none;
+                            padding: 10px 15px;
+                            border-radius: 4px;
+                            cursor: pointer;
+                            margin: 5px;
+                        }
+                        
+                        button:hover {
+                            background: #45a049;
+                        }
+                        
+                        .value {
+                            background: #fff3cd;
+                            padding: 10px;
+                            border-radius: 4px;
+                            margin: 10px 0;
+                            border: 1px solid #ffeaa7;
+                        }
+                    </style>
+                    <div class="demo">
+                        <h4>Interactive Component</h4>
+                        <div class="value">Attribute value: ${value}</div>
+                        <div class="counter">Counter: ${this.counter}</div>
+                        <button id="increment">Increment</button>
+                        <button id="fire-event">Fire Custom Event</button>
+                    </div>
+                `;
+                this.setupEvents();
+            }
+
+            setupEvents() {
+                const incrementBtn = this.shadow.querySelector('#increment');
+                const eventBtn = this.shadow.querySelector('#fire-event');
+
+                if (incrementBtn) {
+                    incrementBtn.onclick = () => {
+                        this.counter++;
+                        this.render();
+                    };
+                }
+
+                if (eventBtn) {
+                    eventBtn.onclick = () => {
+                        this.dispatchEvent(new CustomEvent('customEvent', {
+                            detail: {
+                                counter: this.counter,
+                                message: 'Hello from shadow DOM!'
+                            },
+                            bubbles: true,
+                            composed: true
+                        }));
+                    };
+                }
+            }
+        }
+        customElements.define('interactive-demo', InteractiveDemo);
+
+        // Demo update functions
+        function updateDemo() {
+            const demo = document.querySelector('interactive-demo');
+            demo.setAttribute('data-value', `Updated at ${new Date().toLocaleTimeString()}`);
+        }
+
+        function inspectDemo() {
+            const demo = document.querySelector('interactive-demo');
+            const output = document.querySelector('#demo-output');
+            output.innerHTML = `
+                <h5>Component Inspection:</h5>
+                <p><strong>Tag:</strong> ${demo.tagName}</p>
+                <p><strong>Attributes:</strong> ${Array.from(demo.attributes).map(attr => `${attr.name}="${attr.value}"`).join(', ')}</p>
+                <p><strong>Has Shadow Root:</strong> ${demo.shadowRoot ? 'Yes' : 'No'}</p>
+                <p><strong>Shadow Mode:</strong> ${demo.shadowRoot ? 'open' : 'unknown'}</p>
+                <p><strong>Counter Value:</strong> ${demo.counter}</p>
+            `;
+        }
+
+        // 6. THEMEABLE COMPONENT
+        class ThemeableComponent extends HTMLElement {
+            constructor() {
+                super();
+                const shadow = this.attachShadow({
+                    mode: 'open'
+                });
+                shadow.innerHTML = `
+                    <style>
+                        :host {
+                            /* Default CSS custom properties */
+                            --primary-color: #3498db;
+                            --bg-color: #ecf0f1;
+                            --text-color: #2c3e50;
+                            --border-radius: 8px;
+                            --padding: 20px;
+                        }
+                        
+                        .container {
+                            background: var(--bg-color);
+                            color: var(--text-color);
+                            padding: var(--padding);
+                            border: 2px solid var(--primary-color);
+                            border-radius: var(--border-radius);
+                            text-align: center;
+                            transition: all 0.3s ease;
+                        }
+                        
+                        .title {
+                            color: var(--primary-color);
+                            font-weight: bold;
+                            font-size: 1.2em;
+                            margin-bottom: 10px;
+                        }
+                    </style>
+                    <div class="container">
+                        <div class="title">Themeable Component</div>
+                        <slot></slot>
+                        <p>Styled with CSS custom properties!</p>
+                    </div>
+                `;
+            }
+        }
+        customElements.define('themeable-component', ThemeableComponent);
+
+        function changeTheme(theme) {
+            const component = document.querySelector('themeable-component');
+
+            if (theme === 'dark') {
+                component.style.setProperty('--primary-color', '#e74c3c');
+                component.style.setProperty('--bg-color', '#2c3e50');
+                component.style.setProperty('--text-color', '#ecf0f1');
+            } else if (theme === 'light') {
+                component.style.setProperty('--primary-color', '#3498db');
+                component.style.setProperty('--bg-color', '#ecf0f1');
+                component.style.setProperty('--text-color', '#2c3e50');
+            } else if (theme === 'colorful') {
+                component.style.setProperty('--primary-color', '#9b59b6');
+                component.style.setProperty('--bg-color', '#f39c12');
+                component.style.setProperty('--text-color', '#ffffff');
+                component.style.setProperty('--border-radius', '20px');
+            }
+        }
+
+        // 7. EVENT DEMO COMPONENT
+        class EventDemo extends HTMLElement {
+            constructor() {
+                super();
+                const shadow = this.attachShadow({
+                    mode: 'open'
+                });
+                shadow.innerHTML = `
+                    <style>
+                        .event-demo {
+                            border: 2px solid #ff6b35;
+                            border-radius: 8px;
+                            padding: 20px;
+                            background: #fff5f5;
+                        }
+                        
+                        button {
+                            background: #ff6b35;
+                            color: white;
+                            border: none;
+                            padding: 10px 15px;
+                            border-radius: 4px;
+                            cursor: pointer;
+                            margin: 5px;
+                        }
+                        
+                        input {
+                            padding: 8px;
+                            border: 1px solid #ddd;
+                            border-radius: 4px;
+                            margin: 5px;
+                        }
+                    </style>
+                    <div class="event-demo">
+                        <h4>Event Handling Demo</h4>
+                        <button class="click-btn">Click Me</button>
+                        <button class="custom-event-btn">Fire Custom Event</button>
+                        <input type="text" placeholder="Type something...">
+                    </div>
+                `;
+
+                this.setupEventListeners();
+            }
+
+            setupEventListeners() {
+                // Regular click events
+                this.shadowRoot.querySelector('.click-btn').addEventListener('click', (e) => {
+                    this.logEvent('Button clicked inside shadow DOM');
+                });
+
+                // Custom events
+                this.shadowRoot.querySelector('.custom-event-btn').addEventListener('click', (e) => {
+                    const customEvent = new CustomEvent('shadowCustomEvent', {
+                        detail: {
+                            message: 'Custom event from shadow DOM',
+                            timestamp: new Date().toISOString()
+                        },
+                        bubbles: true,
+                        composed: true // This allows the event to cross shadow boundaries
+                    });
+                    this.dispatchEvent(customEvent);
+                    this.logEvent('Custom event dispatched');
+                });
+
+                // Input events
+                this.shadowRoot.querySelector('input').addEventListener('input', (e) => {
+                    this.logEvent(`Input changed: "${e.target.value}"`);
+                });
+
+                // Focus events
+                this.shadowRoot.addEventListener('focusin', (e) => {
+                    this.logEvent('Focus entered shadow DOM');
+                });
+
+                this.shadowRoot.addEventListener('focusout', (e) => {
+                    this.logEvent('Focus left shadow DOM');
+                });
+            }
+
+            logEvent(message) {
+                const log = document.getElementById('event-log');
+                const timestamp = new Date().toLocaleTimeString();
+                log.innerHTML += `<div>[${timestamp}] ${message}</div>`;
+                log.scrollTop = log.scrollHeight;
+            }
+        }
+        customElements.define('event-demo', EventDemo);
+
+        // Listen for custom events at document level
+        document.addEventListener('shadowCustomEvent', (e) => {
+            const demo = document.querySelector('event-demo');
+            if (demo) {
+                demo.logEvent(`Custom event received at document level: ${e.detail.message}`);
+            }
+        });
+
+        // Listen for all custom events from interactive demo
+        document.addEventListener('customEvent', (e) => {
+            console.log('Custom event received:', e.detail);
+            alert(`Custom event: ${e.detail.message}\nCounter: ${e.detail.counter}`);
+        });
+
+        // Global demonstration
+        console.log('=== SHADOW DOM STRUCTURE EXPLORATION ===');
+        console.log('Try these in DevTools console:');
+        console.log('1. document.querySelector("#basic-host").shadowRoot');
+        console.log('2. $0.shadowRoot (after selecting a shadow host in Elements)');
+        console.log('3. document.querySelector("interactive-demo").counter');
+        console.log('4. Array.from(document.querySelectorAll("*")).filter(el => el.shadowRoot)');
+
+        // Demonstrate the Shadow DOM tree structure
+        setTimeout(() => {
+            console.log('\n=== SHADOW DOM TREE STRUCTURE ===');
+            const hosts = document.querySelectorAll('[id$="-host"], interactive-demo, slot-card, themeable-component, event-demo');
+            hosts.forEach(host => {
+                if (host.shadowRoot) {
+                    console.log(`${host.tagName}#${host.id || 'no-id'}:`);
+                    console.log('  └─ #shadow-root');
+                    const children = host.shadowRoot.children;
+                    Array.from(children).forEach((child, i) => {
+                        const isLast = i === children.length - 1;
+                        console.log(`     ${isLast ? '└─' : '├─'} ${child.tagName.toLowerCase()}`);
+                    });
+                }
+            });
+        }, 1000);
+
+        // Performance comparison
+        function performanceTest() {
+            const start = performance.now();
+
+            // Create 1000 regular DOM elements
+            const container1 = document.createElement('div');
+            for (let i = 0; i < 1000; i++) {
+                const div = document.createElement('div');
+                div.textContent = `Regular DOM ${i}`;
+                container1.appendChild(div);
+            }
+
+            const regularTime = performance.now() - start;
+
+            // Create 1000 shadow DOM elements
+            const start2 = performance.now();
+            const container2 = document.createElement('div');
+
+            for (let i = 0; i < 1000; i++) {
+                const host = document.createElement('div');
+                const shadow = host.attachShadow({
+                    mode: 'open'
+                });
+                shadow.innerHTML = `<div>Shadow DOM ${i}</div>`;
+                container2.appendChild(host);
+            }
+
+            const shadowTime = performance.now() - start2;
+
+            console.log('\n=== PERFORMANCE COMPARISON ===');
+            console.log(`Regular DOM (1000 elements): ${regularTime.toFixed(2)}ms`);
+            console.log(`Shadow DOM (1000 elements): ${shadowTime.toFixed(2)}ms`);
+            console.log(`Difference: ${(shadowTime - regularTime).toFixed(2)}ms`);
+        }
+
+        // Run performance test after page loads
+        window.addEventListener('load', () => {
+            setTimeout(performanceTest, 2000);
+        });
+    </script>
+</body>
+
+</html>

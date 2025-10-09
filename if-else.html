@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS if() and style() Demo - Chrome 137</title>
+    <style>
+        :root {
+            --theme: light;
+            --size: medium;
+            --accent: blue;
+            --layout: grid;
+            --animation: enabled;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: if(style(--theme: modern): 'Inter', 'Segoe UI', sans-serif;
+                    style(--theme: classic): 'Times New Roman', serif;
+                    else: system-ui, sans-serif);
+
+            background: if(style(--theme: dark): linear-gradient(135deg, #1e1e2e, #2a2a3e);
+                    style(--theme: light): linear-gradient(135deg, #f8fafc, #e2e8f0);
+                    style(--theme: neon): linear-gradient(135deg, #0f0f23, #1a1a2e);
+                    else: #ffffff);
+
+            color: if(style(--theme: dark): #e2e8f0;
+                    style(--theme: light): #334155;
+                    style(--theme: neon): #00ff88;
+                    else: #000000);
+
+            min-height: 100vh;
+            padding: if(style(--size: small): 1rem;
+                    style(--size: medium): 2rem;
+                    style(--size: large): 3rem;
+                    else: 1.5rem);
+
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: if(style(--theme: dark): rgba(255, 255, 255, 0.05);
+                    style(--theme: light): rgba(255, 255, 255, 0.8);
+                    style(--theme: neon): rgba(0, 255, 136, 0.1);
+                    else: rgba(255, 255, 255, 0.9));
+
+            border-radius: if(style(--size: small): 8px;
+                    style(--size: medium): 16px;
+                    style(--size: large): 24px;
+                    else: 12px);
+
+            padding: if(style(--size: small): 1.5rem;
+                    style(--size: medium): 2.5rem;
+                    style(--size: large): 3.5rem;
+                    else: 2rem);
+
+            backdrop-filter: if(style(--theme: dark): blur(10px);
+                    style(--theme: neon): blur(15px);
+                    else: blur(5px));
+
+            box-shadow: if(style(--theme: dark): 0 20px 40px rgba(0, 0, 0, 0.3);
+                    style(--theme: light): 0 20px 40px rgba(0, 0, 0, 0.1);
+                    style(--theme: neon): 0 0 30px rgba(0, 255, 136, 0.3);
+                    else: 0 10px 20px rgba(0, 0, 0, 0.1));
+        }
+
+        h1 {
+            font-size: if(style(--size: small): 2rem;
+                    style(--size: medium): 3rem;
+                    style(--size: large): 4rem;
+                    else: 2.5rem);
+
+            text-align: center;
+            margin-bottom: 2rem;
+
+            text-shadow: if(style(--theme: neon): 0 0 20px currentColor;
+                    else: none);
+
+            animation: if(style(--animation: enabled) and style(--theme: neon): glow 2s ease-in-out infinite alternate;
+                    else: none);
+        }
+
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 20px currentColor;
+            }
+
+            to {
+                text-shadow: 0 0 30px currentColor, 0 0 40px currentColor;
+            }
+        }
+
+        .controls {
+            display: if(style(--layout: grid): grid;
+                    style(--layout: flex): flex;
+                    else: block);
+
+            grid-template-columns: if(style(--layout: grid): repeat(auto-fit, minmax(200px, 1fr));
+                    else: none);
+
+            flex-wrap: if(style(--layout: flex): wrap;
+                    else: nowrap);
+
+            gap: if(style(--layout: grid) or style(--layout: flex): 1rem;
+                    else: 0);
+
+            margin-bottom: 3rem;
+        }
+
+        .control-group {
+            background: if(style(--theme: dark): rgba(255, 255, 255, 0.1);
+                    style(--theme: light): rgba(0, 0, 0, 0.05);
+                    style(--theme: neon): rgba(0, 255, 136, 0.15);
+                    else: rgba(0, 0, 0, 0.05));
+
+            padding: if(style(--size: small): 1rem;
+                    style(--size: medium): 1.5rem;
+                    style(--size: large): 2rem;
+                    else: 1.25rem);
+
+            border-radius: if(style(--size: small): 6px;
+                    style(--size: medium): 12px;
+                    style(--size: large): 18px;
+                    else: 10px);
+
+            border: if(style(--theme: neon): 1px solid rgba(0, 255, 136, 0.3);
+                    else: none);
+
+            margin-bottom: if(style(--layout: block): 1rem;
+                    else: 0);
+        }
+
+        .control-group h3 {
+            margin-bottom: 1rem;
+            font-size: if(style(--size: small): 1.1rem;
+                    style(--size: medium): 1.3rem;
+                    style(--size: large): 1.5rem;
+                    else: 1.2rem);
+        }
+
+        button {
+            background: if(style(--accent: blue): linear-gradient(45deg, #3b82f6, #1d4ed8);
+                    style(--accent: red): linear-gradient(45deg, #ef4444, #dc2626);
+                    style(--accent: green): linear-gradient(45deg, #10b981, #059669);
+                    style(--accent: purple): linear-gradient(45deg, #8b5cf6, #7c3aed);
+                    else: linear-gradient(45deg, #6b7280, #4b5563));
+
+            color: white;
+            border: none;
+
+            padding: if(style(--size: small): 8px 16px;
+                    style(--size: medium): 12px 24px;
+                    style(--size: large): 16px 32px;
+                    else: 10px 20px);
+
+            border-radius: if(style(--size: small): 4px;
+                    style(--size: medium): 8px;
+                    style(--size: large): 12px;
+                    else: 6px);
+
+            font-size: if(style(--size: small): 0.875rem;
+                    style(--size: medium): 1rem;
+                    style(--size: large): 1.125rem;
+                    else: 1rem);
+
+            cursor: pointer;
+            margin: 4px;
+            transition: all 0.3s ease;
+
+            box-shadow: if(style(--theme: neon): 0 0 15px rgba(0, 255, 136, 0.3);
+                    else: 0 4px 8px rgba(0, 0, 0, 0.1));
+        }
+
+        button:hover {
+            transform: if(style(--animation: enabled): translateY(-2px) scale(1.05);
+                    else: none);
+
+            box-shadow: if(style(--theme: neon): 0 0 25px rgba(0, 255, 136, 0.5);
+                    else: 0 8px 16px rgba(0, 0, 0, 0.2));
+        }
+
+        .demo-cards {
+            display: if(style(--layout: grid): grid;
+                    style(--layout: flex): flex;
+                    else: block);
+
+            grid-template-columns: if(style(--layout: grid): repeat(auto-fit, minmax(250px, 1fr));
+                    else: none);
+
+            flex-wrap: if(style(--layout: flex): wrap;
+                    else: nowrap);
+
+            gap: if(style(--layout: grid) or style(--layout: flex): 1.5rem;
+                    else: 0);
+        }
+
+        .card {
+            background: if(style(--theme: dark): rgba(255, 255, 255, 0.08);
+                    style(--theme: light): rgba(255, 255, 255, 0.9);
+                    style(--theme: neon): rgba(0, 255, 136, 0.1);
+                    else: rgba(255, 255, 255, 0.8));
+
+            padding: if(style(--size: small): 1.5rem;
+                    style(--size: medium): 2rem;
+                    style(--size: large): 2.5rem;
+                    else: 1.75rem);
+
+            border-radius: if(style(--size: small): 8px;
+                    style(--size: medium): 16px;
+                    style(--size: large): 24px;
+                    else: 12px);
+
+            border: if(style(--theme: neon): 1px solid rgba(0, 255, 136, 0.3);
+                    else: 1px solid rgba(0, 0, 0, 0.1));
+
+            margin-bottom: if(style(--layout: block): 1.5rem;
+                    else: 0);
+
+            transition: all 0.3s ease;
+
+            box-shadow: if(style(--theme: neon): 0 0 20px rgba(0, 255, 136, 0.2);
+                    else: 0 8px 16px rgba(0, 0, 0, 0.1));
+        }
+
+        .card:hover {
+            transform: if(style(--animation: enabled): translateY(-5px);
+                    else: none);
+
+            box-shadow: if(style(--theme: neon): 0 0 30px rgba(0, 255, 136, 0.4);
+                    else: 0 12px 24px rgba(0, 0, 0, 0.15));
+        }
+
+        .status {
+            background: if(style(--theme: dark): rgba(34, 197, 94, 0.2);
+                    style(--theme: light): rgba(34, 197, 94, 0.1);
+                    style(--theme: neon): rgba(0, 255, 136, 0.2);
+                    else: rgba(34, 197, 94, 0.1));
+
+            color: if(style(--theme: dark): #4ade80;
+                    style(--theme: light): #16a34a;
+                    style(--theme: neon): #00ff88;
+                    else: #059669);
+
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .code-example {
+            background: if(style(--theme: dark): #1e293b;
+                    style(--theme: light): #f8fafc;
+                    style(--theme: neon): rgba(0, 0, 0, 0.8);
+                    else: #f5f5f5);
+
+            color: if(style(--theme: dark): #e2e8f0;
+                    style(--theme: light): #475569;
+                    style(--theme: neon): #00ff88;
+                    else: #333333);
+
+            padding: 1.5rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+
+            border: if(style(--theme: neon): 1px solid rgba(0, 255, 136, 0.3);
+                    else: 1px solid rgba(0, 0, 0, 0.1));
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>CSS if() and style() Demo</h1>
+
+        <div class="status">
+            ✅ Chrome 137+ CSS if() function with style() conditions
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <h3>Theme Control</h3>
+                <button onclick="setProperty('--theme', 'light')">Light</button>
+                <button onclick="setProperty('--theme', 'dark')">Dark</button>
+                <button onclick="setProperty('--theme', 'neon')">Neon</button>
+            </div>
+
+            <div class="control-group">
+                <h3>Size Control</h3>
+                <button onclick="setProperty('--size', 'small')">Small</button>
+                <button onclick="setProperty('--size', 'medium')">Medium</button>
+                <button onclick="setProperty('--size', 'large')">Large</button>
+            </div>
+
+            <div class="control-group">
+                <h3>Accent Color</h3>
+                <button onclick="setProperty('--accent', 'blue')">Blue</button>
+                <button onclick="setProperty('--accent', 'red')">Red</button>
+                <button onclick="setProperty('--accent', 'green')">Green</button>
+                <button onclick="setProperty('--accent', 'purple')">Purple</button>
+            </div>
+
+            <div class="control-group">
+                <h3>Layout & Animation</h3>
+                <button onclick="setProperty('--layout', 'grid')">Grid Layout</button>
+                <button onclick="setProperty('--layout', 'flex')">Flex Layout</button>
+                <button onclick="setProperty('--layout', 'block')">Block Layout</button>
+                <button onclick="toggleAnimation()">Toggle Animation</button>
+            </div>
+        </div>
+
+        <div class="demo-cards">
+            <div class="card">
+                <h3>🎨 Dynamic Theming</h3>
+                <p>The entire interface adapts based on the --theme variable using CSS if() with style() conditions.
+                    Colors, shadows, and effects change automatically.</p>
+            </div>
+
+            <div class="card">
+                <h3>📏 Responsive Sizing</h3>
+                <p>Font sizes, padding, and border radius scale based on the --size variable. Everything adjusts
+                    proportionally using conditional CSS.</p>
+            </div>
+
+            <div class="card">
+                <h3>🎯 Smart Layout</h3>
+                <p>Layout switches between grid, flex, and block based on the --layout variable. Each layout has
+                    optimized spacing and behavior.</p>
+            </div>
+
+            <div class="card">
+                <h3>✨ Conditional Effects</h3>
+                <p>Animations, glows, and hover effects are conditionally applied based on theme and animation settings
+                    using complex if() logic.</p>
+            </div>
+        </div>
+
+        <div class="code-example">
+            background: if(
+            style(--theme: dark): linear-gradient(135deg, #1e1e2e, #2a2a3e);
+            style(--theme: light): linear-gradient(135deg, #f8fafc, #e2e8f0);
+            style(--theme: neon): linear-gradient(135deg, #0f0f23, #1a1a2e);
+            else: #ffffff
+            );
+
+            font-size: if(
+            style(--size: small): 2rem;
+            style(--size: medium): 3rem;
+            style(--size: large): 4rem;
+            else: 2.5rem
+            );
+
+            animation: if(
+            style(--animation: enabled) and style(--theme: neon): glow 2s ease-in-out infinite alternate;
+            else: none
+            );
+        </div>
+
+        <div class="status">
+            Current Settings: Theme=<span id="current-theme">light</span>,
+            Size=<span id="current-size">medium</span>,
+            Accent=<span id="current-accent">blue</span>,
+            Layout=<span id="current-layout">grid</span>,
+            Animation=<span id="current-animation">enabled</span>
+        </div>
+    </div>
+
+    <script>
+        function setProperty(property, value) {
+            document.documentElement.style.setProperty(property, value);
+            updateStatus();
+        }
+
+        function toggleAnimation() {
+            const root = document.documentElement;
+            const current = getComputedStyle(root).getPropertyValue('--animation').trim();
+            const newValue = current === 'enabled' ? 'disabled' : 'enabled';
+            root.style.setProperty('--animation', newValue);
+            updateStatus();
+        }
+
+        function updateStatus() {
+            const root = document.documentElement;
+            const computedStyle = getComputedStyle(root);
+
+            document.getElementById('current-theme').textContent =
+                computedStyle.getPropertyValue('--theme').trim() || 'light';
+            document.getElementById('current-size').textContent =
+                computedStyle.getPropertyValue('--size').trim() || 'medium';
+            document.getElementById('current-accent').textContent =
+                computedStyle.getPropertyValue('--accent').trim() || 'blue';
+            document.getElementById('current-layout').textContent =
+                computedStyle.getPropertyValue('--layout').trim() || 'grid';
+            document.getElementById('current-animation').textContent =
+                computedStyle.getPropertyValue('--animation').trim() || 'enabled';
+        }
+
+        // Check browser support
+        function checkSupport() {
+            const testDiv = document.createElement('div');
+            testDiv.style.cssText = 'color: if(style(--test: red): red; else: blue);';
+
+            if (CSS.supports('color', 'if(style(--test: red): red; else: blue)')) {
+                console.log('✅ CSS if() with style() is supported!');
+            } else {
+                console.log('❌ CSS if() with style() is not supported in this browser');
+                const warning = document.createElement('div');
+                warning.style.cssText = `
+                    background: #fef3c7; 
+                    color: #92400e; 
+                    padding: 1rem; 
+                    border-radius: 8px; 
+                    margin: 1rem 0; 
+                    text-align: center;
+                    font-weight: bold;
+                `;
+                warning.textContent = '⚠️ Your browser may not support CSS if() with style(). Some features might not work as expected.';
+                document.querySelector('.container').insertBefore(warning, document.querySelector('.controls'));
+            }
+        }
+
+        // Initialize
+        updateStatus();
+        checkSupport();
+    </script>
+</body>
+
+</html>

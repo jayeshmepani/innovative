@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transformer.js Demo: Depth Estimation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        input[type="file"] {
+            display: block;
+            margin: 10px 0;
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 20px 0;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #output {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            white-space: pre-wrap;
+        }
+
+        .loading {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+        }
+
+        canvas {
+            display: block;
+            margin: 20px auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Depth Estimation Demo</h1>
+        <p>Upload an image to estimate depth.</p>
+        <input type="file" id="imageUpload" accept="image/*">
+        <button id="analyzeButton">Estimate Depth</button>
+        <div id="output" class="loading">Output will appear here...</div>
+        <canvas id="depthCanvas" width="512" height="512"></canvas>
+    </div>
+
+    <script type="module">
+        import { pipeline } from 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.7.3';
+        const outputDiv = document.getElementById('output');
+        const analyzeButton = document.getElementById('analyzeButton');
+        const imageUpload = document.getElementById('imageUpload');
+        const canvas = document.getElementById('depthCanvas');
+        const ctx = canvas.getContext('2d');
+        let taskPipeline = null;
+
+        async function loadModel() {
+            outputDiv.textContent = 'Loading model...';
+            try {
+                taskPipeline = await pipeline('depth-estimation', 'Xenova/depth-anything-small-hf');
+                outputDiv.textContent = 'Model loaded! Upload an image to start.';
+            } catch (error) {
+                outputDiv.textContent = `Model load error: ${error.message}. Check console for details.`;
+                console.error('Model loading failed:', error);
+            }
+        }
+
+        async function performTask() {
+            if (!imageUpload.files[0]) {
+                outputDiv.textContent = 'Please upload an image.';
+                return;
+            }
+            if (!taskPipeline) {
+                outputDiv.textContent = 'Model not loaded yet.';
+                return;
+            }
+            outputDiv.textContent = 'Processing image...';
+            let url;
+            try {
+                url = URL.createObjectURL(imageUpload.files[0]);
+                const result = await taskPipeline(url);
+
+                // Process and display depth map
+                const depth = result.predicted_depth;
+                const width = depth.shape[1];
+                const height = depth.shape[0];
+                canvas.width = width;
+                canvas.height = height;
+                const imageData = ctx.createImageData(width, height);
+                const data = depth.data;
+                const max = Math.max(...data);
+                const min = Math.min(...data);
+                for (let i = 0; i < data.length; i++) {
+                    const val = 255 * (data[i] - min) / (max - min);
+                    imageData.data[i * 4] = val;
+                    imageData.data[i * 4 + 1] = val;
+                    imageData.data[i * 4 + 2] = val;
+                    imageData.data[i * 4 + 3] = 255;
+                }
+                ctx.putImageData(imageData, 0, 0);
+                outputDiv.textContent = 'Depth map rendered below.';
+            } catch (error) {
+                outputDiv.textContent = `Processing error: ${error.message}. Check console for details.`;
+                console.error('Processing failed:', error);
+            } finally {
+                if (url) URL.revokeObjectURL(url);
+            }
+        }
+
+        analyzeButton.addEventListener('click', performTask);
+        loadModel();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title></title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+        :root {
+            --deg: 16.66deg;
+        }
+        
+        html {
+            box-sizing: border-box;
+            transform-style: preserve-3d;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        p {
+            color: #666;
+        }
+
+        .container {
+            width: 400px;
+            height: 400px;
+            margin: 0 auto;
+            position: relative;
+            perspective: 300px;
+            perspective-origin: 50% 40%;
+        }
+
+        .side {
+            position: absolute;
+            left: 140px;
+            top: 150px;
+            width: 120px;
+            height: 120px;
+            background-color: #007eb3;
+            clip-path: polygon(50% 0, 100% 100%, 0 100%);
+            transform-origin: 50% 0%;
+            animation: spin 6s infinite linear;
+        }
+
+        .f1 {
+            animation-delay: -4s;
+        }
+
+        .f2 {
+            animation-delay: -2s;
+        }
+
+        .f3 {
+            animation-delay: 0s;
+
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotateY(0deg) rotateX(var(--deg));
+                border-bottom-color: #1abcff;
+            }
+
+            33.333% {
+                transform: rotateY(120deg) rotateX(var(--deg));
+                border-bottom-color: #0089c2;
+            }
+
+            66.666% {
+                transform: rotateY(240deg) rotateX(var(--deg));
+                border-bottom-color: #007eb3;
+                opacity: 1;
+            }
+
+            100% {
+                transform: rotateY(360deg) rotateX(var(--deg));
+                border-bottom-color: #1abcff;
+            }
+        }
+
+        .shadow {
+            position: absolute;
+            top: 300px;
+            left: 175px;
+            width: 50px;
+            height: 50px;
+            background-color: #bbb;
+            box-shadow: 0 0 40px 40px #bbb;
+            animation: shadow 15s infinite linear;
+        }
+
+        @keyframes shadow {
+            0% {
+                transform: rotateX(90deg) rotateZ(0deg);
+            }
+
+            100% {
+                transform: rotateX(90deg) rotateZ(-360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="side f1"></div>
+        <div class="side f2"></div>
+        <div class="side f3"></div>
+
+
+        <div class="shadow"></div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transformer.js Demo: Text-to-Image</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        textarea {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            resize: vertical;
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 20px 0;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #output {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            white-space: pre-wrap;
+        }
+
+        .loading {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+        }
+
+        img {
+            display: block;
+            margin: 20px auto;
+            max-width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Text-to-Image Demo</h1>
+        <p>Enter a prompt to generate an image (may be slow; WebGPU recommended).</p>
+        <textarea id="prompt" placeholder="Prompt for image generation..."></textarea>
+        <button id="analyzeButton">Generate Image</button>
+        <div id="output" class="loading">Output will appear here...</div>
+        <img id="generatedImage" alt="Generated Image">
+    </div>
+
+    <script type="module">
+        import { pipeline } from 'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2';
+        const outputDiv = document.getElementById('output');
+        const analyzeButton = document.getElementById('analyzeButton');
+        const prompt = document.getElementById('prompt');
+        const generatedImage = document.getElementById('generatedImage');
+        let taskPipeline = null;
+        async function loadModel() {
+            outputDiv.textContent = 'Loading model...';
+            try {
+                taskPipeline = await pipeline('text-to-image', 'Xenova/stable-diffusion-v1-5');
+                outputDiv.textContent = 'Model loaded!';
+            } catch (error) {
+                outputDiv.textContent = `Error: ${error.message}`;
+            }
+        }
+        async function performTask() {
+            const text = prompt.value.trim();
+            if (!text) return outputDiv.textContent = 'Enter a prompt.';
+            if (!taskPipeline) return outputDiv.textContent = 'Model loading...';
+            outputDiv.textContent = 'Generating... (this may take a while)';
+            try {
+                const result = await taskPipeline(text, { num_inference_steps: 20 });
+                generatedImage.src = result.toDataURL(); // Assume result is image
+                outputDiv.textContent = 'Image generated below.';
+            } catch (error) {
+                outputDiv.textContent = `Error: ${error.message}`;
+            }
+        }
+        analyzeButton.addEventListener('click', performTask);
+        loadModel();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,149 @@
+:root {
+    --n: 7;
+    --side: 3rem;
+    --exterior: calc(360deg / var(--n));
+    --apothem: calc(var(--side) / (2 * tan(180deg / var(--n))));
+    --radius: calc(var(--side) / (2 * sin(180deg / var(--n))));
+}
+
+.polygon {
+    position: relative;
+    width: calc(var(--radius) * 2);
+    height: calc(var(--radius) * 2);
+    margin: 2rem auto;
+}
+
+.polygon .side {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: var(--side);
+    height: 1px;
+    background: #333;
+    transform-origin: center;
+}
+
+.polygon .side:nth-child(1) {
+    transform: rotate(calc(var(--exterior) * 0)) translateY(calc(-1 * var(--apothem)));
+}
+
+.polygon .side:nth-child(2) {
+    transform: rotate(calc(var(--exterior) * 1)) translateY(calc(-1 * var(--apothem)));
+}
+
+.polygon .side:nth-child(3) {
+    transform: rotate(calc(var(--exterior) * 2)) translateY(calc(-1 * var(--apothem)));
+}
+
+.polygon .side:nth-child(4) {
+    transform: rotate(calc(var(--exterior) * 3)) translateY(calc(-1 * var(--apothem)));
+}
+
+.polygon .side:nth-child(5) {
+    transform: rotate(calc(var(--exterior) * 4)) translateY(calc(-1 * var(--apothem)));
+}
+
+.polygon .side:nth-child(6) {
+    transform: rotate(calc(var(--exterior) * 5)) translateY(calc(-1 * var(--apothem)));
+}
+
+.polygon .side:nth-child(7) {
+    transform: rotate(calc(var(--exterior) * 6)) translateY(calc(-1 * var(--apothem)));
+}
+
+.polygon .side:nth-child(8) {
+    transform: rotate(calc(var(--exterior) * 7)) translateY(calc(-1 * var(--apothem)));
+}
+
+.polygon .side:nth-child(9) {
+    transform: rotate(calc(var(--exterior) * 8)) translateY(calc(-1 * var(--apothem)));
+}
+
+.polygon .side:nth-child(10) {
+    transform: rotate(calc(var(--exterior) * 9)) translateY(calc(-1 * var(--apothem)));
+}
+
+.polygon .side:nth-child(11) {
+    transform: rotate(calc(var(--exterior) * 10)) translateY(calc(-1 * var(--apothem)));
+}
+
+.polygon .side:nth-child(12) {
+    transform: rotate(calc(var(--exterior) * 11)) translateY(calc(-1 * var(--apothem)));
+}
+
+.polygon .side:nth-child(13) {
+    transform: rotate(calc(var(--exterior) * 12)) translateY(calc(-1 * var(--apothem)));
+}
+
+.polygon .side:nth-child(14) {
+    transform: rotate(calc(var(--exterior) * 13)) translateY(calc(-1 * var(--apothem)));
+}
+
+.polygon .side:nth-child(15) {
+    transform: rotate(calc(var(--exterior) * 14)) translateY(calc(-1 * var(--apothem)));
+}
+
+.polygon .side:nth-child(16) {
+    transform: rotate(calc(var(--exterior) * 15)) translateY(calc(-1 * var(--apothem)));
+}
+
+.polygon .side:nth-child(17) {
+    transform: rotate(calc(var(--exterior) * 16)) translateY(calc(-1 * var(--apothem)));
+}
+
+.polygon .side:nth-child(18) {
+    transform: rotate(calc(var(--exterior) * 17)) translateY(calc(-1 * var(--apothem)));
+}
+
+.polygon .side:nth-child(19) {
+    transform: rotate(calc(var(--exterior) * 18)) translateY(calc(-1 * var(--apothem)));
+}
+
+.polygon .side:nth-child(20) {
+    transform: rotate(calc(var(--exterior) * 19)) translateY(calc(-1 * var(--apothem)));
+}
+
+.polygon .side:nth-child(21) {
+    transform: rotate(calc(var(--exterior) * 20)) translateY(calc(-1 * var(--apothem)));
+}
+
+.polygon .side:nth-child(22) {
+    transform: rotate(calc(var(--exterior) * 21)) translateY(calc(-1 * var(--apothem)));
+}
+
+.polygon .side:nth-child(23) {
+    transform: rotate(calc(var(--exterior) * 22)) translateY(calc(-1 * var(--apothem)));
+}
+
+.polygon .side:nth-child(24) {
+    transform: rotate(calc(var(--exterior) * 23)) translateY(calc(-1 * var(--apothem)));
+}
+
+.polygon .side:nth-child(25) {
+    transform: rotate(calc(var(--exterior) * 24)) translateY(calc(-1 * var(--apothem)));
+}
+
+.polygon .side:nth-child(26) {
+    transform: rotate(calc(var(--exterior) * 25)) translateY(calc(-1 * var(--apothem)));
+}
+
+.polygon .side:nth-child(27) {
+    transform: rotate(calc(var(--exterior) * 26)) translateY(calc(-1 * var(--apothem)));
+}
+
+.polygon .side:nth-child(28) {
+    transform: rotate(calc(var(--exterior) * 27)) translateY(calc(-1 * var(--apothem)));
+}
+
+.polygon .side:nth-child(29) {
+    transform: rotate(calc(var(--exterior) * 28)) translateY(calc(-1 * var(--apothem)));
+}
+
+.polygon .side:nth-child(30) {
+    transform: rotate(calc(var(--exterior) * 29)) translateY(calc(-1 * var(--apothem)));
+}
+
+.polygon .side:nth-child(31) {
+    transform: rotate(calc(var(--exterior) * 30)) translateY(calc(-1 * var(--apothem)));
+}
+

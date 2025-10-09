@@ -1,0 +1,33 @@
+$n: 5 !default;
+$side-length: 3rem !default;
+
+:root {
+    --n: #{$n};
+    --side: #{$side-length};
+    --exterior: calc(360deg / var(--n));
+    --apothem: calc(var(--side) / (2 * tan(180deg / var(--n))));
+    --radius: calc(var(--side) / (2 * sin(180deg / var(--n))));
+}
+
+.polygon {
+    position: relative;
+    width: calc(var(--radius) * 2);
+    height: calc(var(--radius) * 2);
+    margin: 2rem auto;
+
+    .side {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: var(--side);
+        height: 1px;
+        background: #333;
+        transform-origin: center;
+    }
+
+    @for $i from 1 through $n {
+        .side:nth-child(#{$i}) {
+            transform: rotate(calc(var(--exterior) * #{ $i - 1 })) translateY(calc(-1 * var(--apothem)));
+        }
+    }
+}

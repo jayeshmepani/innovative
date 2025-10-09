@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprehensive Demo of Advanced CSS Features</title>
+    <style>
+        /* ==========================================================================
+           1. @property Definitions - The core of modern CSS animations
+           ========================================================================== */
+
+        /* Basic properties */
+        @property --primary-color {
+            syntax: "<color>";
+            inherits: true;
+            initial-value: #3498db;
+        }
+
+        @property --primary-gradient {
+            syntax: "*";
+            inherits: false;
+            initial-value: red, orange, yellow, yellowgreen, green, blue, violet, red;
+        }
+
+
+        @property --secondary-color {
+            syntax: "<color>";
+            inherits: true;
+            initial-value: #2ecc71;
+        }
+
+        /* Advanced animation properties */
+        @property --angle {
+            syntax: "<angle>";
+            inherits: false;
+            initial-value: 0deg;
+        }
+
+        @property --hue {
+            syntax: "<number>";
+            inherits: false;
+            initial-value: 0;
+        }
+
+        @property --progress {
+            syntax: "<percentage>";
+            inherits: false;
+            initial-value: 0%;
+        }
+
+        @property --scale {
+            syntax: "<number>";
+            inherits: false;
+            initial-value: 1;
+        }
+
+        @property --border-width {
+            syntax: "<length>";
+            inherits: false;
+            initial-value: 3px;
+        }
+
+        @property --glow-intensity {
+            syntax: "<number>";
+            inherits: false;
+            initial-value: 0;
+        }
+
+        /* Houdini property for animated gradient border angle */
+        @property --angle-spin {
+            syntax: "<angle>";
+            inherits: true;
+            initial-value: 0turn;
+        }
+
+
+        /* ==========================================================================
+           2. Root, Body, and General Styling
+           ========================================================================== */
+
+        :root {
+            color-scheme: light dark;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+            background-color: light-dark(white, #1a1a1a);
+            color: light-dark(black, white);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1,
+        h2,
+        h3 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 2.8em;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            font-size: 2em;
+        }
+
+        p {
+            font-size: 1.1em;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+
+        .centered-p {
+            text-align: center;
+        }
+
+        .demo-card {
+            background: light-dark(#f8f9fa, #2a2a2a);
+            padding: 30px;
+            border-radius: 16px;
+            margin: 40px 0;
+            box-shadow: 0 8px 16px light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.4));
+            overflow: hidden;
+        }
+
+        .demo-title {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+
+        .demo-description {
+            max-width: 800px;
+            margin: 0 auto 30px auto;
+            text-align: center;
+            opacity: 0.8;
+        }
+
+        .code-block {
+            background: light-dark(#f1f3f4, #1e1e1e);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .code-block pre {
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        /* ==========================================================================
+           3. Animated Gradient Demos
+           ========================================================================== */
+
+        .conic-demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            place-items: center;
+        }
+
+        .conic-demo {
+            display: grid;
+            justify-items: center;
+        }
+
+        .conic-spinner {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: conic-gradient(from var(--angle),
+                    hsl(calc(var(--hue) + 0), 70%, 60%), hsl(calc(var(--hue) + 60), 70%, 60%),
+                    hsl(calc(var(--hue) + 120), 70%, 60%), hsl(calc(var(--hue) + 180), 70%, 60%),
+                    hsl(calc(var(--hue) + 240), 70%, 60%), hsl(calc(var(--hue) + 300), 70%, 60%),
+                    hsl(calc(var(--hue) + 360), 70%, 60%));
+            animation: rainbow-spin 4s linear infinite;
+            position: relative;
+        }
+
+        .conic-spinner::before {
+            content: '';
+            position: absolute;
+            inset: 20px;
+            border-radius: 50%;
+            background: light-dark(white, #1a1a1a);
+        }
+
+        @keyframes rainbow-spin {
+            to {
+                --angle: 360deg;
+                --hue: 360;
+            }
+        }
+
+        .progress-pie {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: conic-gradient(from -90deg, var(--primary-gradient) var(--progress), #333 var(--progress));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            cursor: pointer;
+            transition: --progress 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .progress-pie:hover {
+            --progress: 83%;
+        }
+
+        .progress-pie::before {
+            content: attr(data-progress);
+            position: absolute;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .pulse-gradient {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: conic-gradient(from var(--angle),
+                    hsla(calc(var(--hue)), 80%, 60%, var(--glow-intensity)),
+                    hsla(calc(var(--hue) + 120), 80%, 60%, var(--glow-intensity)),
+                    hsla(calc(var(--hue) + 240), 80%, 60%, var(--glow-intensity)),
+                    hsla(calc(var(--hue)), 80%, 60%, var(--glow-intensity))
+                    );
+            animation: pulse-glow 3s ease-in-out infinite;
+            box-shadow: 0 0 calc(var(--glow-intensity) * 50px) hsla(calc(var(--hue)), 80%, 60%, 0.5);
+        }
+
+        @keyframes pulse-glow {
+
+            0%,
+            100% {
+                --glow-intensity: 0.3;
+                --scale: 1;
+                --hue: 220;
+                --angle: 0deg;
+            }
+
+            50% {
+                --glow-intensity: 1;
+                --scale: 1.1;
+                --hue: 280;
+                --angle: 180deg;
+            }
+        }
+
+        .gradient-text {
+            font-size: 3rem;
+            font-weight: bold;
+            background: linear-gradient(var(--angle),
+                    hsl(calc(var(--hue)), 70%, 60%), hsl(calc(var(--hue) + 60), 70%, 60%),
+                    hsl(calc(var(--hue) + 120), 70%, 60%), hsl(calc(var(--hue) + 180), 70%, 60%));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradient-text-flow 5s linear infinite;
+            margin: 40px 0;
+        }
+
+        @keyframes gradient-text-flow {
+            to {
+                --angle: 360deg;
+                --hue: 360;
+            }
+        }
+
+        /* ==========================================================================
+           4. Animated Border Demos
+           ========================================================================== */
+
+        .border-demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .gradient-border-card {
+            position: relative;
+            background: light-dark(white, #2a2a2a);
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .gradient-border-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            padding: var(--border-width);
+            background: linear-gradient(var(--angle), var(--primary-color), var(--secondary-color), #e74c3c, var(--primary-color));
+            border-radius: inherit;
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask-composite: xor;
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            animation: border-spin 3s linear infinite;
+        }
+
+        @keyframes border-spin {
+            to {
+                --angle: 360deg;
+            }
+        }
+
+        .neon-border {
+            position: relative;
+            background: light-dark(#f8f9fa, #2d2d2d);
+            padding: 25px;
+            border-radius: 8px;
+            border: 2px solid transparent;
+            background-clip: padding-box;
+        }
+
+        .neon-border::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            background: conic-gradient(from var(--angle),
+                    transparent 0deg, hsl(calc(var(--hue)), 100%, 50%) 90deg,
+                    transparent 180deg, hsl(calc(var(--hue) + 120), 100%, 50%) 270deg,
+                    transparent 360deg);
+            border-radius: inherit;
+            z-index: -1;
+            animation: neon-rotate 4s linear infinite;
+            filter: blur(calc(var(--glow-intensity) * 2px));
+        }
+
+        @keyframes neon-rotate {
+            0% {
+                --angle: 0deg;
+                --hue: 200;
+                --glow-intensity: 1;
+            }
+
+            50% {
+                --glow-intensity: 3;
+            }
+
+            100% {
+                --angle: 360deg;
+                --hue: 320;
+                --glow-intensity: 1;
+            }
+        }
+
+        .morphing-border {
+            position: relative;
+            background: light-dark(white, #1e1e1e);
+            padding: 20px;
+            border-radius: calc(var(--scale) * 10px);
+            transform: scale(var(--scale));
+            transition: --scale 0.3s ease;
+        }
+
+        .morphing-border::before {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            background: linear-gradient(var(--angle),
+                    hsla(calc(var(--hue)), 70%, 60%, 0.8), hsla(calc(var(--hue) + 180), 70%, 60%, 0.8));
+            border-radius: inherit;
+            z-index: -1;
+            animation: morph-animation 6s ease-in-out infinite;
+        }
+
+        .morphing-border:hover {
+            --scale: 1.05;
+        }
+
+        @keyframes morph-animation {
+
+            0%,
+            100% {
+                --angle: 45deg;
+                --hue: 260;
+                --scale: 1;
+            }
+
+            25% {
+                --angle: 135deg;
+                --hue: 180;
+                --scale: 1.02;
+            }
+
+            50% {
+                --angle: 225deg;
+                --hue: 100;
+                --scale: 0.98;
+            }
+
+            75% {
+                --angle: 315deg;
+                --hue: 320;
+                --scale: 1.02;
+            }
+        }
+
+        /* ==========================================================================
+           5. Advanced Gradient Border Techniques (NEW SECTION)
+           ========================================================================== */
+
+        .advanced-border-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 40px;
+        }
+
+        @media (min-width: 900px) {
+            .advanced-border-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .technique-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Base styles for the card provided by user */
+        .card-demo {
+            background-color: light-dark(#ffffff, #0F0620);
+            color: light-dark(#000000, #E0D1FF);
+            padding: 24px;
+            border-radius: 24px;
+        }
+
+        .card-demo__title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+            text-align: left;
+        }
+
+        .card-demo__description {
+            font-size: 1rem;
+            opacity: 0.8;
+            margin-bottom: 24px;
+            text-align: left;
+        }
+
+        .card-demo__actions {
+            display: flex;
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .card-demo__button {
+            font-size: 0.9rem;
+            color: light-dark(#381D6A, #E0D1FF);
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        .card-demo .media-object {
+            padding: 24px;
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .media-object__title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 0;
+            /* override p styling */
+        }
+
+        .media-object__button {
+            display: inline-block;
+            margin-top: 12px;
+            padding: 8px 16px;
+            background-color: #381D6A;
+            color: #E0D1FF;
+            border-radius: 8px;
+            text-decoration: none;
+        }
+
+        .media-object__thumbnail {
+            width: 60px;
+            height: 60px;
+            background-color: #E0D1FF;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        /* Technique 1: border-image */
+        .media-object--border-image {
+            border: 4px solid;
+            border-image: conic-gradient(#381D6A 80%, #E0D1FF 88%, #E0D1FF 92%, #381D6A 100%) 1;
+        }
+
+        /* Technique 2: Pseudo-element */
+        .card-demo--pseudo-element {
+            isolation: isolate;
+        }
+
+        .media-object--pseudo-element {
+            --border-width: 4px;
+            --radius: 24px;
+            --bg-color: light-dark(#ffffff, #0F0620);
+            position: relative;
+            border: var(--border-width) solid transparent;
+            border-radius: var(--radius);
+            background-color: var(--bg-color);
+            background-clip: padding-box;
+        }
+
+        .media-object--pseudo-element::before {
+            content: " ";
+            position: absolute;
+            inset: calc(var(--border-width) * -1);
+            z-index: -1;
+            border-radius: inherit;
+            background-image: conic-gradient(#381D6A 80%, #E0D1FF 88%, #E0D1FF 92%, #381D6A 100%);
+        }
+
+        /* Technique 3: Multiple Backgrounds */
+        .media-object--multiple-bg {
+            --border-width: 4px;
+            --radius: 24px;
+            --bg-color: light-dark(#ffffff, #0F0620);
+            border: var(--border-width) solid transparent;
+            border-radius: var(--radius);
+            background-image: linear-gradient(var(--bg-color) 0 0),
+                conic-gradient(#381D6A 80%, #E0D1FF 88%, #E0D1FF 92%, #381D6A 100%);
+            background-clip: padding-box, border-box;
+            background-origin: padding-box, border-box;
+        }
+
+        /* Technique 4: CSS Masks */
+        .card-demo--mask {
+            isolation: isolate;
+        }
+
+        .media-object--mask {
+            --border-width: 4px;
+            --radius: 24px;
+            position: relative;
+            border-radius: var(--radius);
+            border: var(--border-width) solid transparent;
+            background-color: light-dark(rgba(255, 255, 255, 0.7), rgba(15, 6, 32, 0.7));
+            backdrop-filter: blur(5px);
+        }
+
+        .media-object--mask::before {
+            content: " ";
+            position: absolute;
+            inset: calc(var(--border-width) * -1);
+            z-index: -1;
+            border: inherit;
+            border-radius: inherit;
+            background-image: conic-gradient(#381D6A 80%, #E0D1FF 88%, #E0D1FF 92%, #381D6A 100%);
+            background-origin: border-box;
+            mask: linear-gradient(black, black), linear-gradient(black, black);
+            mask-clip: content-box, border-box;
+            mask-composite: exclude;
+            -webkit-mask: linear-gradient(black, black) content-box, linear-gradient(black, black) border-box;
+            -webkit-mask-composite: xor;
+        }
+
+        /* Technique 5: Animated */
+        .media-object--animated {
+            --border-width: 4px;
+            --radius: 24px;
+            border: var(--border-width) solid;
+            border-image: conic-gradient(from var(--angle-spin), #381D6A 80%, #E0D1FF 88%, #E0D1FF 92%, #381D6A 100%) 1;
+            border-radius: var(--radius);
+            animation: spin 3s linear infinite paused;
+        }
+
+        .media-object--animated:hover {
+            animation-play-state: running;
+        }
+
+        @keyframes spin {
+            to {
+                --angle-spin: 1turn;
+            }
+        }
+
+        @supports not (background: paint(something)) {
+            .media-object--animated {
+                animation: none;
+                border-image: conic-gradient(#381D6A 80%, #E0D1FF 88%, #E0D1FF 92%, #381D6A 100%) 1;
+            }
+        }
+
+
+        /* ==========================================================================
+           6. Motion Path Animation
+           ========================================================================== */
+        .path-container {
+            width: 250px;
+            height: 150px;
+            border: 2px dashed light-dark(gray, lightgray);
+            margin: 50px auto;
+            position: relative;
+        }
+
+        .animated-element {
+            width: 50px;
+            height: 50px;
+            background-color: #e74c3c;
+            border-radius: 50%;
+            position: absolute;
+            offset-path: path("M20,20 C20,100 200,0 200,100");
+            offset-position: 20% 80%;
+            animation: moveAlongPath 5s linear infinite alternate;
+        }
+
+        @keyframes moveAlongPath {
+            from {
+                offset-distance: 0%;
+            }
+
+            to {
+                offset-distance: 100%;
+            }
+        }
+
+        /* ==========================================================================
+           7. Whitespace Control Demo
+           ========================================================================== */
+        .whitespace-demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .whitespace-demo {
+            border: 1px dashed light-dark(black, gray);
+            padding: 15px;
+            background-color: light-dark(#f9f9f9, #444);
+            color: light-dark(#333, #eee);
+            border-radius: 8px;
+            text-align: left;
+        }
+
+        .whitespace-demo-title {
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .whitespace-collapse {
+            white-space-collapse: collapse;
+        }
+
+        .whitespace-preserve {
+            white-space-collapse: preserve;
+        }
+
+        .whitespace-preserve-breaks {
+            white-space-collapse: preserve-breaks;
+        }
+
+
+        /* ==========================================================================
+           8. Conceptual CSS Features
+           ========================================================================== */
+        .button-demo-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .button {
+            background-color: var(--primary-color);
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            font-size: 1em;
+            transition: transform 0.2s ease, background-color 0.3s ease;
+        }
+
+        .button:hover {
+            filter: brightness(0.9);
+            transform: translateY(-2px);
+        }
+
+        .button.secondary {
+            background-color: var(--secondary-color);
+        }
+
+
+        /* ==========================================================================
+           9. Performance Optimized Sections (content-visibility)
+           ========================================================================== */
+        .lazy-load-section {
+            content-visibility: auto;
+            contain-intrinsic-size: 300px;
+            border: 2px solid transparent;
+            background: linear-gradient(135deg,
+                    light-dark(var(--primary-color), var(--secondary-color)),
+                    light-dark(var(--secondary-color), var(--primary-color)));
+            padding: 30px;
+            margin-bottom: 30px;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            font-weight: bold;
+            color: white;
+            border-radius: 16px;
+            position: relative;
+            overflow: hidden;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .lazy-load-section::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: conic-gradient(from var(--angle), transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 3s linear infinite;
+        }
+
+        @keyframes shimmer {
+            to {
+                --angle: 360deg;
+            }
+        }
+
+        /* ==========================================================================
+           10. Responsive Design
+           ========================================================================== */
+        @media (max-width: 768px) {
+
+            .conic-demo-grid,
+            .border-demo-grid,
+            .whitespace-demo-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .gradient-text {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Comprehensive CSS Features Showcase</h1>
+        <p class="demo-description">
+            This page is a deep dive into modern and experimental CSS.
+            Explore animations using <code>@property</code>, performance with <code>content-visibility</code>,
+            layout control with <code>white-space-collapse</code>, motion with <code>offset-path</code>, and advanced
+            border techniques.
+        </p>
+
+        <div class="gradient-text">MODERN CSS IN ACTION</div>
+
+        <section class="demo-card">
+            <h2>🎨 Animated Conic Gradients with @property</h2>
+            <p class="demo-description">By registering custom properties like <code>--angle</code> and
+                <code>--hue</code>, we can animate conic gradients in ways previously impossible.
+            </p>
+            <div class="conic-demo-grid">
+                <div class="conic-demo">
+                    <h3 class="demo-title">Spinning Rainbow</h3>
+                    <div class="conic-spinner"></div>
+                    <p class="centered-p">Animates <code>--angle</code> and <code>--hue</code>.</p>
+                </div>
+                <div class="conic-demo">
+                    <h3 class="demo-title">Interactive Progress</h3>
+                    <div class="progress-pie" data-progress="83%"></div>
+                    <p class="centered-p">Animates <code>--progress</code> on hover.</p>
+                </div>
+                <div class="conic-demo">
+                    <h3 class="demo-title">Pulsating Glow</h3>
+                    <div class="pulse-gradient"></div>
+                    <p class="centered-p">Animates <code>--glow-intensity</code>, <code>--hue</code>, and
+                        <code>--angle</code>.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section class="demo-card">
+            <h2>✨ Animated Gradient Borders</h2>
+            <p class="demo-description">These examples use <code>@property</code> with masking and pseudo-elements to
+                create dynamic, animated borders.</p>
+            <div class="border-demo-grid">
+                <div class="gradient-border-card">
+                    <h3 class="demo-title">Rotating Border</h3>
+                    <p>A masked gradient animated.</p>
+                </div>
+                <div class="neon-border">
+                    <h3 class="demo-title">Neon Glow Effect</h3>
+                    <p>A blurred conic-gradient animates a glow.</p>
+                </div>
+                <div class="morphing-border">
+                    <h3 class="demo-title">Morphing Border</h3>
+                    <p>Scale and angle transforms on a loop.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="demo-card">
+            <h2>🔮 Advanced Gradient Border Techniques</h2>
+            <p class="demo-description">A deep dive into various methods for creating gradient borders, each with its
+                own use case, from simple to complex, animated, and transparent-friendly solutions.</p>
+            <div class="advanced-border-grid">
+                <div class="technique-container">
+                    <h3 class="demo-title">1. `border-image` (No Radius)</h3>
+                    <article class="card-demo">
+                        <div class="media-object media-object--border-image">
+                            <div>
+                                <h2 class="media-object__title">Your frontend doesn't have to be a mess.</h2><a
+                                    class="media-object__button">Get Your Audit</a>
+                            </div>
+                            <div class="media-object__thumbnail"></div>
+                        </div>
+                    </article>
+                    <div class="code-block">
+                        <pre><code>.media-object {
+  border: 4px solid;
+  border-image: conic-gradient(...) 1;
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="technique-container">
+                    <h3 class="demo-title">2. Pseudo-element (With Radius)</h3>
+                    <article class="card-demo card-demo--pseudo-element">
+                        <div class="media-object media-object--pseudo-element">
+                            <div>
+                                <h2 class="media-object__title">Your frontend doesn't have to be a mess.</h2><a
+                                    class="media-object__button">Get Your Audit</a>
+                            </div>
+                            <div class="media-object__thumbnail"></div>
+                        </div>
+                    </article>
+                    <div class="code-block">
+                        <pre><code>.media-object {
+  position: relative;
+  border: 4px solid transparent;
+  border-radius: 24px;
+}
+.media-object::before {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  z-index: -1;
+  border-radius: inherit;
+  background-image: conic-gradient(...);
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="technique-container">
+                    <h3 class="demo-title">3. Multiple Backgrounds</h3>
+                    <article class="card-demo">
+                        <div class="media-object media-object--multiple-bg">
+                            <div>
+                                <h2 class="media-object__title">Your frontend doesn't have to be a mess.</h2><a
+                                    class="media-object__button">Get Your Audit</a>
+                            </div>
+                            <div class="media-object__thumbnail"></div>
+                        </div>
+                    </article>
+                    <div class="code-block">
+                        <pre><code>.media-object {
+  border: 4px solid transparent;
+  border-radius: 24px;
+  background-image: 
+    linear-gradient(bg-color, bg-color), 
+    conic-gradient(...);
+  background-clip: padding-box, border-box;
+  background-origin: padding-box, border-box;
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="technique-container">
+                    <h3 class="demo-title">4. CSS Mask (With Transparency)</h3>
+                    <article class="card-demo card-demo--mask">
+                        <div class="media-object media-object--mask">
+                            <div>
+                                <h2 class="media-object__title">Your frontend doesn't have to be a mess.</h2><a
+                                    class="media-object__button">Get Your Audit</a>
+                            </div>
+                            <div class="media-object__thumbnail"></div>
+                        </div>
+                    </article>
+                    <div class="code-block">
+                        <pre><code>.media-object::before {
+  /* ... positioning ... */
+  background-image: conic-gradient(...);
+  mask: linear-gradient(#fff, #fff),
+        linear-gradient(#fff, #fff);
+  mask-clip: content-box, border-box;
+  mask-composite: exclude;
+}</code></pre>
+                    </div>
+                </div>
+
+                <div class="technique-container">
+                    <h3 class="demo-title">5. Animated Border (Hover Me)</h3>
+                    <article class="card-demo">
+                        <div class="media-object media-object--animated">
+                            <div>
+                                <h2 class="media-object__title">Your frontend doesn't have to be a mess.</h2><a
+                                    class="media-object__button">Get Your Audit</a>
+                            </div>
+                            <div class="media-object__thumbnail"></div>
+                        </div>
+                    </article>
+                    <div class="code-block">
+                        <pre><code>@property --angle-spin {
+  syntax: "&lt;angle&gt;";
+  initial-value: 0turn;
+}
+.media-object {
+  border-image: conic-gradient(
+    from var(--angle-spin), ...
+  ) 1;
+  animation: spin 3s linear infinite paused;
+}
+.media-object:hover {
+  animation-play-state: running;
+}
+@keyframes spin {
+  to { --angle-spin: 1turn; }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="demo-card">
+            <h2>🚀 Motion Path Animation with `offset-path`</h2>
+            <p class="demo-description"><code>offset-path</code> defines a geometric path for an element to follow.
+                Combined with <code>offset-distance</code>, we can achieve complex, non-linear movement.</p>
+            <div class="path-container">
+                <div class="animated-element"></div>
+            </div>
+        </section>
+
+        <section class="demo-card">
+            <h2>📄 Whitespace Control with `white-space-collapse`</h2>
+            <p class="demo-description">This property provides more granular control over how whitespace is handled.
+                Link: <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/white-space-collapse">MDN Docs</a></p>
+            <div class="whitespace-demo-grid">
+                <div class="whitespace-demo whitespace-collapse">
+                    <p class="whitespace-demo-title">collapse (default)</p>This text has multiple spaces that are
+                    collapsed.
+                </div>
+                <div class="whitespace-demo whitespace-preserve">
+                    <p class="whitespace-demo-title">preserve</p>This text preserves all spaces
+                    and
+                    all line breaks.
+                </div>
+                <div class="whitespace-demo whitespace-preserve-breaks">
+                    <p class="whitespace-demo-title">preserve-breaks</p>This text collapses multiple spaces,
+                    but preserves line breaks.
+                </div>
+            </div>
+        </section>
+
+        <section class="demo-card">
+            <h2>⚡ Performance-Optimized Rendering</h2>
+            <p class="demo-description">These sections use <code>content-visibility: auto</code>. This tells the browser
+                to skip rendering off-screen elements. <code>contain-intrinsic-size</code> prevents the scrollbar from
+                jumping.</p>
+            <div class="lazy-load-section">Section 1 (Lazy Loaded)</div>
+            <div class="lazy-load-section">Section 2 (Lazy Loaded)</div>
+        </section>
+
+        <section class="demo-card">
+            <h2>🔬 Conceptual CSS: Functions and Mixins</h2>
+            <p class="demo-description">While native <code>@function</code> and <code>@mixin</code> are not yet
+                supported, we can achieve reusable styles using custom properties defined with <code>@property</code>.
+            </p>
+            <div class="button-demo-container">
+                <button class="button">Default Button</button>
+                <button class="button secondary">Secondary Button</button>
+            </div>
+        </section>
+
+    </div>
+</body>
+
+</html>

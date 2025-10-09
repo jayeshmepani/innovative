@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🧪 Transformers.js All‑Tasks Playground — High‑End Models</title>
+    <style>
+        :root {
+            --bg1: #667eea;
+            --bg2: #764ba2;
+            --primary: #4f46e5;
+            --primary2: #7c3aed;
+            --ok: #10b981;
+            --warn: #f59e0b;
+            --err: #ef4444;
+            --ink: #1f2937;
+            --muted: #6b7280;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, Roboto, Arial, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--bg1), var(--bg2));
+            padding: 20px;
+            color: #111
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, .95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, .1);
+            overflow: hidden;
+            animation: slideUp .6s ease-out
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--primary2));
+            color: #fff;
+            padding: 28px 24px
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 800
+        }
+
+        .header p {
+            opacity: .9;
+            margin-top: 6px
+        }
+
+        .content {
+            padding: 28px 24px;
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 22px
+        }
+
+        @media (max-width:980px) {
+            .content {
+                grid-template-columns: 1fr
+            }
+        }
+
+        .panel {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 16px
+        }
+
+        .panel h2 {
+            font-size: 16px;
+            color: var(--ink);
+            margin-bottom: 10px
+        }
+
+        .f {
+            display: flex;
+            flex-direction: column;
+            gap: 10px
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 13px;
+            color: #374151
+        }
+
+        select,
+        input[type="text"],
+        input[type="number"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            background: #fff;
+            font: inherit
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical
+        }
+
+        input[type="file"] {
+            padding: 8px;
+            border: 1px dashed #cbd5e1;
+            border-radius: 12px;
+            background: #f8fafc
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px
+        }
+
+        .hint {
+            font-size: 12px;
+            color: var(--muted)
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 6px
+        }
+
+        button {
+            background: linear-gradient(135deg, var(--primary), var(--primary2));
+            border: none;
+            color: #fff;
+            padding: 12px 18px;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden
+        }
+
+        button:disabled {
+            opacity: .6;
+            cursor: not-allowed
+        }
+
+        .ghost {
+            background: #f3f4f6;
+            color: #111;
+            border: 1px solid #e5e7eb
+        }
+
+        .danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626)
+        }
+
+        .status {
+            position: fixed;
+            top: 18px;
+            right: 18px;
+            padding: 10px 14px;
+            border-radius: 20px;
+            color: #fff;
+            font-weight: 700;
+            transform: translateX(400px);
+            transition: transform .35s ease;
+            z-index: 50
+        }
+
+        .status.show {
+            transform: translateX(0)
+        }
+
+        .status.loading {
+            background: linear-gradient(135deg, #f59e0b, #d97706)
+        }
+
+        .status.success {
+            background: linear-gradient(135deg, #10b981, #059669)
+        }
+
+        .status.error {
+            background: linear-gradient(135deg, #ef4444, #dc2626)
+        }
+
+        .result {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 16px;
+            min-height: 160px
+        }
+
+        .result h3 {
+            font-size: 14px;
+            margin-bottom: 10px
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 16px
+        }
+
+        .pill {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            color: #fff
+        }
+
+        .pill.ok {
+            background: linear-gradient(135deg, #10b981, #059669)
+        }
+
+        .pill.warn {
+            background: linear-gradient(135deg, #f59e0b, #d97706)
+        }
+
+        .pill.err {
+            background: linear-gradient(135deg, #ef4444, #dc2626)
+        }
+
+        .mono {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            white-space: pre-wrap;
+            word-break: break-word;
+            background: #0b1021;
+            color: #e3e8ff;
+            border-radius: 12px;
+            padding: 12px;
+            font-size: 12px
+        }
+
+        .canvas-wrapper {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+            background: #f9fafb
+        }
+
+        canvas,
+        img {
+            max-width: 100%;
+            display: block
+        }
+
+        .small {
+            font-size: 12px;
+            color: #4b5563
+        }
+
+        .kbd {
+            font-family: monospace;
+            background: #eef2ff;
+            border: 1px solid #c7d2fe;
+            border-radius: 6px;
+            padding: 1px 6px
+        }
+    </style>
+</head>
+
+<body>
+    <div id="toast" class="status"></div>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 Transformers.js All‑Tasks Playground — High‑End Models</h1>
+            <p>High‑quality defaults selected per task. These are heavier models — switch <b>Device</b> to WebGPU for
+                speed.
+                First run will download weights (cached locally).</p>
+        </div>
+        <div class="content">
+            <!-- LEFT: Controls -->
+            <div class="panel f" id="controlsPanel">
+                <h2>⚙️ Configure</h2>
+                <div class="f">
+                    <label for="taskSelect">Task/Pipeline</label>
+                    <select id="taskSelect"></select>
+                    <div class="hint" id="taskHint">Select a task to see inputs.</div>
+                </div>
+                <div class="row">
+                    <div class="f">
+                        <label for="modelInput">Model (Hub id)</label>
+                        <input id="modelInput" type="text" placeholder="Auto‑selects a solid default for the task" />
+                        <div class="hint" id="modelHint">Use presets below or type any compatible repo id.</div>
+                    </div>
+                    <div class="f">
+                        <label for="deviceSelect">Device</label>
+                        <select id="deviceSelect">
+                            <option value="auto">Auto (WebGPU → WASM)</option>
+                            <option value="wasm">WASM (CPU)</option>
+                            <option value="webgpu">WebGPU (if available)</option>
+                        </select>
+                        <div class="hint">Tip: Enable <span
+                                class="kbd">chrome://flags/#enable-webgpu-developer-features</span> for best perf.</div>
+                    </div>
+                </div>
+
+                <div id="dynamicInputs" class="f"></div>
+
+                <div class="controls">
+                    <button id="runBtn">▶️ Run</button>
+                    <button id="clearBtn" class="ghost">🗑️ Clear</button>
+                </div>
+                <div class="hint small">Need sample data? Click the task then press <span class="kbd">Load sample</span>
+                    under the inputs.</div>
+            </div>
+
+            <!-- RIGHT: Results -->
+            <div class="panel">
+                <h2>📊 Results</h2>
+                <div id="results" class="result">
+                    <div class="small">Ready. Pick a task, add inputs, then run.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { pipeline, env } from 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.7.3';
+
+        // ---------- ENV / BACKENDS ----------
+        env.allowLocalModels = true; // allow IndexedDB cache
+        const toast = (msg, kind = 'loading', ms = 2500) => {
+            const el = document.getElementById('toast');
+            el.textContent = msg; el.className = `status ${kind} show`;
+            clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('show'), ms);
+        };
+
+        // ---------- MODEL PRESETS (Best / Balanced / Fast) ----------
+        // Curated from Transformers.js‑compatible repositories. You can still type any model id.
+        const MODEL_PRESETS = {
+            // ===== NLP =====
+            'fill-mask': [
+                { name: 'Best (quality)', id: 'Xenova/roberta-large' },
+                { name: 'Balanced', id: 'Xenova/bert-base-cased' },
+                { name: 'Fast/Small', id: 'Xenova/distilroberta-base' }
+            ],
+            'question-answering': [
+                { name: 'Best', id: 'Xenova/deberta-v3-large-squad2' },
+                { name: 'Balanced', id: 'Xenova/roberta-base-squad2' },
+                { name: 'Fast', id: 'Xenova/distilbert-base-cased-distilled-squad' }
+            ],
+            'feature-extraction': [
+                { name: 'Best (EN retrieval)', id: 'Xenova/bge-large-en-v1.5' },
+                { name: 'Balanced (EN)', id: 'Xenova/all-MiniLM-L6-v2' },
+                { name: 'Best (Multilingual)', id: 'Xenova/bge-m3' }
+            ],
+            'summarization': [
+                { name: 'Best', id: 'Xenova/bart-large-cnn' },
+                { name: 'Balanced', id: 'Xenova/distilbart-cnn-6-6' },
+                { name: 'Fast', id: 'Xenova/t5-small' }
+            ],
+            'text-classification': [
+                { name: 'Best (sentiment EN)', id: 'Xenova/bert-large-uncased-finetuned-sst-2-english' },
+                { name: 'Balanced', id: 'Xenova/distilbert-base-uncased-finetuned-sst-2-english' },
+                { name: 'Best (multilingual sentiment)', id: 'Xenova/bert-base-multilingual-uncased-sentiment' }
+            ],
+            'text-generation': [
+                { name: 'Best (browser‑friendly)', id: 'onnx-community/Llama-3.2-3B-Instruct' },
+                { name: 'Balanced', id: 'onnx-community/Llama-3.2-1B-Instruct' },
+                { name: 'Fast (tiny)', id: 'Xenova/distilgpt2' }
+            ],
+            'text2text-generation': [
+                { name: 'Best', id: 'Xenova/LaMini-Flan-T5-783M' },
+                { name: 'Balanced', id: 'Xenova/flan-t5-base' },
+                { name: 'Fast', id: 'Xenova/t5-small' }
+            ],
+            'token-classification': [
+                { name: 'Best (NER)', id: 'Xenova/bert-large-NER' },
+                { name: 'Balanced', id: 'Xenova/bert-base-NER' },
+                { name: 'Fast', id: 'Xenova/squeezebert-mnli-head' }
+            ],
+            'translation': [
+                { name: 'Best (200 langs)', id: 'Xenova/nllb-200-distilled-600M' },
+                { name: 'Balanced (many langs)', id: 'Xenova/m2m100_418M' },
+                { name: 'Fast (EN↔FR demo)', id: 'Xenova/t5-small' }
+            ],
+            'zero-shot-classification': [
+                { name: 'Best', id: 'Xenova/deberta-v3-large-mnli' },
+                { name: 'Balanced', id: 'Xenova/bart-large-mnli' },
+                { name: 'Fast', id: 'Xenova/mobilebert-uncased-mnli' }
+            ],
+
+            // ===== VISION =====
+            'image-classification': [
+                { name: 'Best', id: 'Xenova/vit-large-patch16-224' },
+                { name: 'Balanced', id: 'Xenova/vit-base-patch16-224' },
+                { name: 'Fast', id: 'Xenova/vit-small-patch16-224' }
+            ],
+            'zero-shot-image-classification': [
+                { name: 'Best', id: 'Xenova/siglip-large-patch16-384' },
+                { name: 'Balanced', id: 'Xenova/clip-vit-large-patch14' },
+                { name: 'Fast', id: 'Xenova/clip-vit-base-patch16' }
+            ],
+            'object-detection': [
+                { name: 'Best', id: 'Xenova/detr-resnet-101' },
+                { name: 'Balanced', id: 'Xenova/detr-resnet-50' }
+            ],
+            'zero-shot-object-detection': [
+                { name: 'Best', id: 'Xenova/owlv2-large-patch14-ensemble' },
+                { name: 'Balanced', id: 'Xenova/owlv2-base-patch16-ensemble' }
+            ],
+            'image-segmentation': [
+                { name: 'Best (BG removal)', id: 'briaai/RMBG-1.4' },
+                { name: 'Balanced', id: 'Xenova/modnet-photographic-portrait-matting' }
+            ],
+            'depth-estimation': [
+                { name: 'Best', id: 'onnx-community/metric3d-vit-giant2' },
+                { name: 'Balanced', id: 'Xenova/dpt-large' },
+                { name: 'Fast', id: 'Xenova/dpt-hybrid-midas' }
+            ],
+            'image-to-image': [
+                { name: 'Best (SR x4)', id: 'Xenova/swin2SR-classical-sr-x4-64' },
+                { name: 'Balanced (SR x2)', id: 'Xenova/swin2SR-classical-sr-x2-64' }
+            ],
+
+            // ===== AUDIO =====
+            'audio-classification': [
+                { name: 'Best', id: 'Xenova/ast-finetuned-audioset-10-10-0.4593' }
+            ],
+            'zero-shot-audio-classification': [
+                { name: 'Best', id: 'Xenova/clap-htsat-unfused' }
+            ],
+            'automatic-speech-recognition': [
+                { name: 'Best (EN)', id: 'onnx-community/whisper-large-v3-turbo' },
+                { name: 'Balanced (EN)', id: 'Xenova/whisper-small.en' },
+                { name: 'Fast (tiny EN)', id: 'Xenova/whisper-tiny.en' }
+            ],
+            'text-to-speech': [
+                { name: 'Best (natural EN)', id: 'onnx-community/Kokoro-82M-v1.0-ONNX' },
+                { name: 'Balanced (EN multi)', id: 'Xenova/mms-tts-eng' }
+            ],
+
+            // ===== MULTIMODAL =====
+            'image-to-text': [
+                { name: 'Best (OCR printed)', id: 'Xenova/trocr-base-printed' },
+                { name: 'Best (OCR handwritten)', id: 'Xenova/trocr-base-handwritten' },
+                { name: 'Balanced (captioning)', id: 'Xenova/vit-gpt2-image-captioning' },
+                { name: 'Best (VLM caption/VQA small)', id: 'Xenova/moondream2' }
+            ],
+            'document-question-answering': [
+                { name: 'Best', id: 'Xenova/donut-base-finetuned-docvqa' }
+            ],
+            'background-removal': [
+                { name: 'Best', id: 'briaai/RMBG-1.4' },
+                { name: 'Balanced', id: 'Xenova/modnet-photographic-portrait-matting' }
+            ]
+        };
+
+        // ---------- TASK CATALOG ----------
+        const TASKS = {
+            // ===== NLP =====
+            'fill-mask': {
+                label: 'Fill‑Mask (MLM)', desc: 'Predict masked tokens in a sentence. Use [MASK] token.', kind: 'text',
+                defaultModel: MODEL_PRESETS['fill-mask'][0].id,
+                inputs: [{ key: 'text', label: 'Text (include [MASK])', type: 'textarea', placeholder: 'The capital of France is [MASK].' }],
+                samples: [{ text: 'Transformers.js makes [MASK] easy in the browser.' }],
+                run: async (clf, vals) => await clf(vals.text)
+            },
+            'question-answering': {
+                label: 'Question Answering', desc: 'Extractive QA over a context paragraph.', kind: 'text',
+                defaultModel: MODEL_PRESETS['question-answering'][0].id,
+                inputs: [
+                    { key: 'question', label: 'Question', type: 'text', placeholder: 'Who wrote Hamlet?' },
+                    { key: 'context', label: 'Context', type: 'textarea', placeholder: 'Hamlet is a tragedy written by William Shakespeare sometime between 1599 and 1601.' }
+                ],
+                samples: [{ question: 'Who wrote Hamlet?', context: 'Hamlet is a tragedy written by William Shakespeare sometime between 1599 and 1601.' }],
+                run: async (clf, v) => await clf(v.question, v.context)
+            },
+            'feature-extraction': {
+                label: 'Feature Extraction (Embeddings)', desc: 'Get sentence embeddings; optional similarity.', kind: 'text',
+                defaultModel: MODEL_PRESETS['feature-extraction'][0].id,
+                inputs: [
+                    { key: 'text', label: 'Text A', type: 'textarea', placeholder: 'A quick brown fox jumps over the lazy dog.' },
+                    { key: 'textB', label: 'Text B (optional, for similarity)', type: 'textarea', placeholder: 'Type another sentence to compute cosine similarity (optional).' }
+                ],
+                samples: [{ text: 'I love programming in JavaScript.', textB: 'Coding in JS is enjoyable.' }],
+                run: async (clf, v) => {
+                    const embA = await clf(v.text);
+                    if (!v.textB?.trim()) return { embedding: embA.data, dims: embA.dims };
+                    const embB = await clf(v.textB);
+                    const sim = cosineSim(embA.data, embB.data);
+                    return { similarity: sim, dims: embA.dims };
+                }
+            },
+            'summarization': {
+                label: 'Summarization', desc: 'Summarize long passages.', kind: 'text',
+                defaultModel: MODEL_PRESETS['summarization'][0].id,
+                inputs: [{ key: 'text', label: 'Document', type: 'textarea', placeholder: 'Paste a few paragraphs to summarize...' }],
+                samples: [{ text: 'Transformers.js runs ML models entirely in the browser. It supports text, vision, audio, and multimodal tasks, enabling private, low-latency applications without servers. WebGPU offers big speedups.' }],
+                run: async (clf, v) => await clf(v.text, { max_new_tokens: 128 })
+            },
+            'text-classification': {
+                label: 'Text Classification', desc: 'General topic/sentiment classification.', kind: 'text',
+                defaultModel: MODEL_PRESETS['text-classification'][0].id,
+                inputs: [{ key: 'text', label: 'Text', type: 'textarea', placeholder: 'Type something to classify...' }],
+                samples: [{ text: 'The product quality is excellent and the delivery was fast!' }],
+                run: async (clf, v) => await clf(v.text)
+            },
+            'text-generation': {
+                label: 'Text Generation', desc: 'Causal LM text continuation.', kind: 'text',
+                defaultModel: MODEL_PRESETS['text-generation'][0].id,
+                inputs: [
+                    { key: 'text', label: 'Prompt', type: 'textarea', placeholder: 'Once upon a time,' },
+                    { key: 'max_new_tokens', label: 'Max New Tokens', type: 'number', value: 64 },
+                    { key: 'temperature', label: 'Temperature (0.1–2)', type: 'number', value: 1 }
+                ],
+                samples: [{ text: 'I enjoy walking with my cute dog,' }],
+                run: async (clf, v) => await clf(v.text, { max_new_tokens: +v.max_new_tokens || 64, temperature: +v.temperature || 1 })
+            },
+            'text2text-generation': {
+                label: 'Text‑to‑Text Generation', desc: 'Seq2seq tasks (T5/FLAN).', kind: 'text',
+                defaultModel: MODEL_PRESETS['text2text-generation'][0].id,
+                inputs: [{ key: 'text', label: 'Input', type: 'textarea', placeholder: 'Translate English to German: How are you?' }],
+                samples: [{ text: 'Explain like I am five: What is a rainbow?' }],
+                run: async (clf, v) => await clf(v.text, { max_new_tokens: 128 })
+            },
+            'token-classification': {
+                label: 'Token Classification (NER)', desc: 'Label entities in text.', kind: 'text',
+                defaultModel: MODEL_PRESETS['token-classification'][0].id,
+                inputs: [{ key: 'text', label: 'Text', type: 'textarea', placeholder: 'My name is Sarah and I live in London.' }],
+                samples: [{ text: 'Apple is looking at buying U.K. startup for $1 billion.' }],
+                run: async (clf, v) => await clf(v.text)
+            },
+            'translation': {
+                label: 'Translation', desc: 'Translate between languages (set codes).', kind: 'text',
+                defaultModel: MODEL_PRESETS['translation'][0].id,
+                inputs: [
+                    { key: 'text', label: 'Source Text', type: 'textarea', placeholder: '生活就像一盒巧克力。' },
+                    { key: 'src_lang', label: 'Source Lang Code', type: 'text', value: 'zh' },
+                    { key: 'tgt_lang', label: 'Target Lang Code', type: 'text', value: 'en' }
+                ],
+                samples: [{ text: 'संयुक्त राष्ट्र के प्रमुख का कहना है कि सीरिया में कोई सैन्य समाधान नहीं है', src_lang: 'hi', tgt_lang: 'en' }],
+                run: async (clf, v) => await clf(v.text, { src_lang: v.src_lang || 'en', tgt_lang: v.tgt_lang || 'fr' })
+            },
+            'zero-shot-classification': {
+                label: 'Zero‑Shot Classification', desc: 'Classify into custom labels.', kind: 'text',
+                defaultModel: MODEL_PRESETS['zero-shot-classification'][0].id,
+                inputs: [
+                    { key: 'text', label: 'Text', type: 'textarea', placeholder: 'I need help with my billing issue.' },
+                    { key: 'labels', label: 'Candidate Labels (comma‑sep)', type: 'text', placeholder: 'billing, account, mobile' }
+                ],
+                samples: [{ text: 'Last week I upgraded iOS and now the app overheats.', labels: 'mobile, billing, website, account access' }],
+                run: async (clf, v) => await clf(v.text, splitLabels(v.labels))
+            },
+
+            // ===== VISION =====
+            'image-classification': {
+                label: 'Image Classification', desc: 'Predict class labels for images.', kind: 'image',
+                defaultModel: MODEL_PRESETS['image-classification'][0].id,
+                inputs: imageInputs(),
+                samples: [{ image_url: cats() }],
+                run: async (clf, v) => await clf(pickImageInput(v))
+            },
+            'zero-shot-image-classification': {
+                label: 'Zero‑Shot Image Classification', desc: 'Classify images into custom labels.', kind: 'image',
+                defaultModel: MODEL_PRESETS['zero-shot-image-classification'][0].id,
+                inputs: [...imageInputs(), { key: 'labels', label: 'Candidate Labels (comma‑sep)', type: 'text', placeholder: 'cat, dog, couch' }],
+                samples: [{ image_url: cats(), labels: 'cat, dog, sofa' }],
+                run: async (clf, v) => await clf(pickImageInput(v), splitLabels(v.labels))
+            },
+            'object-detection': {
+                label: 'Object Detection', desc: 'Detect boxes for objects.', kind: 'image',
+                defaultModel: MODEL_PRESETS['object-detection'][0].id,
+                inputs: imageInputs(),
+                samples: [{ image_url: cats() }],
+                run: async (clf, v) => await clf(pickImageInput(v))
+            },
+            'zero-shot-object-detection': {
+                label: 'Zero‑Shot Object Detection', desc: 'Detect custom categories with text prompts.', kind: 'image',
+                defaultModel: MODEL_PRESETS['zero-shot-object-detection'][0].id,
+                inputs: [...imageInputs(), { key: 'labels', label: 'Candidate Labels (comma‑sep)', type: 'text', placeholder: 'cat, plant, couch' }],
+                samples: [{ image_url: cats(), labels: 'cat, couch' }],
+                run: async (clf, v) => await clf(pickImageInput(v), splitLabels(v.labels))
+            },
+            'image-segmentation': {
+                label: 'Image Segmentation', desc: 'Pixel‑wise segmentation.', kind: 'image',
+                defaultModel: MODEL_PRESETS['image-segmentation'][0].id,
+                inputs: imageInputs(),
+                samples: [{ image_url: cats() }],
+                run: async (clf, v) => await clf(pickImageInput(v))
+            },
+            'depth-estimation': {
+                label: 'Depth Estimation', desc: 'Predict relative depth map.', kind: 'image',
+                defaultModel: MODEL_PRESETS['depth-estimation'][0].id,
+                inputs: imageInputs(),
+                samples: [{ image_url: cats() }],
+                run: async (clf, v) => await clf(pickImageInput(v))
+            },
+            'image-to-image': {
+                label: 'Image → Image (SR)', desc: 'Super‑resolution / enhancement.', kind: 'image',
+                defaultModel: MODEL_PRESETS['image-to-image'][0].id,
+                inputs: imageInputs(),
+                samples: [{ image_url: butterfly() }],
+                run: async (clf, v) => await clf(pickImageInput(v))
+            },
+
+            // ===== AUDIO =====
+            'audio-classification': {
+                label: 'Audio Classification', desc: 'Tag audio clips.', kind: 'audio',
+                defaultModel: MODEL_PRESETS['audio-classification'][0].id,
+                inputs: audioInputs(),
+                samples: [{ audio_url: dogBark() }],
+                run: async (clf, v) => await clf(pickAudioInput(v), { top_k: 4 })
+            },
+            'zero-shot-audio-classification': {
+                label: 'Zero‑Shot Audio Classification', desc: 'Classify into custom labels.', kind: 'audio',
+                defaultModel: MODEL_PRESETS['zero-shot-audio-classification'][0].id,
+                inputs: [...audioInputs(), { key: 'labels', label: 'Candidate Labels (comma‑sep)', type: 'text', value: 'dog, vacuum cleaner' }],
+                samples: [{ audio_url: dogBark(), labels: 'dog, vacuum cleaner' }],
+                run: async (clf, v) => await clf(pickAudioInput(v), splitLabels(v.labels))
+            },
+            'automatic-speech-recognition': {
+                label: 'Automatic Speech Recognition (ASR)', desc: 'Transcribe speech to text.', kind: 'audio',
+                defaultModel: MODEL_PRESETS['automatic-speech-recognition'][0].id,
+                inputs: audioInputs(),
+                samples: [{ audio_url: jfk() }],
+                run: async (clf, v) => await clf(pickAudioInput(v))
+            },
+            'text-to-speech': {
+                label: 'Text → Speech (TTS)', desc: 'Synthesize speech audio from text.', kind: 'text',
+                defaultModel: MODEL_PRESETS['text-to-speech'][0].id,
+                inputs: [{ key: 'text', label: 'Text', type: 'textarea', value: 'Hello from Transformers dot JS!' }],
+                samples: [{ text: 'Bonjour le monde!' }],
+                run: async (clf, v) => await clf(v.text)
+            },
+
+            // ===== MULTIMODAL =====
+            'image-to-text': {
+                label: 'Image → Text (Caption/OCR)', desc: 'Caption images or read text (TrOCR).', kind: 'image',
+                defaultModel: MODEL_PRESETS['image-to-text'][0].id,
+                inputs: imageInputs(),
+                samples: [{ image_url: cats() }],
+                run: async (clf, v) => await clf(pickImageInput(v))
+            },
+            'document-question-answering': {
+                label: 'Document QA (Donut)', desc: 'Ask questions about a document image.', kind: 'multimodal',
+                defaultModel: MODEL_PRESETS['document-question-answering'][0].id,
+                inputs: [...imageInputs(), { key: 'question', label: 'Question', type: 'text', placeholder: 'What is the invoice total?' }],
+                samples: [{ image_url: receipt(), question: 'What is the total?' }],
+                run: async (clf, v) => await clf(pickImageInput(v), v.question)
+            },
+            'background-removal': {
+                label: 'Background Removal', desc: 'Segment foreground(s) and drop background.', kind: 'image',
+                defaultModel: MODEL_PRESETS['background-removal'][0].id,
+                inputs: imageInputs(),
+                samples: [{ image_url: cats() }],
+                run: async (clf, v) => await clf(pickImageInput(v))
+            }
+        };
+
+        // ---------- Helpers: sample URLs ----------
+        function cats() { return 'https://huggingface.co/datasets/Xenova/transformers.js-docs/resolve/main/cats.jpg' }
+        function butterfly() { return 'https://huggingface.co/datasets/Xenova/transformers.js-docs/resolve/main/butterfly.jpg' }
+        function jfk() { return 'https://huggingface.co/datasets/Xenova/transformers.js-docs/resolve/main/jfk.wav' }
+        function dogBark() { return 'https://huggingface.co/datasets/Xenova/transformers.js-docs/resolve/main/dog_barking.wav' }
+        function receipt() { return 'https://huggingface.co/datasets/Xenova/transformers.js-docs/resolve/main/receipt.jpg' }
+
+        // ---------- DOM ----------
+        const els = {
+            taskSelect: document.getElementById('taskSelect'),
+            modelInput: document.getElementById('modelInput'),
+            modelHint: document.getElementById('modelHint'),
+            taskHint: document.getElementById('taskHint'),
+            deviceSelect: document.getElementById('deviceSelect'),
+            dynamicInputs: document.getElementById('dynamicInputs'),
+            runBtn: document.getElementById('runBtn'),
+            clearBtn: document.getElementById('clearBtn'),
+            results: document.getElementById('results'),
+        };
+
+        // Populate task dropdown
+        for (const [key, t] of Object.entries(TASKS)) {
+            const opt = document.createElement('option'); opt.value = key; opt.textContent = `• ${t.label}`; els.taskSelect.appendChild(opt);
+        }
+        let currentTaskKey = els.taskSelect.value || Object.keys(TASKS)[0];
+        els.taskSelect.value = currentTaskKey;
+        renderInputs(currentTaskKey);
+        els.taskSelect.addEventListener('change', (e) => { currentTaskKey = e.target.value; renderInputs(currentTaskKey); });
+        els.clearBtn.addEventListener('click', () => {
+            els.dynamicInputs.querySelectorAll('input,textarea').forEach(i => i.value = i.getAttribute('value') || '');
+            renderResults({ html: '<div class="small">Cleared.</div>' });
+        });
+        els.runBtn.addEventListener('click', () => runTask(currentTaskKey).catch(err => { console.error(err); toast(err.message || 'Failed', 'error', 4000); }));
+
+        // ---------- Render inputs per task ----------
+        function imageInputs() {
+            return [
+                { key: 'image_url', label: 'Image URL', type: 'text', placeholder: 'https://...' },
+                { key: 'image_file', label: 'Or Upload Image', type: 'file', accept: 'image/*' }
+            ];
+        }
+        function audioInputs() {
+            return [
+                { key: 'audio_url', label: 'Audio URL', type: 'text', placeholder: 'https://...' },
+                { key: 'audio_file', label: 'Or Upload Audio', type: 'file', accept: 'audio/*' }
+            ];
+        }
+
+        function renderInputs(taskKey) {
+            const t = TASKS[taskKey];
+            els.dynamicInputs.innerHTML = '';
+            els.modelInput.placeholder = t.defaultModel + ' (default)';
+            els.modelInput.value = '';
+            els.taskHint.textContent = t.desc;
+
+            // Preset selector
+            const presetWrap = document.createElement('div'); presetWrap.className = 'f';
+            const presetLabel = document.createElement('label'); presetLabel.textContent = 'Model Preset (curated)'; presetWrap.appendChild(presetLabel);
+            const preset = document.createElement('select'); preset.id = 'presetSelect';
+            (MODEL_PRESETS[taskKey] || []).forEach(p => { const o = document.createElement('option'); o.value = p.id; o.textContent = `${p.name} — ${p.id}`; preset.appendChild(o); });
+            preset.value = t.defaultModel; preset.onchange = () => { els.modelInput.value = preset.value; };
+            presetWrap.appendChild(preset);
+            els.dynamicInputs.appendChild(presetWrap);
+
+            t.inputs.forEach(def => {
+                const wrap = document.createElement('div'); wrap.className = 'f';
+                const label = document.createElement('label'); label.textContent = def.label; label.htmlFor = def.key; wrap.appendChild(label);
+                let input;
+                if (def.type === 'textarea') { input = document.createElement('textarea'); input.id = def.key; input.placeholder = def.placeholder || ''; if (def.value) input.value = def.value; }
+                else if (def.type === 'file') { input = document.createElement('input'); input.type = 'file'; input.id = def.key; if (def.accept) input.accept = def.accept; }
+                else { input = document.createElement('input'); input.type = def.type || 'text'; input.id = def.key; if (def.placeholder) input.placeholder = def.placeholder; if (def.value !== undefined) input.value = def.value; }
+                wrap.appendChild(input); els.dynamicInputs.appendChild(wrap);
+            });
+
+            // Samples bar
+            const samples = document.createElement('div'); samples.className = 'controls';
+            const btn = document.createElement('button'); btn.className = 'ghost'; btn.textContent = '📎 Load sample'; btn.onclick = () => {
+                if (t.samples?.length) { const s = t.samples[0]; for (const k in s) { const el = document.getElementById(k); if (!el) continue; if (el.type === 'file') { /* ignore */ } else { el.value = s[k]; } } renderResults({ html: '<div class="small">Sample loaded.</div>' }); }
+            };
+            samples.appendChild(btn); els.dynamicInputs.appendChild(samples);
+
+            renderResults({ html: '<div class="small">Ready. Provide inputs and click Run.</div>' });
+        }
+
+        // ---------- Pipeline cache ----------
+        const pipeCache = new Map();
+        async function getPipeline(taskKey) {
+            const task = TASKS[taskKey];
+            const taskName = taskKey;
+            const model = (els.modelInput.value || '').trim() || task.defaultModel;
+            const device = els.deviceSelect.value; // auto/wasm/webgpu
+
+            const cacheKey = `${taskName}|${model}|${device}`;
+            if (pipeCache.has(cacheKey)) return pipeCache.get(cacheKey);
+
+            toast(`Loading ${task.label}…`, 'loading', 3200);
+
+            // Choose device via env
+            env.backends.onnx = env.backends.onnx || {};
+            env.backends.onnx.wasm = env.backends.onnx.wasm || {};
+            env.backends.onnx.wasm.numThreads = navigator.hardwareConcurrency ? Math.max(2, Math.min(4, navigator.hardwareConcurrency)) : 2;
+            env.backends.onnx.wasm.simd = true;
+            env.backends.onnx.preferredBackend = device === 'auto' ? undefined : device; // 'webgpu' | 'wasm'
+
+            const pipe = await pipeline(taskName, model);
+            pipeCache.set(cacheKey, pipe);
+            toast(`${task.label} ready`, 'success', 1800);
+            return pipe;
+        }
+
+        // ---------- Run task ----------
+        async function runTask(taskKey) {
+            const t = TASKS[taskKey];
+            const pipe = await getPipeline(taskKey);
+            const vals = collectValues(t.inputs.map(i => i.key));
+            if (taskKey === 'fill-mask' && !(vals.text || '').includes('[MASK]')) { toast('Add [MASK] token to your sentence', 'error', 2500); return; }
+
+            setRunning(true);
+            try {
+                const out = await t.run(pipe, vals);
+                renderForTask(taskKey, out, vals);
+                toast('Done', 'success', 1200);
+            } catch (err) {
+                console.error(err); renderResults({ html: `<pre class="mono">${escapeHtml(err?.message || String(err))}</pre>` }); toast('Error', 'error', 2500);
+            } finally { setRunning(false); }
+        }
+
+        function collectValues(keys) { const o = {}; keys.forEach(k => { const el = document.getElementById(k); if (!el) return; if (el.type === 'file') o[k] = el.files?.[0] || null; else o[k] = el.value; }); return o; }
+        function setRunning(r) { els.runBtn.disabled = r; els.runBtn.textContent = r ? '⏳ Running…' : '▶️ Run'; }
+
+        // ---------- Renderers ----------
+        function renderForTask(taskKey, out, vals) {
+            switch (taskKey) {
+                case 'feature-extraction': {
+                    if (out?.similarity != null) {
+                        renderResults({ html: `<div><div class="pill ok">Cosine similarity: ${(out.similarity * 100).toFixed(2)}%</div><div class="small" style="margin-top:8px">Dims: ${out.dims?.join('×') || '—'}</div></div>` });
+                    } else {
+                        renderResults({ html: `<div class="small">Embedding length: <b>${out.embedding?.length || out.size || '?'}</b> • Dims: ${out.dims?.join('×') || '—'}</div>` });
+                    }
+                    break;
+                }
+                case 'text-generation':
+                case 'text2text-generation':
+                case 'summarization':
+                case 'translation':
+                case 'fill-mask':
+                case 'text-classification':
+                case 'zero-shot-classification':
+                case 'token-classification':
+                case 'question-answering': {
+                    renderJSON(out); break;
+                }
+                case 'image-classification':
+                case 'zero-shot-image-classification': {
+                    renderJSON(out); break;
+                }
+                case 'image-to-text': {
+                    renderJSON(out); break;
+                }
+                case 'document-question-answering': {
+                    renderJSON(out); break;
+                }
+                case 'object-detection':
+                case 'zero-shot-object-detection': {
+                    drawDetections(out, pickImageInput(vals)); break;
+                }
+                case 'image-segmentation': {
+                    drawSegmentation(out, pickImageInput(vals)); break;
+                }
+                case 'depth-estimation': {
+                    drawDepth(out); break;
+                }
+                case 'image-to-image': {
+                    drawRawImage(out); break;
+                }
+                case 'audio-classification':
+                case 'zero-shot-audio-classification': {
+                    renderJSON(out); break;
+                }
+                case 'automatic-speech-recognition': {
+                    renderJSON(out); break;
+                }
+                case 'text-to-speech': {
+                    const url = floatToWavUrl(out.audio, out.sampling_rate);
+                    renderResults({ html: `<audio controls src="${url}"></audio>` });
+                    break;
+                }
+                default: renderJSON(out);
+            }
+        }
+
+        function renderJSON(obj) { const pretty = JSON.stringify(obj, null, 2); renderResults({ html: `<pre class="mono">${escapeHtml(pretty)}</pre>` }); }
+        function renderResults({ html }) { els.results.innerHTML = html; }
+
+        // ---------- Image/audio helpers ----------
+        function pickImageInput(v) { if (v.image_file) return URL.createObjectURL(v.image_file); return (v.image_url || '').trim(); }
+        function pickAudioInput(v) { if (v.audio_file) return URL.createObjectURL(v.audio_file); return (v.audio_url || '').trim(); }
+
+        function drawDetections(out, imgSrc) {
+            const boxes = Array.isArray(out) ? out : out?.boxes || out?.[0]?.boxes || out;
+            const wrap = document.createElement('div'); wrap.className = 'canvas-wrapper';
+            const img = new Image(); img.crossOrigin = 'anonymous'; img.onload = () => {
+                const W = img.naturalWidth, H = img.naturalHeight;
+                const canvas = document.createElement('canvas'); canvas.width = W; canvas.height = H; const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0);
+                (boxes || []).forEach(b => {
+                    const { xmin, ymin, xmax, ymax } = b.box || b;
+                    const x = xmin, y = ymin, w = (xmax - xmin), h = (ymax - ymin);
+                    ctx.strokeStyle = '#22c55e'; ctx.lineWidth = 3; ctx.strokeRect(x, y, w, h);
+                    const tag = `${b.label || b.label_id || 'obj'} ${(b.score ? Math.round(b.score * 100) : '')}%`;
+                    ctx.fillStyle = 'rgba(34,197,94,.75)'; ctx.fillRect(x, Math.max(0, y - 18), ctx.measureText(tag).width + 10, 18);
+                    ctx.fillStyle = '#fff'; ctx.font = 'bold 14px ui-sans-serif, system-ui'; ctx.fillText(tag, x + 4, Math.max(12, y - 4));
+                });
+                els.results.innerHTML = ''; wrap.appendChild(canvas); els.results.appendChild(wrap);
+            }; img.src = imgSrc || cats();
+        }
+
+        function drawSegmentation(segments, imgSrc) {
+            const img = new Image(); img.crossOrigin = 'anonymous'; img.onload = () => {
+                const W = img.naturalWidth, H = img.naturalHeight;
+                const canvas = document.createElement('canvas'); canvas.width = W; canvas.height = H; const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0);
+                (segments || []).forEach(seg => {
+                    if (!seg?.mask) return; const { data, width, height } = seg.mask;
+                    const id = new ImageData(new Uint8ClampedArray(data), width, height);
+                    const off = document.createElement('canvas'); off.width = width; off.height = height; const c2 = off.getContext('2d'); c2.putImageData(id, 0, 0);
+                    ctx.globalAlpha = 0.35; ctx.drawImage(off, 0, 0, W, H); ctx.globalAlpha = 1;
+                });
+                els.results.innerHTML = ''; const wrap = document.createElement('div'); wrap.className = 'canvas-wrapper'; wrap.appendChild(canvas); els.results.appendChild(wrap);
+            }; img.src = imgSrc || cats();
+        }
+
+        function drawDepth(out) {
+            const depth = out.depth || out?.[0]?.depth || out?.predicted_depth; if (!depth) { renderJSON(out); return; }
+            const { data, width, height } = depth; const id = new ImageData(new Uint8ClampedArray(data), width, height);
+            const canvas = document.createElement('canvas'); canvas.width = width; canvas.height = height; const ctx = canvas.getContext('2d'); ctx.putImageData(id, 0, 0);
+            els.results.innerHTML = ''; const wrap = document.createElement('div'); wrap.className = 'canvas-wrapper'; wrap.appendChild(canvas); els.results.appendChild(wrap);
+        }
+
+        function drawRawImage(raw) {
+            const img = Array.isArray(raw) ? raw[0] : raw; const { data, width, height } = img;
+            const id = new ImageData(new Uint8ClampedArray(data), width, height);
+            const canvas = document.createElement('canvas'); canvas.width = width; canvas.height = height; const ctx = canvas.getContext('2d'); ctx.putImageData(id, 0, 0);
+            els.results.innerHTML = ''; const wrap = document.createElement('div'); wrap.className = 'canvas-wrapper'; wrap.appendChild(canvas); els.results.appendChild(wrap);
+        }
+
+        // ---------- Utils ----------
+        function splitLabels(s) { return (s || '').split(',').map(x => x.trim()).filter(Boolean); }
+        function cosineSim(a, b) { let dot = 0, na = 0, nb = 0; for (let i = 0; i < a.length; i++) { const x = a[i], y = b[i]; dot += x * y; na += x * x; nb += y * y; } return dot / (Math.sqrt(na) * Math.sqrt(nb) + 1e-8); }
+        function escapeHtml(s) { return String(s).replace(/[&<>"']/g, m => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#039;" }[m])); }
+
+        // Convert Float32 PCM to WAV Blob URL
+        function floatToWavUrl(float32, sampleRate = 16000) {
+            const numOfChan = 1; const bytesPerSample = 2; const blockAlign = numOfChan * bytesPerSample;
+            const buffer = new ArrayBuffer(44 + float32.length * bytesPerSample);
+            const view = new DataView(buffer);
+            writeStr(view, 0, 'RIFF'); view.setUint32(4, 36 + float32.length * bytesPerSample, true); writeStr(view, 8, 'WAVE');
+            writeStr(view, 12, 'fmt '); view.setUint32(16, 16, true); view.setUint16(20, 1, true); view.setUint16(22, numOfChan, true);
+            view.setUint32(24, sampleRate, true); view.setUint32(28, sampleRate * blockAlign, true); view.setUint16(32, blockAlign, true); view.setUint16(34, bytesPerSample * 8, true);
+            writeStr(view, 36, 'data'); view.setUint32(40, float32.length * bytesPerSample, true);
+            let offset = 44; for (let i = 0; i < float32.length; i++) { let s = Math.max(-1, Math.min(1, float32[i])); view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true); offset += 2; }
+            const blob = new Blob([view], { type: 'audio/wav' }); return URL.createObjectURL(blob);
+            function writeStr(dv, off, str) { for (let i = 0; i < str.length; i++) dv.setUint8(off + i, str.charCodeAt(i)); }
+        }
+    </script>
+</body>
+
+</html>

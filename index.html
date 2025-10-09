@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- View Transition Opt-in -->
+    <meta name="view-transition" content="same-origin">
+    <title>All-in-One Advanced CSS 2024 & ES2024 Demo (Fixed View Transitions)</title>
+    <style>
+        /* ================= Cascade Layers & Base Styles ================ */
+        /* Define layers - place 'transitions' last for higher priority */
+        @layer utilities, components, theme, transitions;
+
+        @layer utilities {
+
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+
+            /* Use :where() for zero-specificity defaults */
+            :where(button) {
+                /* Basic button reset */
+                font-family: inherit;
+                font-size: inherit;
+                line-height: inherit;
+                color: inherit;
+                background-color: transparent;
+                border: none;
+                cursor: pointer;
+                text-align: inherit;
+            }
+
+            :where(img, svg, video, picture) {
+                display: block;
+                max-width: 100%;
+            }
+
+            html {
+                font-family: system-ui, -apple-system, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+                line-height: 1.6;
+                background: oklch(95% 0.01 230);
+                /* Using OKLCH */
+                color: oklch(20% 0.01 230);
+                color-scheme: light dark;
+                /* Support light/dark mode */
+            }
+
+            /* Dark Mode */
+            @media (prefers-color-scheme: dark) {
+                html {
+                    background: oklch(20% 0.01 230);
+                    color: oklch(90% 0.01 230);
+                }
+            }
+
+            body {
+                /* Fluid padding using clamp() */
+                padding: clamp(1rem, 0.5rem + 3vw, 3rem);
+            }
+
+            /* Balance headlines */
+            h1,
+            h2 {
+                text-wrap: balance;
+                line-height: 1.2;
+            }
+
+            h1 {
+                /* Logical margin */
+                margin-block-end: 1.5rem;
+                font-size: clamp(1.75rem, 1.5rem + 1.25vw, 2.5rem);
+                /* Fluid H1 */
+            }
+
+            h2 {
+                margin-block-end: 1rem;
+                font-size: clamp(1.25rem, 1.1rem + 0.75vw, 1.75rem);
+                /* Fluid H2 */
+            }
+
+            /* Navigation Styling (using reference styles) */
+            nav {
+                margin-block-end: 2rem;
+                /* Logical margin */
+                display: flex;
+                flex-wrap: wrap;
+                /* Allow buttons to wrap */
+                gap: 0.5rem;
+                /* Use gap for spacing */
+
+                /* Nested button styles */
+                & button {
+                    /* margin-right: 0.5rem; /* From reference - gap replaces this */
+                    padding: 0.5rem 1rem;
+                    /* From reference */
+                    border: none;
+                    /* From reference */
+                    background: oklch(0.4 0.2 240);
+                    /* From reference */
+                    color: white;
+                    /* From reference */
+                    border-radius: 4px;
+                    /* From reference */
+                    cursor: pointer;
+                    /* From reference */
+                    transition: background-color 0.2s ease;
+                    /* Added transition */
+
+                    &:hover {
+                        /* Adjusted hover from combined example */
+                        background: color-mix(in oklab, oklch(55% 0.25 235), transparent 5%);
+                    }
+
+                    &.active {
+                        background: oklch(0.6 0.3 220);
+                        /* From reference */
+                        font-weight: bold;
+                        /* Added */
+                    }
+                }
+            }
+
+            /* Page visibility */
+            .page {
+                display: none;
+                /* Hide inactive pages */
+
+                &.active {
+                    display: block;
+                    /* Show active page */
+                }
+            }
+
+            /* Visually Hidden Utility (Integrated from first style block) */
+            .visually-hidden {
+                position: absolute;
+                width: 1px;
+                height: 1px;
+                padding: 0;
+                margin: -1px;
+                overflow: hidden;
+                clip: rect(0, 0, 0, 0);
+                white-space: nowrap;
+                border: 0;
+            }
+
+            /* #page4 Layout Utility (Integrated from first style block) */
+            #page4, #page5 {
+                text-align: center;
+                padding: 4rem 1rem;
+            }
+
+        }
+
+        /* End Utilities Layer */
+
+        /* ================= Components with Subgrid & Container Queries ================ */
+        @layer components {
+            .card {
+                container-type: inline-size;
+                /* Query based on inline size */
+                container-name: card;
+                /* Optional name */
+                display: grid;
+                /* NOTE: 'subgrid' requires parent context. Using fallback. */
+                grid-template-columns: auto 1fr;
+                /* Fallback if not subgrid */
+                grid-template-rows: auto 1fr;
+                gap: 1rem;
+                background: oklch(99% 0.01 230);
+                border-radius: 8px;
+                box-shadow: 0 2px 8px oklch(0% 0 0 / 0.1);
+                padding: clamp(1rem, 0.8rem + 1vw, 1.5rem);
+                /* Fluid padding */
+                margin-block-end: 2rem;
+                /* Logical margin */
+
+                @media (prefers-color-scheme: dark) {
+                    & {
+                        /* Nesting dark mode styles for the card */
+                        background: oklch(25% 0.01 230);
+                        box-shadow: 0 2px 8px oklch(0% 0 0 / 0.3);
+                    }
+                }
+
+                /* Style card heading based on container width */
+                @container card (min-width: 400px) {
+                    &>h2 {
+                        /* Nesting container query style */
+                        font-size: 1.5rem;
+                        color: oklch(0.6 0.2 220);
+                        /* Color from reference */
+                    }
+                }
+
+                /* Style card using :has() */
+                &:has(.badge) {
+                    /* Nesting :has() selector */
+                    border: 2px solid oklch(65% 0.2 140);
+                    /* Greenish border from combined */
+                }
+            }
+
+            /* End .card */
+
+
+            /* ================= Interactive Card (Integrated from first style block) ================= */
+            .interactive-card {
+                position: relative;
+                display: inline-block;
+                /* Or block depending on desired layout */
+                padding: 1rem 1.5rem;
+                margin: 1rem auto;
+                /* Assumes block display if centered */
+                color: white;
+                background: linear-gradient(135deg, #6a11cb, #2575fc);
+                border-radius: 8px;
+                text-decoration: none;
+                overflow: hidden;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+                /* Nested Hover State */
+                &:hover {
+                    transform: translateY(-4px) scale(1.02);
+                    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+
+                    & .arrow {
+                        /* Target nested .arrow on hover */
+                        transform: translateX(4px);
+                    }
+                }
+
+                /* Nested Active State for Ripple */
+                &:active .ripple {
+                    width: 200px;
+                    /* Consider using max(100%, 200px) or similar */
+                    height: 200px;
+                    opacity: 0;
+                }
+
+                /* Nested Content Styles */
+                & .card-content {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                    font-size: 1.1rem;
+                }
+
+                /* Nested Arrow Styles */
+                & .arrow {
+                    transition: transform 0.3s ease;
+                }
+
+                /* Nested Ripple Styles */
+                & .ripple {
+                    position: absolute;
+                    border-radius: 50%;
+                    background: rgba(255, 255, 255, 0.4);
+                    width: 0;
+                    height: 0;
+                    transform: translate(-50%, -50%);
+                    pointer-events: none;
+                    /* Apply transition here, not just on :active */
+                    transition: width 0.6s ease-out, height 0.6s ease-out, opacity 0.8s ease-out;
+                }
+
+            }
+
+            /* End .interactive-card */
+
+
+            /* ================= Conceptual: Calc-Size & Interpolate-Size ================= */
+            /* Using Fallbacks */
+            .calc-box {
+                width: 150px;
+                height: 50px;
+                /* Fallback static height */
+                transition: height 0.5s ease;
+                background: oklch(0.7 0.1 300);
+                color: #fff;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-block-end: 2rem;
+                border-radius: 4px;
+                cursor: help;
+                text-align: center;
+                padding: 0.5rem;
+
+                /* Nested Hover State */
+                &:hover {
+                    height: 80px;
+                    /* Fallback static height on hover */
+                }
+            }
+
+            /* End .calc-box */
+
+
+            /* ================= Cross-Fade ================= */
+            .xfade {
+                width: clamp(150px, 30vw, 250px);
+                height: 100px;
+                border: 1px solid oklch(70% 0.01 230);
+                /* Use inline SVG placeholders */
+                background-image: cross-fade(url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%234CAF50'/%3E%3Ctext x='50' y='55' font-size='12' fill='white' text-anchor='middle'%3EGreen%3C/text%3E%3C/svg%3E") 75%,
+                        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23F44336'/%3E%3Ctext x='50' y='55' font-size='12' fill='white' text-anchor='middle'%3ERed%3C/text%3E%3C/svg%3E") 75%);
+                background-size: 50% 100%, 50% 100%;
+                background-repeat: no-repeat;
+                background-position: left center, right center;
+                margin-block-end: 2rem;
+            }
+
+            /* End .xfade */
+
+
+            /* ================= Scroll-Driven Animations ================= */
+            .scroll-area {
+                max-height: 150px;
+                overflow: auto;
+                padding: 1rem;
+                border: 1px solid #ccc;
+                margin-block-end: 2rem;
+                background: oklch(98% 0.01 230);
+                scrollbar-width: thin;
+                scroll-timeline: --scrollTL block;
+                /* Define scroll timeline */
+
+                @media (prefers-color-scheme: dark) {
+                    & {
+                        /* Nest dark mode styles */
+                        background: oklch(30% 0.01 230);
+                        border-color: #555;
+                    }
+                }
+
+                /* Nested paragraph animation */
+                & p {
+                    animation: fadeInScroll linear both;
+                    animation-timeline: --scrollTL;
+                    animation-range: entry 0% cover 40%;
+                }
+            }
+
+            /* End .scroll-area */
+
+            /* Keyframe Definition (outside component rule) */
+            @keyframes fadeInScroll {
+                from {
+                    opacity: 0;
+                }
+
+                to {
+                    opacity: 1;
+                }
+            }
+
+
+            /* ================= View-Driven Animations ================= */
+            .view-area-wrapper {
+                height: 250px;
+                overflow: auto;
+                border: 1px solid #ccc;
+                padding: 0.5rem;
+                margin-block-end: 2rem;
+                background: oklch(98% 0.01 230);
+
+                @media (prefers-color-scheme: dark) {
+                    & {
+                        /* Nest dark mode styles */
+                        background: oklch(30% 0.01 230);
+                        border-color: #555;
+                    }
+                }
+            }
+
+            /* End .view-area-wrapper */
+
+            .view-box {
+                height: 200px;
+                background: #eef;
+                margin-block-end: 1rem;
+                display: grid;
+                place-content: center;
+                border-radius: 6px;
+                view-timeline: --viewTL block;
+                /* Define view timeline */
+                animation: scaleUpView linear both;
+                animation-timeline: --viewTL;
+                animation-range: entry 0% cover 50%;
+                /* Link animation */
+
+                @media (prefers-color-scheme: dark) {
+                    & {
+                        /* Nest dark mode styles */
+                        background: oklch(40% 0.1 260);
+                    }
+                }
+            }
+
+            /* End .view-box */
+
+            /* Keyframe Definition (outside component rule) */
+            @keyframes scaleUpView {
+                from {
+                    transform: scale(0.8);
+                }
+
+                to {
+                    transform: scale(1);
+                }
+            }
+
+
+            /* ================= Content-Visibility ================= */
+            .lazy {
+                content-visibility: auto;
+                contain-intrinsic-block-size: 100px;
+                padding: 1rem;
+                background: #fafafa;
+                margin-block-end: 2rem;
+                border: 1px dashed #ccc;
+                min-height: 100px;
+
+                @media (prefers-color-scheme: dark) {
+                    & {
+                        /* Nest dark mode styles */
+                        background: oklch(28% 0.01 230);
+                        border-color: #555;
+                    }
+                }
+            }
+
+            /* End .lazy */
+
+
+            /* ================= Anchor Positioning (Experimental) ================= */
+            .anchor-container {
+                position: relative;
+                padding: 1rem;
+                border: 1px solid #eee;
+                margin-block-end: 2rem;
+                min-height: 100px;
+
+                @media (prefers-color-scheme: dark) {
+                    & {
+                        border-color: #444;
+                    }
+                }
+            }
+
+            /* End .anchor-container */
+
+            .anchor-ref {
+                anchor-name: --ref;
+                /* Define anchor */
+                display: inline-block;
+                padding: 0.5rem;
+                background: #def;
+                border-radius: 4px;
+
+                @media (prefers-color-scheme: dark) {
+                    & {
+                        background: color-mix(in oklab, oklch(45% 0.1 150), transparent 10%);
+                    }
+                }
+            }
+
+            /* End .anchor-ref */
+
+            .anchor-pop {
+                position: absolute;
+                /* Experimental rules - syntax might vary */
+                position-anchor: --ref;
+                /* Fallback/Simplified positioning */
+                top: anchor(bottom);
+                /* Position 10px below bottom of anchor */
+                left: anchor(center);
+                /* Position horizontally centered to anchor */
+                transform: translateX(-50%);
+                /* Adjust for center positioning */
+                /* Fallback size */
+                height: anchor-size(--ref);
+                /* Example fixed width */
+                width: calc(anchor-size(--ref) + 1rem);
+                /* Example fixed width */
+                /* Styling */
+                background: #cfd;
+                padding: 0.25rem;
+                border: 1px solid #999;
+                border-radius: 4px;
+                box-shadow: 0 1px 5px oklch(0% 0 0 / 0.2);
+                z-index: 10;
+                text-align: center;
+                /* Added for better text display */
+                font-size: 0.9em;
+
+                @media (prefers-color-scheme: dark) {
+                    & {
+                        background: oklch(40% 0.05 90);
+                        border-color: #777;
+                    }
+                }
+            }
+
+            /* End .anchor-pop */
+
+
+            /* ================= Transition-Behavior ================= */
+            .pop {
+                transition: opacity 0.3s ease-in, transform 0.3s ease-in, display 0.3s ease-in;
+                /* Adjusted */
+                transition-behavior: allow-discrete;
+                transform-origin: top center;
+                /* Example origin */
+                opacity: 1;
+                transform: scaleY(1);
+
+                &.hidden {
+                    /* Nested hidden state */
+                    /* Apply 'out' state for transition */
+                    opacity: 0;
+                    transform: scaleY(0);
+                    /* Apply 'display: none' AFTER transition (if needed) */
+                    /* display: none; /* Consider removing if opacity/scale handle hiding */
+
+                    /* Add a 'display' transition at the end of the other transitions */
+                    @starting-style {
+                        /* Needed for entry transition */
+                        opacity: 0;
+                        transform: scaleY(0);
+                    }
+                }
+            }
+
+            /* End .pop */
+
+        }
+
+        /* End Components Layer */
+
+
+        /* ================= Theme Layer (Example: Badge) ================= */
+        @layer theme {
+            .badge {
+                background: linear-gradient(45deg, #fc0, #f60);
+                padding: 0.25rem 0.5rem;
+                border-radius: 4px;
+                color: #333;
+                font-weight: bold;
+                font-size: 0.8em;
+                display: inline-block;
+                vertical-align: middle;
+
+                @media (prefers-color-scheme: dark) {
+
+                    /* Keep combined dark mode for better contrast */
+                    & {
+                        color: oklch(30% 0.02 50);
+                    }
+                }
+            }
+
+            /* End .badge */
+        }
+
+        /* End Theme Layer */
+
+        /* ================= View Transitions Layer ================= */
+        /* These are global and don't need nesting within specific components */
+        @layer transitions {
+            @view-transition {
+                navigation: auto;
+            }
+
+            html::view-transition {
+                position: fixed;
+                inset: 0;
+            }
+
+            ::view-transition-group(root),
+            ::view-transition-image-pair(root) {
+                position: absolute;
+                inset: 0;
+                animation-duration: inherit;
+                animation-fill-mode: inherit;
+            }
+
+            ::view-transition-old(root) {
+                animation: 0.4s ease-in both move-out;
+            }
+
+            ::view-transition-new(root) {
+                animation: 0.4s ease-in both move-in;
+            }
+
+            @keyframes move-out {
+                from {
+                    opacity: 1;
+                    transform: translateX(0%);
+                }
+
+                to {
+                    opacity: 0;
+                    transform: translateX(-10%);
+                }
+            }
+
+            @keyframes move-in {
+                from {
+                    opacity: 0;
+                    transform: translateZ(10%);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateZ(0%);
+                }
+            }
+        }
+
+        /* End Transitions Layer */
+    </style>
+</head>
+
+<body>
+    <!-- Using H1 from combined example -->
+    <h1>Advanced CSS 2024 & ES2024 Demo (Fixed View Transitions)</h1>
+
+    <!-- Navigation HTML from reference code -->
+    <nav id="main-nav"> <!-- Added ID for easier JS selection -->
+        <button data-target="page1" class="active">Home</button>
+        <button data-target="page2">Features</button>
+        <button data-target="page3">More Demos</button>
+        <button data-target="page4">Math func</button>
+        <button data-target="page5">3D world</button>
+    </nav>
+
+    <!-- Page Structure and Content from reference code -->
+    <!-- Page 1 -->
+    <section id="page1" class="page active" aria-labelledby="page1-heading">
+        <!-- Using combined H2 style -->
+        <h2 id="page1-heading" class="visually-hidden">Home and Components</h2>
+        <div class="card">
+            <h2>Dashboard <span class="badge">NEW</span></h2>
+            <p>Resize me (min‑400px) to see container query and subgrid in action.</p>
+        </div>
+        <button class="pop">View Transition Pop</button>
+    </section>
+
+    <!-- Page 2 -->
+    <section id="page2" class="page" aria-labelledby="page2-heading">
+        <h2 id="page2-heading">Advanced CSS Effects</h2>
+        <h3>Calc-Size & Interpolate-Size</h3>
+        <div class="calc-box">Hover me</div>
+
+        <h3>Cross-Fade</h3>
+        <div class="xfade"></div>
+
+        <h3>Scroll‑Driven Animation</h3>
+        <div class="scroll-area">
+            <p>Scroll me to fade in content...<br>Line 2<br>Line 3<br>Line 4</p>
+        </div>
+    </section>
+
+    <!-- Page 3 -->
+    <section id="page3" class="page" aria-labelledby="page3-heading">
+        <h2 id="page3-heading">Animation & Layout</h2>
+        <h3>View‑Driven Animation</h3>
+        <div class="view-area-wrapper" style="height:150px;overflow:auto;border:1px solid #ccc;padding:0.5rem;">
+            <!-- Adjusted wrapper style slightly -->
+            <div class="view-box">Scroll me into view ↓</div>
+        </div>
+
+        <h3>Content‑Visibility (Lazy)</h3>
+        <div class="lazy">I only render when near viewport!</div>
+
+        <h3>Anchor Positioning</h3> <!-- Renamed Heading -->
+        <div class="anchor-container"> <!-- Wrapped in container -->
+            <span class="anchor-ref">Reference</span>
+            <div class="anchor-pop">Popup</div>
+        </div>
+        <p><em>Note: Anchor positioning syntax and behaviour are highly experimental and subject to change. May require
+                browser flags.</em></p>
+    </section>
+
+    <section id="page4" class="page">
+        <a id="to-math" href="math.html" class="interactive-card">
+            <div class="card-content">
+                <span>Explore CSS Math Functions</span>
+                <svg class="arrow" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 4l1.41 1.41L8.83 10H20v2H8.83l4.58 4.59L12 18l-8-8z" fill="currentColor" />
+                </svg>
+            </div>
+            <span class="ripple"></span>
+        </a>
+    </section>
+    <section id="page5" class="page">
+        <a id="to-math" href="3d.html" class="interactive-card">
+            <div class="card-content">
+                <span>3D World</span>
+                <svg class="arrow" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 4l1.41 1.41L8.83 10H20v2H8.83l4.58 4.59L12 18l-8-8z" fill="currentColor" />
+                </svg>
+            </div>
+            <span class="ripple"></span>
+        </a>
+    </section>
+
+    <footer style="margin-top: 3rem; text-align: center; opacity: 0.7; font-size: 0.9em;">
+        <p>End of Demo. Reload to see initial state.</p>
+    </footer>
+
+    <script type="module">
+        // --- Using the exact JavaScript from the user's reference code ---
+        console.log("--- Page Navigation & ES2024 Demo Script (Reference Version) ---");
+
+        // Navigation with View Transitions
+        document.querySelectorAll('nav button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const target = btn.dataset.target;
+
+                // Check if already active
+                if (btn.classList.contains('active')) {
+                    console.log(`Page ${target} is already active.`);
+                    return;
+                }
+
+                // Check for VT support (added check)
+                if (!document.startViewTransition) {
+                    console.warn("View Transitions API not supported. Switching pages directly.");
+                    updateActivePageSimple(target, btn); // Fallback function
+                    return;
+                }
+
+                // Start VT
+                document.startViewTransition(() => {
+                    updateActivePageSimple(target, btn); // Use the same update logic
+                });
+            });
+        });
+
+        // Simple page update function (used by VT callback and fallback)
+        function updateActivePageSimple(targetPageId, targetButton) {
+            console.log(`Updating DOM for ${targetPageId}`);
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            const targetPageElement = document.querySelector('#' + targetPageId);
+            if (targetPageElement) {
+                targetPageElement.classList.add('active');
+            } else {
+                console.error(`Target page element #${targetPageId} not found!`);
+            }
+            document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+            targetButton.classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll top
+        }
+
+        // ES2024 features demo (from reference)
+        console.log("\n--- ES2024+ Features (Reference Version) ---");
+        try {
+            const data = [{ g: 'a', v: 1 }, { g: 'b', v: 2 }, { g: 'a', v: 3 }];
+            console.log('Object.groupBy:', Object.groupBy(data, o => o.g));
+        } catch (e) {
+            console.error("Error demonstrating Object.groupBy:", e.message);
+        }
+        try {
+            const { promise, resolve } = Promise.withResolvers();
+            resolve('Resolved✅'); promise.then(console.log);
+        } catch (e) {
+            console.error("Error demonstrating Promise.withResolvers:", e.message);
+        }
+        try {
+            console.log("RegExp 'v' flag test:", /[\p{Letter}]/v.test('Z'));
+        } catch (e) {
+            console.error("Error demonstrating RegExp 'v' flag:", e.message);
+        }
+
+        console.log("\n--- Script Execution Finished ---");
+    </script>
+
+
+</body>
+
+</html>

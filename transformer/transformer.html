@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Sentiment Analysis Studio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            animation: slideUp 0.8s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            padding: 40px 30px;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="white" opacity="0.1"/></svg>') repeat;
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+
+            100% {
+                transform: translate(-50px, -50px) rotate(360deg);
+            }
+        }
+
+        .header h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .main-content {
+            padding: 40px 30px;
+        }
+
+        .input-section {
+            margin-bottom: 40px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 20px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: inherit;
+            resize: vertical;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .char-counter {
+            position: absolute;
+            bottom: 8px;
+            right: 12px;
+            font-size: 12px;
+            color: #6b7280;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        button:hover::before {
+            left: 100%;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(79, 70, 229, 0.3);
+        }
+
+        button:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .clear-btn {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            padding: 15px 20px;
+        }
+
+        .clear-btn:hover {
+            box-shadow: 0 10px 25px rgba(239, 68, 68, 0.3);
+        }
+
+        .sample-texts {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .sample-btn {
+            background: #f3f4f6;
+            color: #374151;
+            border: 1px solid #d1d5db;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .sample-btn:hover {
+            background: #e5e7eb;
+            transform: translateY(-1px);
+        }
+
+        .results-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .model-result {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .model-result::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #4f46e5, #7c3aed);
+            transform: scaleX(0);
+            transition: transform 0.5s ease;
+        }
+
+        .model-result.analyzing::before {
+            transform: scaleX(1);
+        }
+
+        .model-result:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+
+        .model-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 12px;
+        }
+
+        .model-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: white;
+        }
+
+        .twitter-icon {
+            background: linear-gradient(135deg, #1da1f2, #0d8bd9);
+        }
+
+        .multilingual-icon {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .model-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .model-description {
+            font-size: 13px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        .result-content {
+            min-height: 100px;
+        }
+
+        .sentiment-result {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .sentiment-label {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            padding: 10px 20px;
+            border-radius: 25px;
+            display: inline-block;
+        }
+
+        .positive {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .negative {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        .neutral {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+        }
+
+        .confidence-section {
+            margin-top: 20px;
+        }
+
+        .confidence-bar {
+            height: 12px;
+            background-color: #f3f4f6;
+            border-radius: 6px;
+            overflow: hidden;
+            margin: 10px 0;
+            position: relative;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4f46e5, #7c3aed);
+            transition: width 1s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .confidence-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                transform: translateX(-100%);
+            }
+
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        .confidence-text {
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .loading {
+            text-align: center;
+            color: #6b7280;
+            font-style: italic;
+            padding: 40px 0;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f4f6;
+            border-top: 4px solid #4f46e5;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .error {
+            color: #ef4444;
+            background: #fee2e2;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #fecaca;
+        }
+
+        .status-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 25px;
+            color: white;
+            font-weight: 600;
+            transform: translateX(400px);
+            transition: transform 0.5s ease;
+            z-index: 1000;
+        }
+
+        .status-indicator.show {
+            transform: translateX(0);
+        }
+
+        .status-loading {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+
+        .status-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+
+            .header {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 2.2rem;
+            }
+
+            .main-content {
+                padding: 30px 20px;
+            }
+
+            .results-container {
+                grid-template-columns: 1fr;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="status-indicator" id="statusIndicator"></div>
+
+    <div class="container">
+        <div class="header">
+            <h1>🤖 AI Sentiment Analysis Studio</h1>
+            <p class="subtitle">Compare dual AI models with advanced sentiment detection</p>
+        </div>
+
+        <div class="main-content">
+            <div class="input-section">
+                <div class="input-wrapper">
+                    <textarea id="inputText"
+                        placeholder="Share your thoughts, reviews, tweets, or any text you'd like to analyze..."></textarea>
+                    <div class="char-counter" id="charCounter">0 characters</div>
+                </div>
+
+                <div class="controls">
+                    <button id="analyzeButton">
+                        <span>✨ Analyze Sentiment</span>
+                    </button>
+                    <button class="clear-btn" id="clearButton">
+                        <span>🗑️ Clear</span>
+                    </button>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <p style="margin-bottom: 10px; font-weight: 600; color: #374151;">Try these samples:</p>
+                    <div class="sample-texts">
+                        <button class="sample-btn"
+                            onclick="setSampleText('I absolutely love this new product! It works perfectly and exceeded my expectations.')">😊
+                            Positive Review</button>
+                        <button class="sample-btn"
+                            onclick="setSampleText('This movie was terrible. Worst thing I have ever watched. Complete waste of time.')">😞
+                            Negative Review</button>
+                        <button class="sample-btn"
+                            onclick="setSampleText('The weather today is okay. Nothing special, just another regular day.')">😐
+                            Neutral Comment</button>
+                        <button class="sample-btn"
+                            onclick="setSampleText('¡Me encanta este producto! Es absolutamente increíble y lo recomiendo totalmente.')">🌍
+                            Spanish Text</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-container">
+                <div class="model-result" id="twitterResult">
+                    <div class="model-header">
+                        <div class="model-icon twitter-icon">🐦</div>
+                        <div>
+                            <div class="model-title">Twitter RoBERTa</div>
+                            <div class="model-description">Trained on English tweets • 3 classes: Positive, Negative,
+                                Neutral</div>
+                        </div>
+                    </div>
+                    <div class="result-content">
+                        <div id="outputTwitter" class="loading">Ready for analysis...</div>
+                    </div>
+                </div>
+
+                <div class="model-result" id="multilingualResult">
+                    <div class="model-header">
+                        <div class="model-icon multilingual-icon">🌐</div>
+                        <div>
+                            <div class="model-title">Multilingual BERT</div>
+                            <div class="model-description">Multilingual support • 5-star rating system</div>
+                        </div>
+                    </div>
+                    <div class="result-content">
+                        <div id="outputMultilingual" class="loading">Ready for analysis...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { pipeline } from 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.7.3';
+
+        // DOM elements
+        const elements = {
+            inputText: document.getElementById('inputText'),
+            analyzeButton: document.getElementById('analyzeButton'),
+            clearButton: document.getElementById('clearButton'),
+            charCounter: document.getElementById('charCounter'),
+            outputTwitter: document.getElementById('outputTwitter'),
+            outputMultilingual: document.getElementById('outputMultilingual'),
+            twitterResult: document.getElementById('twitterResult'),
+            multilingualResult: document.getElementById('multilingualResult'),
+            statusIndicator: document.getElementById('statusIndicator')
+        };
+
+        // State management
+        let state = {
+            twitterClassifier: null,
+            multilingualClassifier: null,
+            isAnalyzing: false
+        };
+
+        // Utility functions
+        function showStatus(message, type = 'loading') {
+            elements.statusIndicator.textContent = message;
+            elements.statusIndicator.className = `status-indicator status-${type} show`;
+            setTimeout(() => {
+                elements.statusIndicator.classList.remove('show');
+            }, 3000);
+        }
+
+        function updateCharCounter() {
+            const text = elements.inputText.value;
+            elements.charCounter.textContent = `${text.length} characters`;
+        }
+
+        function getSentimentColor(label) {
+            const lowerLabel = label.toLowerCase();
+            if (lowerLabel.includes('positive') || lowerLabel.includes('5') || lowerLabel.includes('4')) {
+                return 'positive';
+            } else if (lowerLabel.includes('negative') || lowerLabel.includes('1') || lowerLabel.includes('2')) {
+                return 'negative';
+            } else {
+                return 'neutral';
+            }
+        }
+
+        function createSentimentDisplay(result) {
+            const label = result[0].label;
+            const score = result[0].score;
+            const colorClass = getSentimentColor(label);
+            const percentage = Math.round(score * 100);
+
+            return `
+                <div class="sentiment-result">
+                    <div class="sentiment-label ${colorClass}">
+                        ${label}
+                    </div>
+                    <div class="confidence-section">
+                        <div class="confidence-text">Confidence: ${percentage}%</div>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" style="width: ${percentage}%"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function showLoading(element) {
+            element.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    Analyzing...
+                </div>
+            `;
+        }
+
+        function showError(element, message) {
+            element.innerHTML = `
+                <div class="error">
+                    ❌ Error: ${message}
+                </div>
+            `;
+        }
+
+        // Model loading functions
+        async function loadTwitterModel() {
+            try {
+                showStatus('Loading Twitter model...', 'loading');
+                elements.outputTwitter.innerHTML = `
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        Loading Twitter RoBERTa model...
+                    </div>
+                `;
+
+                state.twitterClassifier = await pipeline(
+                    'sentiment-analysis',
+                    'Xenova/twitter-roberta-base-sentiment-latest'
+                );
+
+                elements.outputTwitter.innerHTML = '<div class="loading">✅ Twitter model ready!</div>';
+                updateButtonState();
+                showStatus('Twitter model loaded successfully!', 'success');
+            } catch (error) {
+                console.error('Twitter model error:', error);
+                showError(elements.outputTwitter, `Failed to load Twitter model: ${error.message}`);
+                showStatus('Failed to load Twitter model', 'error');
+            }
+        }
+
+        async function loadMultilingualModel() {
+            try {
+                showStatus('Loading multilingual model...', 'loading');
+                elements.outputMultilingual.innerHTML = `
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        Loading Multilingual BERT model...
+                    </div>
+                `;
+
+                state.multilingualClassifier = await pipeline(
+                    'sentiment-analysis',
+                    'Xenova/bert-base-multilingual-uncased-sentiment'
+                );
+
+                elements.outputMultilingual.innerHTML = '<div class="loading">✅ Multilingual model ready!</div>';
+                updateButtonState();
+                showStatus('Multilingual model loaded successfully!', 'success');
+            } catch (error) {
+                console.error('Multilingual model error:', error);
+                showError(elements.outputMultilingual, `Failed to load multilingual model: ${error.message}`);
+                showStatus('Failed to load multilingual model', 'error');
+            }
+        }
+
+        function updateButtonState() {
+            const bothModelsLoaded = state.twitterClassifier && state.multilingualClassifier;
+            elements.analyzeButton.disabled = !bothModelsLoaded || state.isAnalyzing;
+
+            if (state.isAnalyzing) {
+                elements.analyzeButton.innerHTML = '<span>🔄 Analyzing...</span>';
+            } else if (bothModelsLoaded) {
+                elements.analyzeButton.innerHTML = '<span>✨ Analyze Sentiment</span>';
+            } else {
+                elements.analyzeButton.innerHTML = '<span>⏳ Loading Models...</span>';
+            }
+        }
+
+        // Analysis functions
+        async function analyzeWithTwitterModel(text) {
+            try {
+                elements.twitterResult.classList.add('analyzing');
+                showLoading(elements.outputTwitter);
+
+                const result = await state.twitterClassifier(text);
+                elements.outputTwitter.innerHTML = createSentimentDisplay(result);
+            } catch (error) {
+                console.error('Twitter analysis error:', error);
+                showError(elements.outputTwitter, error.message);
+            } finally {
+                elements.twitterResult.classList.remove('analyzing');
+            }
+        }
+
+        async function analyzeWithMultilingualModel(text) {
+            try {
+                elements.multilingualResult.classList.add('analyzing');
+                showLoading(elements.outputMultilingual);
+
+                const result = await state.multilingualClassifier(text);
+                elements.outputMultilingual.innerHTML = createSentimentDisplay(result);
+            } catch (error) {
+                console.error('Multilingual analysis error:', error);
+                showError(elements.outputMultilingual, error.message);
+            } finally {
+                elements.multilingualResult.classList.remove('analyzing');
+            }
+        }
+
+        async function analyzeSentiment() {
+            const text = elements.inputText.value.trim();
+            if (!text) {
+                showStatus('Please enter some text to analyze', 'error');
+                return;
+            }
+
+            if (text.length > 1000) {
+                showStatus('Text is too long. Please keep it under 1000 characters.', 'error');
+                return;
+            }
+
+            state.isAnalyzing = true;
+            updateButtonState();
+            showStatus('Analyzing sentiment...', 'loading');
+
+            try {
+                await Promise.all([
+                    analyzeWithTwitterModel(text),
+                    analyzeWithMultilingualModel(text)
+                ]);
+                showStatus('Analysis completed successfully!', 'success');
+            } catch (error) {
+                console.error('Analysis error:', error);
+                showStatus('Analysis failed. Please try again.', 'error');
+            } finally {
+                state.isAnalyzing = false;
+                updateButtonState();
+            }
+        }
+
+        function clearText() {
+            elements.inputText.value = '';
+            elements.outputTwitter.innerHTML = '<div class="loading">Ready for analysis...</div>';
+            elements.outputMultilingual.innerHTML = '<div class="loading">Ready for analysis...</div>';
+            updateCharCounter();
+            elements.inputText.focus();
+        }
+
+        // Global function for sample texts
+        window.setSampleText = function (text) {
+            elements.inputText.value = text;
+            updateCharCounter();
+            elements.inputText.focus();
+        };
+
+        // Event listeners
+        elements.analyzeButton.addEventListener('click', analyzeSentiment);
+        elements.clearButton.addEventListener('click', clearText);
+        elements.inputText.addEventListener('input', updateCharCounter);
+        elements.inputText.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'Enter') {
+                analyzeSentiment();
+            }
+        });
+
+        // Initialize
+        updateButtonState();
+        updateCharCounter();
+        loadTwitterModel();
+        loadMultilingualModel();
+    </script>
+</body>
+
+</html>

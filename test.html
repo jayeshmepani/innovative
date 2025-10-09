@@ -1,0 +1,92 @@
+<!-- approach 1 -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Dynamic Regular n‑gon</title>
+    <link rel="stylesheet" href="polygon.css">
+    <style>
+        @media (color-gamut: srgb) {
+            body {
+                background: oklab(51.976% -0.14032 0.10763);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="polygon"></div>
+
+    <script>
+        const n = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--n'), 10);
+
+        const container = document.querySelector('.polygon');
+        for (let i = 0; i < n; i++) {
+            const span = document.createElement('span');
+            span.classList.add('side');
+            container.appendChild(span);
+        }
+    </script>
+
+</body>
+
+</html>
+
+
+
+
+<!-- approach 2 -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regular N-gon</title>
+    <style>
+        .container {
+            --r: calc(var(--s) / (2 * sin(180deg / var(--n))));
+            --n: 7;
+            --s: 3rem;
+            position: relative;
+            width: calc(2 * var(--r) + 2rem);
+            height: calc(2 * var(--r) + 2rem);
+            margin: 2rem auto;
+        }
+
+        .side {
+            position: absolute;
+            width: var(--s);
+            height: 1px;
+            background-color: black;
+            transform-origin: 0 50%;
+            left: calc(50% + var(--r) * cos((360deg / var(--n)) * (var(--k) - 1) - 90deg));
+            top: calc(50% + var(--r) * sin((360deg / var(--n)) * (var(--k) - 1) - 90deg));
+            transform: rotate(calc((180deg / var(--n)) + (360deg / var(--n)) * (var(--k) - 1)));
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.querySelector('.container');
+            const n = parseInt(getComputedStyle(container).getPropertyValue('--n'), 10);
+
+            for (let k = 1; k <= n; k++) {
+                const side = document.createElement('div');
+                side.className = 'side';
+                side.style.setProperty('--k', k);
+                container.appendChild(side);
+            }
+        });
+    </script>
+</body>
+
+</html>

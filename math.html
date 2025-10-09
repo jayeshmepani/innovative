@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive CSS Math Functions Demo</title>
+    <meta name="view-transition" content="same-origin">
+    <style>
+        @view-transition {
+            navigation: auto;
+        }
+
+        ::view-transition-new(root) {
+            animation: fadeInPage 0.5s ease-in both;
+        }
+
+        @keyframes fadeInPage {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        :root {
+            /* Colors */
+            --color-bg: #f8f9fa;
+            --color-text: #343a40;
+            --color-heading: #212529;
+            --color-primary: #007bff;
+            --color-secondary: #6c757d;
+            --color-accent: #17a2b8;
+            --color-border: #dee2e6;
+            --color-container-bg: #ffffff;
+            --color-item-bg: #f1f3f5;
+            --color-code-bg: #e9ecef;
+            --color-label: var(--color-primary);
+            --color-formula: #28a745;
+            /* Green */
+            --color-result: var(--color-secondary);
+            --color-shadow: rgba(0, 0, 0, 0.1);
+
+            /* Function Group Colors */
+            --color-calc: #e0f7fa;
+            --color-compare: #fff3cd;
+            --color-step: #dcedc8;
+            --color-rem: #f0f4c3;
+            /* Specific yellow-green for rem */
+            --color-mod: #f8bbd0;
+            /* Specific pink for mod */
+            --color-trig: #d1e7dd;
+            --color-exp: #d6d8f0;
+            --color-sign: #f8d7da;
+            --color-const: #ffe8cc;
+            --color-unit: #e1bee7;
+            --color-adv: #cfe2ff;
+
+            /* Spacing & Sizes */
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+            --border-radius: 6px;
+            --base-font-size: 16px;
+
+            /* Variables for Demo */
+            --value1: 150px;
+            --value2: 75px;
+            --float-value: 123.456;
+            --angle: 45deg;
+            --dividend-pos: 17;
+            --dividend-neg: -17;
+            --divisor-pos: 5;
+            --divisor-neg: -5;
+            --x-comp: 3;
+            --y-comp: 4;
+            --base: 2;
+            --exponent: 8;
+            --number-for-sqrt: 144;
+            --number-for-log: 100;
+            --negative-value: -50;
+        }
+
+        /* --- Base & Reset --- */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            padding: var(--spacing-lg);
+            line-height: 1.6;
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            font-size: var(--base-font-size);
+        }
+
+        /* --- Typography --- */
+        h1,
+        h2,
+        h3 {
+            color: var(--color-heading);
+            margin-bottom: var(--spacing-md);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: var(--spacing-xl);
+            font-size: calc(1.8rem + 1.2vw);
+        }
+
+        h2 {
+            border-bottom: 2px solid var(--color-primary);
+            padding-bottom: var(--spacing-sm);
+            margin-top: var(--spacing-xl);
+            font-size: 1.6rem;
+        }
+
+        h3 {
+            margin-top: var(--spacing-lg);
+            margin-bottom: var(--spacing-sm);
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: var(--color-secondary);
+            text-align: center;
+        }
+
+        p,
+        li {
+            font-size: 1rem;
+            margin-bottom: var(--spacing-md);
+        }
+
+        code {
+            font-family: 'SF Mono', Monaco, Consolas, monospace;
+            background-color: var(--color-code-bg);
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: var(--border-radius);
+            font-size: 0.9em;
+            color: var(--color-heading);
+        }
+
+        a {
+            color: var(--color-primary);
+            text-decoration: none;
+
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+
+        /* --- Layout --- */
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .instructions {
+            background-color: var(--color-compare);
+            border: 1px solid #ffeeba;
+            padding: var(--spacing-lg);
+            border-radius: var(--border-radius);
+            margin-bottom: var(--spacing-xl);
+
+            p {
+                margin-bottom: var(--spacing-sm);
+
+                &:last-child {
+                    margin-bottom: 0;
+                }
+            }
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+            padding: var(--spacing-lg);
+            background-color: var(--color-container-bg);
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 12px var(--color-shadow);
+        }
+
+        .section-wrapper {
+            margin-bottom: var(--spacing-xl);
+        }
+
+        /* Wrapper for H2 + Container */
+
+        /* --- Item Styling (Using Native Nesting) --- */
+        .item {
+            border: 1px solid var(--color-border);
+            padding: var(--spacing-md);
+            min-width: 180px;
+            text-align: center;
+            background-color: var(--color-item-bg);
+            border-radius: var(--border-radius);
+            position: relative;
+            margin: var(--spacing-sm);
+            overflow: hidden;
+            /* Default, override for mod/rem */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            /* Space out content */
+            align-items: center;
+            min-height: 100px;
+            flex-grow: 1;
+            flex-basis: 200px;
+            box-shadow: 0 2px 5px var(--color-shadow);
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out, border-color 0.2s ease-in-out;
+
+            /* Pseudo-elements for labels/formulas */
+            &::before {
+                content: attr(data-label);
+                display: block;
+                font-weight: 600;
+                /* Bolder label */
+                margin-bottom: var(--spacing-sm);
+                color: var(--color-label);
+                font-size: 1rem;
+                /* Slightly larger label */
+                border-bottom: 1px dashed var(--color-border);
+                padding-bottom: var(--spacing-sm);
+                width: 100%;
+            }
+
+            &::after {
+                content: attr(data-formula);
+                display: block;
+                font-family: 'SF Mono', Monaco, Consolas, monospace;
+                font-size: 0.8em;
+                color: var(--color-formula);
+                margin-top: var(--spacing-sm);
+                word-wrap: break-word;
+                max-width: 100%;
+                line-height: 1.4;
+                padding: var(--spacing-xs);
+                background: #fff;
+                /* Slight background for readability */
+                border-radius: 3px;
+            }
+
+            /* Inner span for result text */
+            &>span {
+                font-size: 0.9em;
+                color: var(--color-result);
+                margin-top: var(--spacing-sm);
+                font-weight: 500;
+            }
+
+            /* Hover effect */
+            &:hover {
+                transform: translateY(-3px) scale(1.01);
+                box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+                border-color: var(--color-primary);
+            }
+
+            /* --- Specific Function Backgrounds --- */
+            &#calc-demo-1,
+            &#calc-demo-2,
+            &#calc-demo-3 {
+                background-color: var(--color-calc);
+            }
+
+            &#min-demo,
+            &#max-demo,
+            &^=[id|="clamp-demo"] {
+                background-color: var(--color-compare);
+            }
+
+            /* Select all clamp demos */
+            &.rem-item {
+                background-color: var(--color-rem);
+                overflow: visible;
+            }
+
+            /* Allow negative margin */
+            &.mod-item {
+                background-color: var(--color-mod);
+                overflow: visible;
+            }
+
+            /* Allow negative margin */
+            &.round-item {
+                background-color: var(--color-step);
+            }
+
+            &.floor-ceil-item {
+                background-color: color-mix(in srgb, var(--color-step), #fff 20%);
+            }
+
+            /* Slightly lighter */
+            &^=[id|="sin-demo"],
+            &^=[id|="cos-demo"],
+            &^=[id|="tan-demo"],
+            &^=[id|="asin-demo"],
+            &^=[id|="acos-demo"],
+            &^=[id|="atan-demo"],
+            &^=[id|="atan2-demo"] {
+                background-color: var(--color-trig);
+            }
+
+            &^=[id|="pow-demo"],
+            &^=[id|="sqrt-demo"],
+            &^=[id|="hypot-demo"],
+            &^=[id|="log-demo"],
+            &^=[id|="log10-demo"],
+            &^=[id|="exp-demo"] {
+                background-color: var(--color-exp);
+            }
+
+            &^=[id|="abs-demo"],
+            &^=[id|="sign-"] {
+                background-color: var(--color-sign);
+            }
+
+            &^=[id|="pi-demo"],
+            &^=[id|="e-demo"] {
+                background-color: var(--color-const);
+            }
+
+            &^=[id|="rem-unit-demo"] {
+                background-color: var(--color-unit);
+            }
+
+            &#advanced-gradient,
+            &#advanced-transform {
+                background-color: var(--color-adv);
+            }
+        }
+
+        /* --- Stepped Value Group Styling --- */
+        .stepped-group {
+            flex-basis: 100%;
+            margin-bottom: var(--spacing-md);
+            padding: var(--spacing-md);
+            border: 1px dashed var(--color-border);
+            border-radius: var(--border-radius);
+            background-color: color-mix(in srgb, var(--color-container-bg), var(--color-bg) 20%);
+            /* Slightly off-white */
+
+            &>h3 {
+                /* Target h3 directly inside */
+                margin-top: 0;
+                border-bottom: 1px solid var(--color-border);
+                padding-bottom: var(--spacing-sm);
+                margin-bottom: var(--spacing-lg);
+            }
+
+            &>.container {
+                /* Target nested container */
+                padding: 0;
+                box-shadow: none;
+                background-color: transparent;
+            }
+        }
+
+        /* --- Apply Specific CSS Math Functions --- */
+        /* These remain similar, just ensure IDs match HTML */
+        .item {
+
+            /* 1. calc() */
+            &#calc-demo-1 {
+                width: calc(50% - 20px);
+            }
+
+            &#calc-demo-2 {
+                padding: calc(var(--base-font-size) / 2) calc(var(--base-font-size) * 1.5);
+            }
+
+            &#calc-demo-3 {
+                font-size: calc(1rem + 0.5vw);
+            }
+
+            /* 2. Comparison */
+            &#min-demo {
+                width: min(var(--value1), var(--value2));
+            }
+
+            &#max-demo {
+                width: max(var(--value1), var(--value2));
+            }
+
+            &#clamp-demo-width {
+                width: clamp(75px, 100px, 150px);
+            }
+
+            &#clamp-demo-width-min {
+                width: clamp(75px, 50px, 150px);
+            }
+
+            &#clamp-demo-width-max {
+                width: clamp(75px, 200px, 150px);
+            }
+
+            &#clamp-demo-font {
+                font-size: clamp(0.8rem, 1.5vw, 1.2rem);
+                min-width: 220px;
+            }
+
+            /* Wider for text */
+            /* 3. Stepped Value */
+            &#rem-pp-demo {
+                margin-left: calc(rem(var(--dividend-pos), var(--divisor-pos)) * 10px);
+            }
+
+            &#rem-pn-demo {
+                margin-left: calc(rem(var(--dividend-pos), var(--divisor-neg)) * 10px);
+            }
+
+            &#rem-np-demo {
+                margin-left: calc(rem(var(--dividend-neg), var(--divisor-pos)) * 10px);
+            }
+
+            &#rem-nn-demo {
+                margin-left: calc(rem(var(--dividend-neg), var(--divisor-neg)) * 10px);
+            }
+
+            &#mod-pp-demo {
+                margin-left: calc(mod(var(--dividend-pos), var(--divisor-pos)) * 10px);
+            }
+
+            &#mod-pn-demo {
+                margin-left: calc(mod(var(--dividend-pos), var(--divisor-neg)) * 10px);
+            }
+
+            &#mod-np-demo {
+                margin-left: calc(mod(var(--dividend-neg), var(--divisor-pos)) * 10px);
+            }
+
+            &#mod-nn-demo {
+                margin-left: calc(mod(var(--dividend-neg), var(--divisor-neg)) * 10px);
+            }
+
+            &#round-nearest-demo {
+                padding-left: round(nearest, var(--float-value) * 1px, 10px);
+            }
+
+            &#round-up-demo {
+                padding-left: round(up, var(--float-value) * 1px, 10px);
+            }
+
+            &#round-down-demo {
+                padding-left: round(down, var(--float-value) * 1px, 10px);
+            }
+
+            &#round-to-zero-demo {
+                padding-left: round(to-zero, var(--float-value) * 1px, 10px);
+            }
+
+            &#floor-approx-demo {
+                padding-left: round(down, var(--float-value) * 1px, 1px);
+            }
+
+            &#ceil-approx-demo {
+                padding-left: round(up, var(--float-value) * 1px, 1px);
+            }
+
+            /* 4. Trigonometric */
+            &#sin-demo {
+                opacity: sin(var(--angle));
+            }
+
+            &#cos-demo {
+                opacity: cos(var(--angle));
+            }
+
+            &#tan-demo {
+                transform: rotate(calc(tan(var(--angle)) * 15deg));
+            }
+
+            &#asin-demo {
+                transform: rotate(asin(0.5));
+            }
+
+            &#acos-demo {
+                transform: rotate(acos(0.5));
+            }
+
+            &#atan-demo {
+                transform: rotate(atan(1));
+            }
+
+            &#atan2-demo {
+                transform: rotate(atan2(var(--y-comp), var(--x-comp)));
+            }
+
+            /* 5. Exponential */
+            &#pow-demo {
+                width: calc(pow(var(--base), var(--exponent)) * 1px);
+            }
+
+            &#sqrt-demo {
+                width: calc(sqrt(var(--number-for-sqrt)) * 10px);
+            }
+
+            &#hypot-demo {
+                width: calc(hypot(var(--x-comp), var(--y-comp)) * 20px);
+            }
+
+            &#log-demo {
+                opacity: calc(log(var(--number-for-log)) / 5);
+            }
+
+            &#log10-demo {
+                opacity: calc(log(var(--number-for-log)) / log(10) / 2);
+            }
+
+            &#exp-demo {
+                width: calc(exp(1) * 40px);
+            }
+
+            /* 6. Sign */
+            &#abs-demo {
+                padding-left: calc(abs(var(--negative-value)) * 1px);
+            }
+
+            &#sign-pos-demo {
+                opacity: calc(0.5 + sign(150) * 0.5);
+            }
+
+            &#sign-neg-demo {
+                opacity: calc(0.5 + sign(-50) * 0.5);
+            }
+
+            &#sign-zero-demo {
+                opacity: calc(0.5 + sign(0) * 0.5);
+            }
+
+            /* 7. Constants */
+            &#pi-demo {
+                transform: rotate(calc(pi * 1rad));
+            }
+
+            &#e-demo {
+                width: calc(e * 50px);
+            }
+
+            /* 8. rem Unit */
+            &#rem-unit-demo-1 {
+                font-size: 1rem;
+            }
+
+            &#rem-unit-demo-2 {
+                font-size: 1.5rem;
+            }
+
+            &#rem-unit-demo-3 {
+                padding: 2rem;
+            }
+
+            /* 9. Advanced */
+            &#advanced-gradient {
+                aspect-ratio: 1;
+                border-radius: 50%;
+                background: conic-gradient(from calc(var(--angle) / 2), hsl(calc(0 * 60 + 180), 80%, 70%), hsl(calc(1 * 60 + 180), 80%, 70%), hsl(calc(2 * 60 + 180), 80%, 70%), hsl(calc(3 * 60 + 180), 80%, 70%), hsl(calc(4 * 60 + 180), 80%, 70%), hsl(calc(5 * 60 + 180), 80%, 70%), hsl(calc(6 * 60 + 180), 80%, 70%));
+            }
+
+            &#advanced-transform {
+                width: 100px;
+                height: 100px;
+                background-color: var(--color-adv);
+                transition: transform 0.4s ease;
+                margin: auto;
+
+                /* Center for hover */
+                &:hover {
+                    /* Nested hover state */
+                    transform: rotate(calc(sin(0.5turn) * 10deg + 20deg)) scale(calc(1 + abs(cos(var(--angle))) * 0.3)) translateX(calc(clamp(-20px, tan(var(--angle)) * 10px, 20px)));
+                }
+            }
+        }
+
+
+        /* --- Live Calculator Styling (Nested) --- */
+        #calculator {
+            background-color: var(--color-container-bg);
+            padding: var(--spacing-lg);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--color-border);
+            margin-top: var(--spacing-lg);
+            box-shadow: 0 4px 12px var(--color-shadow);
+
+            p {
+                margin-bottom: var(--spacing-md);
+                color: var(--color-secondary);
+                font-size: 0.95rem;
+            }
+
+            .input-group {
+                display: flex;
+                flex-wrap: wrap;
+                gap: var(--spacing-sm);
+                align-items: center;
+                margin-bottom: var(--spacing-md);
+            }
+
+            input[type="number"],
+            select {
+                padding: var(--spacing-sm) var(--spacing-md);
+                border: 1px solid var(--color-border);
+                border-radius: var(--border-radius);
+                font-size: 1rem;
+                flex-grow: 1;
+                /* Allow inputs/select to grow */
+                min-width: 60px;
+                max-width: 100px;
+            }
+
+            select {
+                max-width: 180px;
+                /* Limit select width */
+                cursor: pointer;
+            }
+
+            button {
+                padding: var(--spacing-sm) var(--spacing-lg);
+                background-color: var(--color-primary);
+                color: white;
+                cursor: pointer;
+                border: none;
+                border-radius: var(--border-radius);
+                font-size: 1rem;
+                font-weight: 500;
+                transition: background-color 0.2s ease, transform 0.1s ease;
+
+                &:hover {
+                    background-color: color-mix(in srgb, var(--color-primary), #000 15%);
+                }
+
+                &:active {
+                    transform: scale(0.98);
+                }
+            }
+
+            #calc-result {
+                margin-top: var(--spacing-lg);
+                padding: var(--spacing-md);
+                background-color: var(--color-code-bg);
+                border: 1px solid var(--color-border);
+                border-radius: var(--border-radius);
+                font-weight: 500;
+                min-height: 2em;
+                font-family: 'SF Mono', Monaco, Consolas, monospace;
+                word-wrap: break-word;
+            }
+        }
+
+        /* --- Responsive Adjustments --- */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: calc(1.6rem + 1vw);
+            }
+
+            h2 {
+                font-size: 1.4rem;
+            }
+
+            .item {
+                flex-basis: 160px;
+                min-width: 140px;
+            }
+
+            #calculator {
+                .input-group {
+                    flex-direction: column;
+                    align-items: stretch;
+                }
+
+                input[type="number"],
+                select,
+                button {
+                    max-width: 100%;
+                    width: 100%;
+                }
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: var(--spacing-md);
+            }
+
+            .item {
+                flex-basis: 100%;
+                min-width: unset;
+            }
+
+            /* Stack items */
+            h1 {
+                font-size: calc(1.4rem + 1.5vw);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        <h1>Interactive CSS Math Functions Demo</h1>
+
+        <div class="instructions">
+            <p>Explore the power of mathematical functions directly within CSS! This demo showcases various functions
+                from the <a href="https://www.w3.org/TR/css-values-4/" target="_blank" rel="noopener noreferrer">CSS
+                    Values and Units Module Level 4</a> specification.</p>
+            <p>Hover over the items to see subtle interactive effects. The CSS formula used and the function's purpose
+                are displayed on each item.</p>
+            <p><strong>Important:</strong> Open your browser's Developer Console (usually F12) to view JavaScript
+                verification logs, which show the actual computed style value for the relevant property of each demo
+                item.</p>
+        </div>
+
+        <!-- Sections for each function type -->
+        <div class="section-wrapper">
+            <h2>1. Basic Calculation: <code>calc()</code></h2>
+            <div class="container">
+                <div class="item" id="calc-demo-1" data-property="width" data-label="calc() Basic"
+                    data-formula="width: calc(50% - 20px);"><span>Width = 50% - 20px</span></div>
+                <div class="item" id="calc-demo-2" data-property="padding" data-label="calc() with Variables"
+                    data-formula="padding: calc(var(--base-font-size)/2) calc(var(--base-font-size)*1.5);"><span>Padding
+                        based on vars</span></div>
+                <div class="item" id="calc-demo-3" data-property="font-size" data-label="calc() Responsive Font"
+                    data-formula="font-size: calc(1rem + 0.5vw);"><span>Responsive Font Size</span></div>
+            </div>
+        </div>
+
+        <div class="section-wrapper">
+            <h2>2. Comparison Functions: <code>min()</code>, <code>max()</code>, <code>clamp()</code></h2>
+            <div class="container">
+                <div class="item" id="min-demo" data-property="width" data-label="min()"
+                    data-formula="width: min(150px, 75px);"><span>Width = 75px</span></div>
+                <div class="item" id="max-demo" data-property="width" data-label="max()"
+                    data-formula="width: max(150px, 75px);"><span>Width = 150px</span></div>
+                <div class="item" id="clamp-demo-width" data-property="width" data-label="clamp() Width (In Range)"
+                    data-formula="width: clamp(75px, 100px, 150px);"><span>Width = 100px</span></div>
+                <div class="item" id="clamp-demo-width-min" data-property="width" data-label="clamp() Width (Below Min)"
+                    data-formula="width: clamp(75px, 50px, 150px);"><span>Width Clamped to 75px</span></div>
+                <div class="item" id="clamp-demo-width-max" data-property="width" data-label="clamp() Width (Above Max)"
+                    data-formula="width: clamp(75px, 200px, 150px);"><span>Width Clamped to 150px</span></div>
+                <div class="item" id="clamp-demo-font" data-property="font-size" data-label="clamp() Font Size"
+                    data-formula="font-size: clamp(0.8rem, 1.5vw, 1.2rem);"><span>Responsive Font (0.8-1.2rem)</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-wrapper">
+            <h2>3. Stepped Value Functions: <code>round()</code>, <code>mod()</code>, <code>rem()</code></h2>
+            <div class="container" style="display: block; background: none; box-shadow: none; padding: 0;">
+                <!-- Container for groups -->
+
+                <div class="stepped-group">
+                    <h3><code>rem(dividend, divisor)</code> - Remainder (sign matches dividend)</h3>
+                    <div class="container">
+                        <div class="item rem-item" id="rem-pp-demo" data-property="margin-left" data-label="rem(+, +)"
+                            data-formula="margin-left: calc(rem(17, 5) * 10px);"><span>rem(17, 5) = 2 → 20px</span>
+                        </div>
+                        <div class="item rem-item" id="rem-pn-demo" data-property="margin-left" data-label="rem(+, -)"
+                            data-formula="margin-left: calc(rem(17, -5) * 10px);"><span>rem(17, -5) = 2 → 20px</span>
+                        </div>
+                        <div class="item rem-item" id="rem-np-demo" data-property="margin-left" data-label="rem(-, +)"
+                            data-formula="margin-left: calc(rem(-17, 5) * 10px);"><span>rem(-17, 5) = -2 → -20px</span>
+                        </div>
+                        <div class="item rem-item" id="rem-nn-demo" data-property="margin-left" data-label="rem(-, -)"
+                            data-formula="margin-left: calc(rem(-17, -5) * 10px);"><span>rem(-17, -5) = -2 →
+                                -20px</span></div>
+                    </div>
+                </div>
+
+                <div class="stepped-group">
+                    <h3><code>mod(dividend, divisor)</code> - Modulo (sign matches divisor)</h3>
+                    <div class="container">
+                        <div class="item mod-item" id="mod-pp-demo" data-property="margin-left" data-label="mod(+, +)"
+                            data-formula="margin-left: calc(mod(17, 5) * 10px);"><span>mod(17, 5) = 2 → 20px</span>
+                        </div>
+                        <div class="item mod-item" id="mod-pn-demo" data-property="margin-left" data-label="mod(+, -)"
+                            data-formula="margin-left: calc(mod(17, -5) * 10px);"><span>mod(17, -5) = -3 → -30px</span>
+                        </div>
+                        <div class="item mod-item" id="mod-np-demo" data-property="margin-left" data-label="mod(-, +)"
+                            data-formula="margin-left: calc(mod(-17, 5) * 10px);"><span>mod(-17, 5) = 3 → 30px</span>
+                        </div>
+                        <div class="item mod-item" id="mod-nn-demo" data-property="margin-left" data-label="mod(-, -)"
+                            data-formula="margin-left: calc(mod(-17, -5) * 10px);"><span>mod(-17, -5) = -2 →
+                                -20px</span></div>
+                    </div>
+                </div>
+
+                <div class="stepped-group">
+                    <h3><code>round()</code> Strategies</h3>
+                    <div class="container">
+                        <div class="item round-item" id="round-nearest-demo" data-property="padding-left"
+                            data-label="round(nearest, V, S)"
+                            data-formula="padding-left: round(nearest, 123.456px, 10px);"><span>Padding ~120px</span>
+                        </div>
+                        <div class="item round-item" id="round-up-demo" data-property="padding-left"
+                            data-label="round(up, V, S)" data-formula="padding-left: round(up, 123.456px, 10px);">
+                            <span>Padding ~130px</span>
+                        </div>
+                        <div class="item round-item" id="round-down-demo" data-property="padding-left"
+                            data-label="round(down, V, S)" data-formula="padding-left: round(down, 123.456px, 10px);">
+                            <span>Padding ~120px</span>
+                        </div>
+                        <div class="item round-item" id="round-to-zero-demo" data-property="padding-left"
+                            data-label="round(to-zero, V, S)"
+                            data-formula="padding-left: round(to-zero, 123.456px, 10px);"><span>Padding ~120px</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stepped-group">
+                    <h3><code>floor() / ceil()</code> Approximation using <code>round()</code></h3>
+                    <div class="container">
+                        <div class="item floor-ceil-item" id="floor-approx-demo" data-property="padding-left"
+                            data-label="floor() approx." data-formula="padding-left: round(down, 123.456px, 1px);">
+                            <span>Padding ~123px</span>
+                        </div>
+                        <div class="item floor-ceil-item" id="ceil-approx-demo" data-property="padding-left"
+                            data-label="ceil() approx." data-formula="padding-left: round(up, 123.456px, 1px);">
+                            <span>Padding ~124px</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-wrapper">
+            <h2>4. Trigonometric Functions</h2>
+            <div class="container">
+                <div class="item" id="sin-demo" data-property="opacity" data-label="sin(angle)"
+                    data-formula="opacity: sin(45deg);"><span>Opacity ~0.71</span></div>
+                <div class="item" id="cos-demo" data-property="opacity" data-label="cos(angle)"
+                    data-formula="opacity: cos(45deg);"><span>Opacity ~0.71</span></div>
+                <div class="item" id="tan-demo" data-property="transform" data-label="tan(angle)"
+                    data-formula="transform: rotate(calc(tan(45deg) * 15deg));"><span>Rotated 15deg</span></div>
+                <div class="item" id="asin-demo" data-property="transform" data-label="asin(number)"
+                    data-formula="transform: rotate(asin(0.5));"><span>Rotated 30deg</span></div>
+                <div class="item" id="acos-demo" data-property="transform" data-label="acos(number)"
+                    data-formula="transform: rotate(acos(0.5));"><span>Rotated 60deg</span></div>
+                <div class="item" id="atan-demo" data-property="transform" data-label="atan(number)"
+                    data-formula="transform: rotate(atan(1));"><span>Rotated 45deg</span></div>
+                <div class="item" id="atan2-demo" data-property="transform" data-label="atan2(Y, X)"
+                    data-formula="transform: rotate(atan2(4, 3));"><span>Rotated ~53.13deg</span></div>
+            </div>
+        </div>
+
+        <div class="section-wrapper">
+            <h2>5. Exponential Functions</h2>
+            <div class="container">
+                <div class="item" id="pow-demo" data-property="width" data-label="pow(base, exponent)"
+                    data-formula="width: calc(pow(2, 8) * 1px);"><span>Width = 256px</span></div>
+                <div class="item" id="sqrt-demo" data-property="width" data-label="sqrt(number)"
+                    data-formula="width: calc(sqrt(144) * 10px);"><span>Width = 120px</span></div>
+                <div class="item" id="hypot-demo" data-property="width" data-label="hypot(A, B, ...)"
+                    data-formula="width: calc(hypot(3, 4) * 20px);"><span>Width = 100px</span></div>
+                <div class="item" id="log-demo" data-property="opacity" data-label="log(number) (Natural)"
+                    data-formula="opacity: calc(log(100) / 5);"><span>Opacity ~0.92</span></div>
+                <div class="item" id="log10-demo" data-property="opacity" data-label="log10 (via log)"
+                    data-formula="opacity: calc( log(100) / log(10) / 2 );"><span>Opacity = 1</span></div>
+                <div class="item" id="exp-demo" data-property="width" data-label="exp(number)"
+                    data-formula="width: calc(exp(1) * 40px);"><span>Width ~108.7px (e*40)</span></div>
+            </div>
+        </div>
+
+        <div class="section-wrapper">
+            <h2>6. Sign Functions</h2>
+            <div class="container">
+                <div class="item" id="abs-demo" data-property="padding-left" data-label="abs(number)"
+                    data-formula="padding-left: calc(abs(-50) * 1px);"><span>Padding Left = 50px</span></div>
+                <div class="item" id="sign-pos-demo" data-property="opacity" data-label="sign(positive)"
+                    data-formula="opacity: calc(0.5 + sign(150) * 0.5);"><span>Sign = +1 (Opacity 1)</span></div>
+                <div class="item" id="sign-neg-demo" data-property="opacity" data-label="sign(negative)"
+                    data-formula="opacity: calc(0.5 + sign(-50) * 0.5);"><span>Sign = -1 (Opacity 0)</span></div>
+                <div class="item" id="sign-zero-demo" data-property="opacity" data-label="sign(zero)"
+                    data-formula="opacity: calc(0.5 + sign(0) * 0.5);"><span>Sign = 0 (Opacity 0.5)</span></div>
+            </div>
+        </div>
+
+        <div class="section-wrapper">
+            <h2>7. Constants</h2>
+            <div class="container">
+                <div class="item" id="pi-demo" data-property="transform" data-label="pi"
+                    data-formula="transform: rotate(calc(pi * 1rad));"><span>Rotated 180deg</span></div>
+                <div class="item" id="e-demo" data-property="width" data-label="e"
+                    data-formula="width: calc(e * 50px);"><span>Width ~135.9px</span></div>
+            </div>
+        </div>
+
+        <div class="section-wrapper">
+            <h2>8. Relative Unit: <code>rem</code></h2>
+            <div class="container">
+                <div class="item" id="rem-unit-demo-1" data-property="font-size" data-label="1rem font-size"
+                    data-formula="font-size: 1rem;"><span>Font size = root size</span></div>
+                <div class="item" id="rem-unit-demo-2" data-property="font-size" data-label="1.5rem font-size"
+                    data-formula="font-size: 1.5rem;"><span>Font size = 1.5 * root</span></div>
+                <div class="item" id="rem-unit-demo-3" data-property="padding" data-label="2rem padding"
+                    data-formula="padding: 2rem;"><span>Padding = 2 * root size</span></div>
+            </div>
+        </div>
+
+        <div class="section-wrapper">
+            <h2>9. Advanced / Combined Examples</h2>
+            <div class="container">
+                <div class="item" id="advanced-gradient" data-property="background-image" data-label="Conic Gradient"
+                    data-formula="background: conic-gradient(from calc(var(--angle)/2), hsl(...), ...)"><span>Gradient
+                        w/ calc()</span></div>
+                <div class="item" id="advanced-transform" data-property="transform"
+                    data-label="Combined Transforms (Hover)"
+                    data-formula=":hover { transform: rotate(...) scale(...) translateX(...); }"><span>Hover Me!</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-wrapper">
+            <h2>10. Live Calculator (JavaScript)</h2>
+            <div id="calculator">
+                <p>Test math operations below (using JavaScript's <code>Math</code> object, which might differ slightly
+                    from CSS functions like <code>mod()</code>).</p>
+                <div class="input-group">
+                    <input type="number" id="num1" value="17" title="First Number">
+                    <select id="operation" title="Select Operation">
+                        <option value="add">+</option>
+                        <option value="subtract">-</option>
+                        <option value="multiply">×</option>
+                        <option value="divide">÷</option>
+                        <option value="remainder">% (like CSS rem)</option>
+                        <option value="power">pow</option>
+                        <option value="sqrt">sqrt</option>
+                        <option value="sin">sin (deg)</option>
+                        <option value="cos">cos (deg)</option>
+                        <option value="tan">tan (deg)</option>
+                        <option value="asin">asin (returns deg)</option>
+                        <option value="acos">acos (returns deg)</option>
+                        <option value="atan">atan (returns deg)</option>
+                        <option value="hypot">hypot</option>
+                        <option value="round">round</option>
+                        <option value="floor">floor</option>
+                        <option value="ceil">ceil</option>
+                        <option value="abs">abs</option>
+                        <option value="sign">sign</option>
+                        <option value="log">log (ln)</option>
+                        <option value="exp">exp (e^)</option>
+                    </select>
+                    <input type="number" id="num2" value="5" title="Second Number (if applicable)">
+                    <button onclick="calculate()">Calculate</button>
+                </div>
+                <div id="calc-result">Result will appear here</div>
+            </div>
+        </div>
+    </main>
+
+    <!-- JavaScript for Console Verification and Calculator -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log("%c--- CSS Math Function Verification ---", "color: blue; font-weight: bold;");
+            // Select only items with data-property for logging computed styles
+            const itemsToLog = document.querySelectorAll('.item[data-property]');
+
+            itemsToLog.forEach(item => {
+                const label = item.getAttribute('data-label') || item.id;
+                const formula = item.getAttribute('data-formula');
+                const property = item.getAttribute('data-property');
+
+                if (property) {
+                    try {
+                        const computedStyle = window.getComputedStyle(item);
+                        let computedValue = computedStyle[property];
+
+                        // Try to simplify matrix for transforms for readability
+                        if (property === 'transform' && computedValue.startsWith('matrix')) {
+                            // Basic check for no transform
+                            if (computedValue === 'none' || computedValue.includes('1, 0, 0, 1, 0, 0')) {
+                                computedValue = 'transform: none (or identity)';
+                            } else {
+                                computedValue = `transform: ${computedValue} (matrix value)`;
+                            }
+                        }
+
+                        console.log(`[${label}] | Formula: %c${formula}%c | Computed ${property}: %c${computedValue}`, "color: green; font-family: monospace;", "", "color: navy; font-weight: bold;");
+                    } catch (e) {
+                        console.error(`Error getting computed style for [${label}] property ${property}:`, e);
+                    }
+                } else {
+                    console.warn(`Item with label [${label}] missing data-property attribute for computed style logging.`);
+                }
+            });
+            console.log("%c--- End Verification ---", "color: blue; font-weight: bold;");
+
+            // Add change listener to calculator operation to enable/disable second input
+            const opSelect = document.getElementById('operation');
+            const num2Input = document.getElementById('num2');
+            const updateNum2State = () => {
+                const operation = opSelect.value;
+                const requiresNum2 = ['add', 'subtract', 'multiply', 'divide', 'power', 'hypot', 'remainder'].includes(operation);
+                num2Input.disabled = !requiresNum2;
+                num2Input.style.opacity = requiresNum2 ? '1' : '0.5';
+                num2Input.style.cursor = requiresNum2 ? 'text' : 'not-allowed';
+                if (!requiresNum2) {
+                    num2Input.value = ''; // Clear value if not needed
+                }
+            };
+            opSelect.addEventListener('change', updateNum2State);
+            updateNum2State(); // Initial check on load
+        });
+
+        // Calculator function (with input validation)
+        function calculate() {
+            const num1Input = document.getElementById('num1');
+            const num2Input = document.getElementById('num2');
+            const operation = document.getElementById('operation').value;
+            const resultDiv = document.getElementById('calc-result');
+
+            // Use parseFloat for decimal support, default to NaN if empty/invalid
+            const num1 = parseFloat(num1Input.value);
+            const num2 = parseFloat(num2Input.value);
+
+            let result;
+            let errorMsg = null;
+            const requiresNum2 = ['add', 'subtract', 'multiply', 'divide', 'power', 'hypot', 'remainder'].includes(operation);
+
+            // Input Validation
+            if (isNaN(num1)) { errorMsg = "Error: First number is invalid."; }
+            else if (requiresNum2 && isNaN(num2)) { errorMsg = "Error: Second number is required and invalid for this operation."; }
+            else if ((operation === 'divide' || operation === 'remainder') && num2 === 0) { errorMsg = "Error: Cannot divide or find remainder by zero."; }
+            else if ((operation === 'sqrt' || operation === 'log') && num1 < 0) { errorMsg = `Error: Cannot calculate ${operation} of a negative number.`; }
+            else if ((operation === 'asin' || operation === 'acos') && (num1 < -1 || num1 > 1)) { errorMsg = `Error: Input for ${operation} must be between -1 and 1.`; }
+
+
+            if (errorMsg) {
+                resultDiv.textContent = errorMsg;
+                resultDiv.style.color = '#dc3545'; // Error color
+                return;
+            }
+
+            resultDiv.style.color = 'inherit'; // Reset color
+
+            try {
+                switch (operation) {
+                    case 'add': result = num1 + num2; break;
+                    case 'subtract': result = num1 - num2; break;
+                    case 'multiply': result = num1 * num2; break;
+                    case 'divide': result = num1 / num2; break;
+                    case 'remainder': result = num1 % num2; break;
+                    case 'power': result = Math.pow(num1, num2); break;
+                    case 'sqrt': result = Math.sqrt(num1); break;
+                    case 'sin': result = Math.sin(num1 * Math.PI / 180); break;
+                    case 'cos': result = Math.cos(num1 * Math.PI / 180); break;
+                    case 'tan': result = Math.tan(num1 * Math.PI / 180); break;
+                    case 'asin': result = Math.asin(num1) * 180 / Math.PI; break;
+                    case 'acos': result = Math.acos(num1) * 180 / Math.PI; break;
+                    case 'atan': result = Math.atan(num1) * 180 / Math.PI; break;
+                    case 'hypot': result = Math.hypot(num1, num2); break;
+                    case 'round': result = Math.round(num1); break;
+                    case 'floor': result = Math.floor(num1); break;
+                    case 'ceil': result = Math.ceil(num1); break;
+                    case 'abs': result = Math.abs(num1); break;
+                    case 'sign': result = Math.sign(num1); break;
+                    case 'log': result = Math.log(num1); break;
+                    case 'exp': result = Math.exp(num1); break;
+                    default: throw new Error('Invalid operation selected.'); // Should not happen
+                }
+
+                // Handle potential JS quirks (like very small numbers near zero)
+                if (Math.abs(result) < 1e-10) result = 0;
+
+                // Format result, handle potential NaN/Infinity from edge cases missed by validation
+                if (isNaN(result)) { resultDiv.textContent = 'Result: NaN'; }
+                else if (!isFinite(result)) { resultDiv.textContent = `Result: ${result > 0 ? '' : '-'}Infinity`; }
+                else { resultDiv.textContent = `Result: ${Number(result.toFixed(8))}`; }
+
+            } catch (error) {
+                resultDiv.textContent = `Calculation Error: ${error.message}`;
+                resultDiv.style.color = '#dc3545';
+            }
+        }
+    </script>
+</body>
+
+</html>
