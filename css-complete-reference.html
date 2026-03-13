@@ -1,0 +1,1853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Complete CSS Reference — border · outline · box-shadow</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=DM+Serif+Display:ital@0;1&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #08080e;
+  --s0: #0f0f1a;
+  --s1: #141422;
+  --s2: #1c1c2e;
+  --s3: #22223a;
+  --bd: rgba(255,255,255,0.08);
+  --bd2: rgba(255,255,255,0.14);
+  --text: #ddddf0;
+  --muted: #6868a0;
+  --dim: #9090b8;
+  --mono: 'JetBrains Mono', monospace;
+  --serif: 'DM Serif Display', serif;
+  --sans: 'Instrument Sans', sans-serif;
+  /* accent palette */
+  --a1: #818cf8; /* indigo */
+  --a2: #34d399; /* emerald */
+  --a3: #fb923c; /* orange */
+  --a4: #f472b6; /* pink */
+  --a5: #38bdf8; /* sky */
+  --a6: #facc15; /* yellow */
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.65;
+  overflow-x: hidden;
+}
+
+/* ── SKIP LINK (a11y) ── */
+.skip-link {
+  position:absolute; top:-40px; left:0;
+  background: var(--a2); color:#000;
+  padding:8px 16px; font-size:13px; font-weight:600;
+  border-radius:0 0 6px 0; z-index:9999;
+  transition: top .2s;
+}
+.skip-link:focus { top:0; }
+
+/* ── HEADER ── */
+header {
+  position:relative; padding:100px 48px 72px;
+  background:
+    radial-gradient(ellipse 70% 50% at 20% 50%, rgba(129,140,248,.14) 0, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 50%, rgba(52,211,153,.10) 0, transparent 60%),
+    var(--bg);
+  border-bottom: 1px solid var(--bd);
+  overflow:hidden;
+}
+header::before {
+  content:'';
+  position:absolute; inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.02) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events:none;
+}
+.h-eyebrow {
+  display:inline-flex; align-items:center; gap:8px;
+  font-family: var(--mono); font-size:11px; letter-spacing:.18em;
+  text-transform:uppercase; color:var(--a2);
+  border:1px solid rgba(52,211,153,.3); border-radius:3px;
+  padding:5px 14px; margin-bottom:28px;
+  outline: 1px solid rgba(52,211,153,.1); outline-offset:5px;
+}
+header h1 {
+  font-family: var(--serif);
+  font-size: clamp(3rem, 7vw, 6.5rem);
+  font-weight:400; line-height:1; letter-spacing:-.02em;
+  background: linear-gradient(120deg, #fff 0%, var(--a1) 45%, var(--a5) 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  background-clip:text; margin-bottom:20px;
+}
+header p { color:var(--dim); max-width:600px; font-size:15px; line-height:1.7; }
+.h-stats {
+  display:flex; gap:32px; margin-top:36px; flex-wrap:wrap;
+}
+.stat-item { font-family:var(--mono); font-size:11px; color:var(--muted); }
+.stat-item strong { display:block; font-size:22px; font-weight:700; color:var(--text); letter-spacing:-.02em; }
+
+/* ── STICKY NAV ── */
+nav {
+  position:sticky; top:0; z-index:200;
+  background:rgba(8,8,14,.9); backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--bd);
+  padding:0 48px;
+  display:flex; align-items:center; gap:0;
+  overflow-x:auto; scrollbar-width:none;
+}
+nav::-webkit-scrollbar { display:none; }
+.nav-brand {
+  font-family:var(--mono); font-size:12px; font-weight:700;
+  color:var(--a1); padding:14px 0; margin-right:24px;
+  flex-shrink:0; letter-spacing:.1em;
+}
+nav a {
+  font-family:var(--mono); font-size:11px; letter-spacing:.08em;
+  text-transform:uppercase; text-decoration:none;
+  color:var(--muted); padding:14px 14px; white-space:nowrap;
+  border-bottom:2px solid transparent; transition:color .2s, border-color .2s;
+  flex-shrink:0;
+}
+nav a:hover { color:var(--text); border-bottom-color: var(--bd2); }
+nav a:focus-visible {
+  outline:2px solid var(--a5); outline-offset:2px; border-radius:2px;
+}
+
+/* ── LAYOUT ── */
+main { max-width:1280px; margin:0 auto; padding:72px 48px; }
+
+.chapter {
+  margin-bottom:100px; scroll-margin-top:60px;
+}
+
+.chapter-header {
+  display:grid;
+  grid-template-columns: auto 1fr;
+  gap:20px; align-items:center;
+  margin-bottom:40px; padding-bottom:24px;
+  border-bottom:1px solid var(--bd);
+}
+.ch-num {
+  font-family:var(--mono); font-size:11px; font-weight:700;
+  letter-spacing:.15em; padding:6px 14px; border-radius:3px;
+  flex-shrink:0;
+}
+.ch-border { background:rgba(251,146,60,.12); color:var(--a3); border:1px solid rgba(251,146,60,.25); }
+.ch-outline { background:rgba(56,189,248,.1); color:var(--a5); border:1px solid rgba(56,189,248,.22); }
+.ch-shadow { background:rgba(129,140,248,.1); color:var(--a1); border:1px solid rgba(129,140,248,.22); }
+.ch-combined { background:rgba(244,114,182,.1); color:var(--a4); border:1px solid rgba(244,114,182,.22); }
+.ch-future { background:rgba(250,204,21,.08); color:var(--a6); border:1px solid rgba(250,204,21,.2); }
+
+.chapter-header h2 {
+  font-family:var(--serif); font-size:clamp(1.6rem,3vw,2.4rem);
+  font-weight:400; letter-spacing:-.01em; line-height:1.1;
+}
+
+/* ── SUB-SECTION ── */
+.subsec { margin-bottom:48px; }
+.subsec-title {
+  font-family:var(--mono); font-size:10px; letter-spacing:.18em;
+  text-transform:uppercase; color:var(--muted); margin-bottom:16px;
+  display:flex; align-items:center; gap:10px;
+}
+.subsec-title::after {
+  content:''; flex:1; height:1px; background:var(--bd);
+}
+
+/* ── GRID ── */
+.g2 { display:grid; grid-template-columns:repeat(auto-fill,minmax(290px,1fr)); gap:16px; }
+.g3 { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:16px; }
+.g4 { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:16px; }
+.full { grid-column:1/-1; }
+
+/* ── CARD ── */
+.card {
+  background:var(--s0); border:1px solid var(--bd);
+  border-radius:8px; padding:22px 20px;
+  position:relative; overflow:visible;
+}
+.card::after {
+  content:''; position:absolute; top:0; left:24px; right:24px; height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.06),transparent);
+}
+.card-label {
+  font-family:var(--mono); font-size:10px; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--muted); margin-bottom:14px; font-weight:700;
+}
+.demo {
+  width:100%; height:60px; border-radius:6px; margin-bottom:12px;
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--mono); font-size:11px; color:var(--muted);
+  transition:all .25s ease;
+}
+.demo-sm { height:44px; }
+
+/* ── CODE ── */
+pre {
+  font-family:var(--mono); font-size:11.5px; line-height:1.8;
+  background:var(--s2); padding:12px 16px; border-radius:5px;
+  border-left:2px solid var(--bd2); overflow-x:auto;
+  color:#94a3b8; white-space:pre-wrap; word-break:break-word;
+}
+.p  { color:#93c5fd; } /* property */
+.v  { color:#86efac; } /* value */
+.k  { color:#c4b5fd; } /* keyword */
+.c  { color:#4b5563; } /* comment */
+.u  { color:#fbbf24; } /* unsupported */
+
+/* ── BADGE ── */
+.badge {
+  display:inline-block; font-family:var(--mono); font-size:10px;
+  padding:2px 8px; border-radius:2px; vertical-align:middle; margin-left:6px;
+  letter-spacing:.06em; font-weight:700;
+}
+.badge-new { background:rgba(52,211,153,.15); color:var(--a2); border:1px solid rgba(52,211,153,.3); }
+.badge-warn { background:rgba(251,146,60,.15); color:var(--a3); border:1px solid rgba(251,146,60,.3); }
+.badge-spec { background:rgba(250,204,21,.12); color:var(--a6); border:1px solid rgba(250,204,21,.25); }
+.badge-a11y { background:rgba(129,140,248,.12); color:var(--a1); border:1px solid rgba(129,140,248,.25); }
+
+/* ── NOTE / CALLOUT ── */
+.note {
+  font-size:11.5px; color:var(--dim); margin-top:8px; font-style:italic;
+}
+.callout {
+  background:var(--s1); border:1px solid var(--bd);
+  border-left:3px solid var(--a3);
+  border-radius:6px; padding:16px 18px; margin-bottom:20px;
+  font-size:13px; color:var(--dim); line-height:1.7;
+}
+.callout strong { color:var(--text); }
+.callout.info { border-left-color: var(--a5); }
+.callout.future { border-left-color: var(--a6); }
+.callout.a11y { border-left-color: var(--a1); }
+
+/* ── COMPARISON TABLE ── */
+.comp-table { width:100%; border-collapse:collapse; font-size:12.5px; }
+.comp-table th, .comp-table td {
+  padding:10px 16px; text-align:left;
+  border-bottom:1px solid var(--bd);
+}
+.comp-table thead th {
+  font-family:var(--mono); font-size:10px; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--muted); background:var(--s2);
+  font-weight:700;
+}
+.comp-table tr:hover td { background:rgba(255,255,255,.015); }
+.comp-table td:first-child { font-family:var(--mono); color:#93c5fd; font-weight:600; }
+.yes { color:#34d399; font-weight:600; }
+.no  { color:#f87171; }
+.partial { color:var(--a6); }
+
+/* ─── BORDER DEMOS ─── */
+/* styles */
+.bd-solid   { border:3px solid var(--a3); background:rgba(251,146,60,.05); }
+.bd-dashed  { border:3px dashed #e879f9; background:rgba(232,121,249,.05); }
+.bd-dotted  { border:3px dotted var(--a5); background:rgba(56,189,248,.05); }
+.bd-double  { border:7px double #f87171; background:rgba(248,113,113,.05); }
+.bd-groove  { border:6px groove #34d399; background:rgba(52,211,153,.05); }
+.bd-ridge   { border:6px ridge  #60a5fa; background:rgba(96,165,250,.05); }
+.bd-inset   { border:6px inset  #c084fc; background:rgba(192,132,252,.07); }
+.bd-outset  { border:6px outset #f472b6; background:rgba(244,114,182,.05); }
+.bd-none    { border:3px none #888; background:rgba(255,255,255,.03); }
+.bd-hidden  { border:3px hidden #888; background:rgba(255,255,255,.03); }
+
+/* width keywords */
+.bd-thin   { border:thin solid var(--a2); background:rgba(52,211,153,.05); }
+.bd-medium { border:medium solid var(--a2); background:rgba(52,211,153,.05); }
+.bd-thick  { border:thick solid var(--a2); background:rgba(52,211,153,.05); }
+
+/* color specials */
+.bd-currentcolor { color:var(--a5); border:3px solid currentColor; background:rgba(56,189,248,.05); }
+.bd-transparent  { border:4px solid transparent; background:rgba(255,255,255,.04); box-shadow:0 0 0 1px rgba(255,255,255,.08) inset; }
+.bd-inherit-wrap { color:var(--a4); border:3px solid currentColor; }
+.bd-inherit-child { border:3px solid inherit; background:rgba(244,114,182,.05); }
+
+/* per-side longhands */
+.bd-longhand {
+  border-top-width:1px; border-top-style:solid; border-top-color:var(--a1);
+  border-right-width:3px; border-right-style:dashed; border-right-color:var(--a5);
+  border-bottom-width:5px; border-bottom-style:dotted; border-bottom-color:var(--a3);
+  border-left-width:8px; border-left-style:double; border-left-color:var(--a4);
+  background:rgba(255,255,255,.03);
+}
+
+/* radius forms */
+.br-1  { border:2px solid var(--a1); border-radius:12px; background:rgba(129,140,248,.05); }
+.br-2  { border:2px solid var(--a5); border-radius:12px 30px; background:rgba(56,189,248,.05); }
+.br-3  { border:2px solid var(--a3); border-radius:10px 30px 50px; background:rgba(251,146,60,.05); }
+.br-4  { border:2px solid var(--a4); border-radius:8px 20px 40px 60px; background:rgba(244,114,182,.05); }
+.br-elliptic1 { border:2px solid var(--a2); border-radius:50% 50% / 30% 30%; background:rgba(52,211,153,.05); }
+.br-elliptic2 { border:2px solid var(--a6); border-radius:40% 60% 70% 30% / 40% 50% 60% 50%; background:rgba(250,204,21,.05); }
+.br-elliptic3 { border:2px solid var(--a1); border-radius:100% 0 100% 0 / 0 100% 0 100%; background:rgba(129,140,248,.06); }
+.br-circle { border:2px solid var(--a5); border-radius:50%; width:60px; height:60px; margin:0 auto 12px; background:rgba(56,189,248,.07); display:flex; align-items:center; justify-content:center; }
+.br-pill   { border:2px solid var(--a4); border-radius:9999px; background:rgba(244,114,182,.05); }
+
+/* logical corners (modern browsers) */
+.br-ss { border:2px solid var(--a1); border-start-start-radius:24px; background:rgba(129,140,248,.05); }
+.br-se { border:2px solid var(--a5); border-start-end-radius:24px; background:rgba(56,189,248,.05); }
+.br-es { border:2px solid var(--a3); border-end-start-radius:24px; background:rgba(251,146,60,.05); }
+.br-ee { border:2px solid var(--a4); border-end-end-radius:24px; background:rgba(244,114,182,.05); }
+
+/* gradient border */
+.bd-gradient {
+  border:3px solid transparent;
+  background:
+    linear-gradient(var(--s0),var(--s0)) padding-box,
+    linear-gradient(135deg,var(--a1),var(--a5),var(--a2)) border-box;
+}
+.bd-gradient2 {
+  border:3px solid transparent;
+  background:
+    linear-gradient(var(--s0),var(--s0)) padding-box,
+    conic-gradient(from 0deg, var(--a1),var(--a4),var(--a3),var(--a2),var(--a1)) border-box;
+}
+
+/* border-image demos */
+.bi-gradient {
+  border:10px solid transparent;
+  border-image: linear-gradient(135deg,var(--a1),var(--a4)) 10;
+}
+.bi-repeating {
+  border:10px solid transparent;
+  border-image:
+    repeating-linear-gradient(45deg, var(--a3) 0 8px, var(--a5) 8px 16px) 10;
+}
+.bi-conic {
+  border:8px solid transparent;
+  border-image:
+    conic-gradient(from 0deg,var(--a1),var(--a5),var(--a2),var(--a4),var(--a1)) 8;
+}
+.bi-stretch { border:12px solid transparent; border-image:linear-gradient(var(--a2),var(--a5)) 12 stretch; }
+.bi-round   { border:12px solid transparent; border-image:linear-gradient(var(--a3),var(--a4)) 12 round; }
+.bi-fill {
+  border:16px solid transparent;
+  border-image:
+    linear-gradient(135deg, rgba(129,140,248,.4), rgba(56,189,248,.4)) 16 fill;
+  background-clip:padding-box;
+}
+
+/* logical border shorthands */
+.bd-block {
+  border-block:3px solid var(--a1);
+  background:rgba(129,140,248,.05);
+}
+.bd-inline {
+  border-inline:3px solid var(--a5);
+  background:rgba(56,189,248,.05);
+}
+.bd-block-start { border-block-start:3px solid var(--a2); background:rgba(52,211,153,.05); }
+.bd-block-end   { border-block-end:3px dashed var(--a3); background:rgba(251,146,60,.05); }
+.bd-inline-start{ border-inline-start:4px solid var(--a4); background:rgba(244,114,182,.05); }
+.bd-inline-end  { border-inline-end:4px dotted var(--a6); background:rgba(250,204,21,.05); }
+
+/* background-clip interaction */
+.bd-bgclip-border  { background:linear-gradient(135deg,var(--a1),var(--a5)); background-clip:border-box;  color:#fff; border:8px solid rgba(255,255,255,.3); }
+.bd-bgclip-padding { background:linear-gradient(135deg,var(--a1),var(--a5)); background-clip:padding-box; color:#fff; border:8px solid rgba(255,255,255,.3); }
+.bd-bgclip-content { background:linear-gradient(135deg,var(--a1),var(--a5)); background-clip:content-box; color:#fff; border:8px solid rgba(255,255,255,.3); padding:8px; }
+
+/* box-decoration-break */
+.bd-decoration-break {
+  display:inline;
+  border:2px solid var(--a3);
+  border-radius:6px;
+  padding:4px 8px;
+  line-height:2.4;
+  background:rgba(251,146,60,.08);
+  -webkit-box-decoration-break:clone;
+  box-decoration-break:clone;
+  font-size:13px;
+}
+
+/* ─── OUTLINE DEMOS ─── */
+.ol-solid  { outline:3px solid var(--a5); background:rgba(56,189,248,.05); }
+.ol-dashed { outline:2px dashed var(--a4); background:rgba(244,114,182,.05); }
+.ol-dotted { outline:3px dotted var(--a6); background:rgba(250,204,21,.05); }
+.ol-double { outline:5px double var(--a2); background:rgba(52,211,153,.05); }
+.ol-groove { outline:5px groove #60a5fa; background:rgba(96,165,250,.05); }
+.ol-ridge  { outline:5px ridge  var(--a3); background:rgba(251,146,60,.05); }
+.ol-inset  { outline:5px inset  var(--a4); background:rgba(244,114,182,.07); }
+.ol-outset { outline:5px outset var(--a1); background:rgba(129,140,248,.07); }
+.ol-auto   { outline:auto; background:rgba(52,211,153,.05); }
+.ol-none   { outline:none; border:1px dashed rgba(255,255,255,.15); background:rgba(255,255,255,.03); }
+
+/* width keywords */
+.ol-thin   { outline:thin solid var(--a2); background:rgba(52,211,153,.05); }
+.ol-medium { outline:medium solid var(--a2); background:rgba(52,211,153,.05); }
+.ol-thick  { outline:thick solid var(--a2); background:rgba(52,211,153,.05); }
+
+/* offset extremes */
+.ol-off-0  { outline:2px solid var(--a1); outline-offset:0; background:rgba(129,140,248,.05); }
+.ol-off-4  { outline:2px solid var(--a5); outline-offset:4px; background:rgba(56,189,248,.05); margin:8px; }
+.ol-off-10 { outline:2px solid var(--a2); outline-offset:10px; background:rgba(52,211,153,.05); margin:12px; }
+.ol-off-neg4  { outline:2px solid var(--a3); outline-offset:-4px; background:rgba(251,146,60,.05); }
+.ol-off-neg12 { outline:2px solid var(--a4); outline-offset:-12px; background:rgba(244,114,182,.05); }
+
+/* invert color */
+.ol-invert { outline:3px solid Highlight; background:rgba(255,255,255,.04); } /* UA default color */
+
+/* longhands explicit */
+.ol-longhands {
+  outline-width: 3px;
+  outline-style: solid;
+  outline-color: var(--a1);
+  outline-offset: 6px;
+  background: rgba(129,140,248,.05);
+  margin:8px;
+}
+
+/* outline vs border interaction */
+.ol-plus-border {
+  border:2px solid rgba(129,140,248,.5);
+  outline:3px solid var(--a4);
+  outline-offset:5px;
+  background:rgba(244,114,182,.04);
+  margin:8px;
+}
+
+/* focus-visible pattern */
+.fv-base {
+  appearance:none; border:1px solid var(--bd2);
+  background:var(--s1); color:var(--text);
+  padding:10px 18px; border-radius:6px;
+  font-family:var(--sans); font-size:13px; cursor:pointer;
+  outline:none; transition:all .2s;
+}
+.fv-base:hover { background:var(--s2); border-color:var(--bd2); }
+.fv-base:focus { outline:none; }
+.fv-base:focus-visible {
+  outline:2px solid var(--a5);
+  outline-offset:3px;
+  border-color:transparent;
+}
+
+.fv-shadow {
+  appearance:none; border:none;
+  background:var(--a1); color:#fff;
+  padding:10px 20px; border-radius:6px;
+  font-family:var(--sans); font-size:13px; font-weight:600; cursor:pointer;
+  outline:none; box-shadow:0 4px 14px rgba(129,140,248,.4);
+  transition:all .2s;
+}
+.fv-shadow:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(129,140,248,.55); }
+.fv-shadow:focus { outline:none; }
+.fv-shadow:focus-visible {
+  box-shadow:0 0 0 3px rgba(129,140,248,.4), 0 0 0 6px rgba(129,140,248,.15);
+}
+
+.fv-forced {
+  appearance:none; border:2px solid var(--muted);
+  background:transparent; color:var(--text);
+  padding:10px 18px; border-radius:6px;
+  font-family:var(--sans); font-size:13px; cursor:pointer;
+  outline:none; transition:all .2s;
+}
+.fv-forced:hover { border-color:var(--text); }
+.fv-forced:focus { outline:none; }
+.fv-forced:focus-visible {
+  outline:3px solid var(--a2);
+  outline-offset:2px;
+  border-color:transparent;
+}
+
+/* input field patterns */
+.inp {
+  width:100%; padding:11px 16px; border-radius:6px;
+  font-family:var(--mono); font-size:13px; color:var(--text);
+  transition:all .2s ease; outline:none; display:block;
+}
+.inp::placeholder { color:var(--muted); }
+.inp-a {
+  background:var(--s2); border:1px solid var(--bd);
+}
+.inp-a:focus {
+  border-color:var(--a5);
+  box-shadow:0 0 0 3px rgba(56,189,248,.15), inset 0 1px 3px rgba(0,0,0,.3);
+}
+.inp-b {
+  background:#060610; border:1px solid transparent;
+  box-shadow:inset 0 2px 6px rgba(0,0,0,.7), inset 0 0 0 1px rgba(255,255,255,.05);
+}
+.inp-b:focus {
+  box-shadow:inset 0 2px 6px rgba(0,0,0,.7),0 0 0 2px var(--a1);
+}
+.inp-c {
+  background:var(--s1); border:1px solid var(--bd);
+}
+.inp-c:focus-visible {
+  outline:2px solid var(--a3); outline-offset:1px;
+  box-shadow:0 4px 20px rgba(251,146,60,.15);
+}
+.inp-label { font-size:11px; color:var(--muted); font-family:var(--mono); margin-bottom:5px; display:block; }
+
+/* ─── BOX-SHADOW DEMOS ─── */
+/* none */
+.bs-none { box-shadow:none; border:1px solid var(--bd); background:var(--s1); }
+
+/* hard shadow (blur:0) */
+.bs-hard1 { box-shadow:6px 6px 0 var(--a3); border:1px solid var(--a3); background:rgba(251,146,60,.06); }
+.bs-hard2 { box-shadow:8px 8px 0 var(--a1), 16px 16px 0 rgba(129,140,248,.2); border:1px solid var(--a1); background:rgba(129,140,248,.05); }
+.bs-hard3 { box-shadow:4px 4px 0 var(--a4), 8px 8px 0 var(--a1); border:1px solid var(--a4); background:rgba(244,114,182,.05); }
+
+/* negative x/y offset */
+.bs-neg-xy  { box-shadow:-8px -8px 16px rgba(0,0,0,.6), 4px 4px 8px rgba(255,255,255,.03); background:var(--s1); border:1px solid var(--bd); }
+.bs-neg-x   { box-shadow:-12px 0 20px rgba(56,189,248,.3); background:rgba(56,189,248,.04); border:1px solid rgba(56,189,248,.2); }
+.bs-neg-y   { box-shadow:0 -10px 20px rgba(129,140,248,.3); background:rgba(129,140,248,.04); border:1px solid rgba(129,140,248,.2); }
+
+/* negative spread */
+.bs-neg-spread { box-shadow:0 20px 30px -10px rgba(0,0,0,.9); background:var(--s1); border:1px solid var(--bd); border-top:none; margin-top:8px; }
+.bs-neg-spread2 { box-shadow:0 8px 8px -4px var(--a1); background:var(--s2); border:1px solid rgba(129,140,248,.2); }
+
+/* zero blur */
+.bs-zero-blur { box-shadow:0 0 0 2px var(--a2), 0 0 0 5px rgba(52,211,153,.25), 0 0 0 8px rgba(52,211,153,.1); background:rgba(52,211,153,.04); }
+
+/* soft / realistic */
+.bs-soft { box-shadow:0 4px 6px rgba(0,0,0,.05),0 10px 15px rgba(0,0,0,.1); background:var(--s1); border:1px solid var(--bd); }
+.bs-layered {
+  box-shadow:
+    0 1px 2px rgba(0,0,0,.07),
+    0 2px 4px rgba(0,0,0,.07),
+    0 4px 8px rgba(0,0,0,.07),
+    0 8px 16px rgba(0,0,0,.07),
+    0 16px 32px rgba(0,0,0,.07),
+    0 32px 64px rgba(0,0,0,.04);
+  background:var(--s2); border:1px solid var(--bd);
+}
+
+/* inset */
+.bs-inset-pressed {
+  box-shadow:inset 0 3px 8px rgba(0,0,0,.8), inset 0 -1px 3px rgba(255,255,255,.04);
+  background:#070710; border:1px solid rgba(255,255,255,.04);
+}
+.bs-inset-both {
+  box-shadow:
+    inset 6px 6px 12px rgba(0,0,0,.7),
+    inset -4px -4px 10px rgba(255,255,255,.04),
+    0 2px 8px rgba(129,140,248,.15);
+  background:#101020; border:none;
+}
+.bs-inset-glow {
+  box-shadow:inset 0 0 20px rgba(56,189,248,.2), inset 0 0 40px rgba(56,189,248,.08);
+  border:1px solid rgba(56,189,248,.3); background:rgba(56,189,248,.03);
+}
+
+/* mixed inset + outset */
+.bs-mixed {
+  box-shadow:
+    0 4px 20px rgba(129,140,248,.3),
+    inset 0 1px 0 rgba(255,255,255,.08),
+    inset 0 -1px 0 rgba(0,0,0,.3);
+  background:var(--s2); border:1px solid var(--bd);
+}
+.bs-mixed2 {
+  box-shadow:
+    6px 6px 0 var(--a3),
+    inset 0 0 20px rgba(251,146,60,.1);
+  border:1px solid var(--a3); background:rgba(251,146,60,.04);
+}
+
+/* neon glow */
+.bs-neon-g { box-shadow:0 0 7px var(--a2),0 0 20px rgba(52,211,153,.4),0 0 42px rgba(52,211,153,.15); border:1px solid rgba(52,211,153,.6); background:rgba(52,211,153,.04); }
+.bs-neon-i { box-shadow:0 0 7px var(--a1),0 0 20px rgba(129,140,248,.4),0 0 42px rgba(129,140,248,.15); border:1px solid rgba(129,140,248,.6); background:rgba(129,140,248,.04); }
+
+/* neumorphic */
+.bs-nm-raised {
+  background:#18182a;
+  box-shadow:8px 8px 18px rgba(0,0,0,.75), -5px -5px 14px rgba(255,255,255,.04);
+  border:none; border-radius:12px;
+}
+.bs-nm-inset {
+  background:#13131f;
+  box-shadow:inset 5px 5px 14px rgba(0,0,0,.75), inset -3px -3px 10px rgba(255,255,255,.04);
+  border:none; border-radius:12px;
+}
+
+/* elevation scale */
+.bs-e1 { box-shadow:0 1px 3px rgba(0,0,0,.5); background:var(--s1); border:1px solid var(--bd); }
+.bs-e2 { box-shadow:0 3px 8px rgba(0,0,0,.5); background:var(--s1); border:1px solid var(--bd); }
+.bs-e3 { box-shadow:0 8px 20px rgba(0,0,0,.5); background:var(--s1); border:1px solid var(--bd); }
+.bs-e4 { box-shadow:0 16px 40px rgba(0,0,0,.55); background:var(--s1); border:1px solid var(--bd); }
+
+/* one-side */
+.bs-bottom   { box-shadow:0 14px 12px -8px rgba(0,0,0,.9); background:var(--s2); border-top:1px solid var(--bd); }
+.bs-top      { box-shadow:0 -10px 14px -6px rgba(129,140,248,.25); background:var(--s2); border-bottom:1px solid var(--bd); }
+.bs-left     { box-shadow:-12px 0 16px -4px rgba(52,211,153,.3); background:var(--s2); border-right:1px solid var(--bd); }
+
+/* colored ambient */
+.bs-colored-a { box-shadow:0 8px 32px rgba(129,140,248,.4); background:rgba(129,140,248,.06); border:1px solid rgba(129,140,248,.2); }
+.bs-colored-b { box-shadow:0 8px 32px rgba(52,211,153,.35); background:rgba(52,211,153,.05); border:1px solid rgba(52,211,153,.2); }
+.bs-colored-c { box-shadow:0 8px 32px rgba(251,146,60,.3); background:rgba(251,146,60,.05); border:1px solid rgba(251,146,60,.2); }
+
+/* filter drop-shadow for comparison */
+.bs-drop-shadow-box {
+  box-shadow:8px 8px 16px rgba(251,146,60,.4);
+  background:rgba(251,146,60,.08); border:1px solid rgba(251,146,60,.3);
+  border-radius:12px;
+}
+.bs-drop-shadow-filter {
+  filter:drop-shadow(8px 8px 16px rgba(56,189,248,.6));
+  background:rgba(56,189,248,.08); border:1px solid rgba(56,189,248,.3);
+  border-radius:12px;
+}
+
+/* ─── CORNER-SHAPE (Chrome 133+, progressive) ─── */
+@supports (corner-shape: bevel) {
+  .cs-bevel { corner-shape:bevel; }
+  .cs-notch { corner-shape:notch; }
+  .cs-scoop { corner-shape:scoop; }
+  .cs-squircle { corner-shape:squircle; }
+}
+.cs-demo {
+  border:2px solid var(--a2); border-radius:20px;
+  background:rgba(52,211,153,.06); padding:0 16px;
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--mono); font-size:11px; color:var(--a2);
+}
+
+/* ─── ANIMATIONS ─── */
+@keyframes outline-pulse {
+  0%   { outline-color:var(--a1); outline-offset:0px; }
+  33%  { outline-color:var(--a5); outline-offset:8px; }
+  66%  { outline-color:var(--a4); outline-offset:4px; }
+  100% { outline-color:var(--a1); outline-offset:0px; }
+}
+@keyframes shadow-breathe {
+  0%,100% { box-shadow:0 0 16px rgba(129,140,248,.3),0 0 40px rgba(129,140,248,.1); }
+  50% { box-shadow:0 0 28px rgba(129,140,248,.6),0 0 60px rgba(129,140,248,.25); }
+}
+@keyframes border-spin {
+  to { --gradient-angle:360deg; }
+}
+
+.anim-outline {
+  border:1px solid rgba(255,255,255,.1); border-radius:6px;
+  outline:2px solid var(--a1); background:var(--s2);
+  animation:outline-pulse 3s ease-in-out infinite;
+}
+.anim-shadow {
+  border:1px solid rgba(129,140,248,.2); border-radius:8px;
+  background:rgba(129,140,248,.05);
+  animation:shadow-breathe 2.5s ease-in-out infinite;
+}
+
+/* ── MEGA COMBINED CARD ── */
+.mega {
+  background:
+    linear-gradient(135deg, rgba(129,140,248,.2) 0%, rgba(56,189,248,.15) 50%, rgba(52,211,153,.1) 100%),
+    url('https://images.unsplash.com/photo-1518770660439-4636190af475?w=1400&q=80') center/cover;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:16px;
+  box-shadow:
+    0 2px 4px rgba(0,0,0,.25),
+    0 8px 16px rgba(0,0,0,.4),
+    0 24px 48px rgba(0,0,0,.55),
+    inset 0 1px 0 rgba(255,255,255,.1),
+    0 0 80px rgba(129,140,248,.12);
+  outline:1px solid rgba(129,140,248,.2);
+  outline-offset:8px;
+  padding:64px 48px;
+  position:relative; overflow:hidden;
+}
+.mega::before {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(180deg,rgba(0,0,0,.1) 0%,rgba(0,0,0,.65) 100%);
+  pointer-events:none;
+}
+.mega-content { position:relative; z-index:1; }
+.mega h3 {
+  font-family:var(--serif); font-size:2.5rem; font-weight:400;
+  color:#fff; margin-bottom:12px; line-height:1.1;
+  text-shadow:0 2px 16px rgba(0,0,0,.5);
+}
+.mega p { color:rgba(255,255,255,.7); font-size:14px; max-width:500px; }
+
+/* image frames */
+.img-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:16px; }
+.img-frame { border-radius:8px; overflow:hidden; position:relative; }
+.img-frame img { width:100%; height:180px; object-fit:cover; display:block; transition:transform .4s ease; }
+.img-frame:hover img { transform:scale(1.04); }
+.img-tag { position:absolute; bottom:8px; left:8px; right:8px; background:rgba(0,0,0,.65); backdrop-filter:blur(4px); border-radius:3px; padding:5px 10px; font-family:var(--mono); font-size:10px; color:rgba(255,255,255,.75); letter-spacing:.06em; text-transform:uppercase; }
+
+.if1 { border:3px solid var(--a3); box-shadow:0 8px 30px rgba(251,146,60,.3); outline:1px solid rgba(251,146,60,.2); outline-offset:5px; }
+.if2 { border:3px solid transparent; background:linear-gradient(var(--s0),var(--s0)) padding-box, linear-gradient(135deg,var(--a1),var(--a5),var(--a2)) border-box; box-shadow:0 12px 40px rgba(129,140,248,.3); }
+.if3 { border:10px solid transparent; border-image:conic-gradient(from 0deg,var(--a1),var(--a4),var(--a3),var(--a2),var(--a1)) 10; box-shadow:0 16px 48px rgba(0,0,0,.6); }
+.if4 { border:4px solid rgba(255,255,255,.1); box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 20px 60px rgba(0,0,0,.7),0 0 40px rgba(56,189,248,.15); outline:2px dashed rgba(56,189,248,.4); outline-offset:8px; }
+
+/* elevation cards */
+.el-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:16px; }
+.el-card {
+  background:var(--s1); border:1px solid var(--bd);
+  border-radius:10px; padding:24px 16px;
+  text-align:center; font-family:var(--mono); font-size:11px; color:var(--muted);
+  transition:all .3s ease; cursor:pointer;
+}
+.el-card:hover { transform:translateY(-4px); }
+.el-0 { box-shadow:none; }
+.el-1 { box-shadow:0 1px 3px rgba(0,0,0,.5); }
+.el-2 { box-shadow:0 3px 10px rgba(0,0,0,.5); }
+.el-3 { box-shadow:0 8px 24px rgba(0,0,0,.5); }
+.el-4 { box-shadow:0 16px 48px rgba(0,0,0,.5); }
+.el-5 { box-shadow:0 32px 64px rgba(0,0,0,.5); }
+.el-label { font-size:18px; font-weight:700; color:var(--text); margin-bottom:4px; }
+
+/* future/spec section */
+.future-panel {
+  background:linear-gradient(135deg,rgba(250,204,21,.04),rgba(251,146,60,.04));
+  border:1px solid rgba(250,204,21,.2); border-radius:8px; padding:28px;
+}
+.future-prop {
+  display:flex; align-items:flex-start; gap:16px;
+  padding:14px 0; border-bottom:1px solid var(--bd);
+}
+.future-prop:last-child { border-bottom:none; }
+.fp-name { font-family:var(--mono); font-size:12px; color:var(--a6); font-weight:600; min-width:200px; flex-shrink:0; }
+.fp-desc { font-size:12.5px; color:var(--dim); line-height:1.6; }
+
+/* drop-shadow comparison */
+.ds-compare { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+.ds-item { background:var(--s0); border-radius:8px; padding:24px; text-align:center; }
+.ds-box {
+  width:80px; height:80px; margin:0 auto 16px;
+  border-radius:16px;
+  background:linear-gradient(135deg,var(--a1),var(--a5));
+}
+.ds-box.use-box-shadow { box-shadow:10px 10px 20px rgba(0,0,0,.6); }
+.ds-box.use-filter { filter:drop-shadow(10px 10px 20px rgba(0,0,0,.8)); }
+/* clipped shape for drop-shadow demo */
+.ds-shape {
+  width:80px; height:80px; margin:0 auto 16px;
+  background:linear-gradient(135deg,var(--a3),var(--a4));
+  clip-path:polygon(50% 0%,100% 38%,82% 100%,18% 100%,0% 38%);
+}
+.ds-shape.use-box-shadow { box-shadow:10px 10px 20px rgba(251,146,60,.6); }
+.ds-shape.use-filter { filter:drop-shadow(6px 6px 12px rgba(251,146,60,.8)); }
+
+/* responsive */
+@media (max-width:600px) {
+  header { padding:60px 24px 48px; }
+  main { padding:48px 24px; }
+  nav { padding:0 24px; }
+  .ds-compare { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to content</a>
+
+<header>
+  <div class="h-eyebrow">✦ complete css reference — march 2026</div>
+  <h1>border · outline<br>box-shadow</h1>
+  <p>Every property, every value, every longhand — physical &amp; logical. Includes new CSS (corner-shape), spec-level future additions, accessibility patterns, and the box-shadow vs. drop-shadow distinction.</p>
+  <div class="h-stats">
+    <div class="stat-item"><strong>3</strong>property families</div>
+    <div class="stat-item"><strong>80+</strong>live demos</div>
+    <div class="stat-item"><strong>11</strong>border styles</div>
+    <div class="stat-item"><strong>6</strong>full sections</div>
+    <div class="stat-item"><strong>2026</strong>spec-current</div>
+  </div>
+</header>
+
+<nav aria-label="Page sections">
+  <span class="nav-brand">CSS∷</span>
+  <a href="#border">§ border</a>
+  <a href="#border-image">§ border-image</a>
+  <a href="#border-logical">§ logical</a>
+  <a href="#outline">§ outline</a>
+  <a href="#box-shadow">§ box-shadow</a>
+  <a href="#combined">§ combined</a>
+  <a href="#a11y">§ a11y</a>
+  <a href="#future">§ future spec</a>
+  <a href="#reference">§ reference</a>
+</nav>
+
+<main id="main-content">
+
+<!-- ═══════════════════════ CHAPTER 1 — BORDER ═══════════════════════ -->
+<section class="chapter" id="border">
+  <div class="chapter-header">
+    <span class="ch-num ch-border">01 — border</span>
+    <h2>Border — all properties, styles, widths, colors</h2>
+  </div>
+
+  <!-- STYLES -->
+  <div class="subsec">
+    <div class="subsec-title">all 11 border-style values</div>
+    <div class="g3">
+      <div class="card">
+        <div class="card-label">solid</div>
+        <div class="demo bd-solid">solid</div>
+        <pre><span class="p">border-style</span>: <span class="v">solid</span>;</pre>
+      </div>
+      <div class="card">
+        <div class="card-label">dashed</div>
+        <div class="demo bd-dashed">dashed</div>
+        <pre><span class="p">border-style</span>: <span class="v">dashed</span>;</pre>
+      </div>
+      <div class="card">
+        <div class="card-label">dotted</div>
+        <div class="demo bd-dotted">dotted</div>
+        <pre><span class="p">border-style</span>: <span class="v">dotted</span>;</pre>
+      </div>
+      <div class="card">
+        <div class="card-label">double (needs ≥3px)</div>
+        <div class="demo bd-double">double</div>
+        <pre><span class="p">border</span>: <span class="v">7px double #f87171</span>;</pre>
+      </div>
+      <div class="card">
+        <div class="card-label">groove (3D)</div>
+        <div class="demo bd-groove">groove</div>
+        <pre><span class="p">border-style</span>: <span class="v">groove</span>;</pre>
+      </div>
+      <div class="card">
+        <div class="card-label">ridge (3D)</div>
+        <div class="demo bd-ridge">ridge</div>
+        <pre><span class="p">border-style</span>: <span class="v">ridge</span>;</pre>
+      </div>
+      <div class="card">
+        <div class="card-label">inset (3D pressed)</div>
+        <div class="demo bd-inset">inset</div>
+        <pre><span class="p">border-style</span>: <span class="v">inset</span>;</pre>
+      </div>
+      <div class="card">
+        <div class="card-label">outset (3D raised)</div>
+        <div class="demo bd-outset">outset</div>
+        <pre><span class="p">border-style</span>: <span class="v">outset</span>;</pre>
+      </div>
+      <div class="card">
+        <div class="card-label">none (no border, no space)</div>
+        <div class="demo bd-none">none</div>
+        <pre><span class="p">border-style</span>: <span class="v">none</span>; <span class="c">/* removes border + collapses width */</span></pre>
+      </div>
+      <div class="card">
+        <div class="card-label">hidden (like none, but collapses in tables)</div>
+        <div class="demo bd-hidden">hidden</div>
+        <pre><span class="p">border-style</span>: <span class="v">hidden</span>; <span class="c">/* wins in border-collapse */</span></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- WIDTH KEYWORDS -->
+  <div class="subsec">
+    <div class="subsec-title">border-width keywords — thin · medium · thick</div>
+    <div class="callout">
+      <strong>Keywords vs lengths.</strong> <code>thin</code>, <code>medium</code>, <code>thick</code> are UA-defined (typically ~1px, 3px, 5px). Always prefer explicit px/em for design control; keywords are useful for inheriting UA defaults.
+    </div>
+    <div class="g3">
+      <div class="card">
+        <div class="card-label">border-width: thin (~1px)</div>
+        <div class="demo bd-thin">thin</div>
+        <pre><span class="p">border</span>: <span class="v">thin solid #34d399</span>;</pre>
+      </div>
+      <div class="card">
+        <div class="card-label">border-width: medium (~3px)</div>
+        <div class="demo bd-medium">medium</div>
+        <pre><span class="p">border</span>: <span class="v">medium solid #34d399</span>;</pre>
+      </div>
+      <div class="card">
+        <div class="card-label">border-width: thick (~5px)</div>
+        <div class="demo bd-thick">thick</div>
+        <pre><span class="p">border</span>: <span class="v">thick solid #34d399</span>;</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- COLOR SPECIALS -->
+  <div class="subsec">
+    <div class="subsec-title">border-color — currentColor · transparent · modern color functions</div>
+    <div class="g2">
+      <div class="card">
+        <div class="card-label">currentColor — inherits element's color</div>
+        <div class="demo bd-currentcolor">border follows text color</div>
+        <pre><span class="p">color</span>: <span class="v">#38bdf8</span>;
+<span class="p">border</span>: <span class="v">3px solid currentColor</span>; <span class="c">/* matches color */</span></pre>
+      </div>
+      <div class="card">
+        <div class="card-label">transparent — layout-reserving invisible border</div>
+        <div class="demo bd-transparent">invisible but space-taking</div>
+        <pre><span class="p">border</span>: <span class="v">4px solid transparent</span>;
+<span class="c">/* reserves space, shows background behind it */</span></pre>
+      </div>
+      <div class="card">
+        <div class="card-label">modern color functions</div>
+        <div class="demo" style="border:3px solid oklch(70% 0.2 264); background:rgba(129,140,248,.05);">oklch / hsl / lab</div>
+        <pre><span class="p">border-color</span>: <span class="v">oklch(70% 0.2 264)</span>;
+<span class="p">border-color</span>: <span class="v">hsl(265 80% 65%)</span>;
+<span class="p">border-color</span>: <span class="v">color(display-p3 0.4 0.3 0.9)</span>;</pre>
+      </div>
+      <div class="card">
+        <div class="card-label">per-side color longhands</div>
+        <div class="demo" style="border-top-color:var(--a1);border-right-color:var(--a5);border-bottom-color:var(--a3);border-left-color:var(--a4);border-width:3px;border-style:solid;background:rgba(255,255,255,.03);">4 colors</div>
+        <pre><span class="p">border-top-color</span>: <span class="v">#818cf8</span>;
+<span class="p">border-right-color</span>: <span class="v">#38bdf8</span>;
+<span class="p">border-bottom-color</span>: <span class="v">#fb923c</span>;
+<span class="p">border-left-color</span>: <span class="v">#f472b6</span>;</pre>
+      </div>
+      <div class="card">
+        <div class="card-label">global keywords</div>
+        <div class="demo" style="border:3px solid;border-color:inherit;background:rgba(255,255,255,.03);">inherit / initial / unset</div>
+        <pre><span class="p">border-color</span>: <span class="v">inherit</span>;
+<span class="p">border-color</span>: <span class="v">initial</span>;   <span class="c">/* resets to currentColor */</span>
+<span class="p">border-color</span>: <span class="v">unset</span>;
+<span class="p">border-color</span>: <span class="v">revert</span>;
+<span class="p">border-color</span>: <span class="v">revert-layer</span>;</pre>
+      </div>
+      <div class="card">
+        <div class="card-label">per-side width longhands</div>
+        <div class="demo bd-longhand">4 sides, 4 widths, 4 styles</div>
+        <pre><span class="p">border-top-width</span>: <span class="v">1px</span>; <span class="p">border-top-style</span>: <span class="v">solid</span>;
+<span class="p">border-right-width</span>: <span class="v">3px</span>; <span class="p">border-right-style</span>: <span class="v">dashed</span>;
+<span class="p">border-bottom-width</span>: <span class="v">5px</span>; <span class="p">border-bottom-style</span>: <span class="v">dotted</span>;
+<span class="p">border-left-width</span>: <span class="v">8px</span>; <span class="p">border-left-style</span>: <span class="v">double</span>;</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- BORDER-RADIUS -->
+  <div class="subsec">
+    <div class="subsec-title">border-radius — 1 to 4 values, elliptical slash syntax, logical corners</div>
+    <div class="callout info">
+      <strong>Slash syntax</strong> <code>border-radius: h-radius / v-radius</code> creates elliptical corners. Each side of the slash takes up to 4 values (TL TR BR BL). This is one of the most underused features in CSS.
+    </div>
+    <div class="g3">
+      <div class="card"><div class="card-label">1 value (uniform)</div><div class="demo br-1">12px all</div><pre><span class="p">border-radius</span>: <span class="v">12px</span>;</pre></div>
+      <div class="card"><div class="card-label">2 values (TL+BR / TR+BL)</div><div class="demo br-2">12px 30px</div><pre><span class="p">border-radius</span>: <span class="v">12px 30px</span>;</pre></div>
+      <div class="card"><div class="card-label">3 values (TL / TR+BL / BR)</div><div class="demo br-3">10px 30px 50px</div><pre><span class="p">border-radius</span>: <span class="v">10px 30px 50px</span>;</pre></div>
+      <div class="card"><div class="card-label">4 values (TL TR BR BL)</div><div class="demo br-4">8px 20px 40px 60px</div><pre><span class="p">border-radius</span>: <span class="v">8px 20px 40px 60px</span>;</pre></div>
+      <div class="card"><div class="card-label">elliptical — uniform slash</div><div class="demo br-elliptic1">50% 50% / 30% 30%</div><pre><span class="p">border-radius</span>: <span class="v">50% 50% / 30% 30%</span>;
+<span class="c">/* h-radii / v-radii */</span></pre></div>
+      <div class="card"><div class="card-label">elliptical — complex slash</div><div class="demo br-elliptic2">organic blob</div><pre><span class="p">border-radius</span>: <span class="v">40% 60% 70% 30% / 40% 50% 60% 50%</span>;</pre></div>
+      <div class="card"><div class="card-label">elliptical — extreme contrast</div><div class="demo br-elliptic3">leaf / crescent</div><pre><span class="p">border-radius</span>: <span class="v">100% 0 100% 0 / 0 100% 0 100%</span>;</pre></div>
+      <div class="card"><div class="card-label">circle (50%)</div><div class="demo" style="height:auto;"><div class="br-circle">●</div></div><pre><span class="p">border-radius</span>: <span class="v">50%</span>; <span class="c">/* requires equal w/h */</span></pre></div>
+      <div class="card"><div class="card-label">pill / capsule (9999px)</div><div class="demo br-pill">pill</div><pre><span class="p">border-radius</span>: <span class="v">9999px</span>; <span class="c">/* or 100vmax */</span></pre></div>
+    </div>
+    <div class="g4" style="margin-top:16px;">
+      <div class="card">
+        <div class="card-label">border-start-start-radius <span class="badge badge-new">logical</span></div>
+        <div class="demo-sm bs-none br-ss">↖ rounded</div>
+        <pre><span class="p">border-start-start-radius</span>: <span class="v">24px</span>;</pre>
+      </div>
+      <div class="card">
+        <div class="card-label">border-start-end-radius</div>
+        <div class="demo-sm bs-none br-se">↗ rounded</div>
+        <pre><span class="p">border-start-end-radius</span>: <span class="v">24px</span>;</pre>
+      </div>
+      <div class="card">
+        <div class="card-label">border-end-start-radius</div>
+        <div class="demo-sm bs-none br-es">↙ rounded</div>
+        <pre><span class="p">border-end-start-radius</span>: <span class="v">24px</span>;</pre>
+      </div>
+      <div class="card">
+        <div class="card-label">border-end-end-radius</div>
+        <div class="demo-sm bs-none br-ee">↘ rounded</div>
+        <pre><span class="p">border-end-end-radius</span>: <span class="v">24px</span>;</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- GRADIENT BORDERS -->
+  <div class="subsec">
+    <div class="subsec-title">gradient borders — background-clip technique + conic</div>
+    <div class="g2">
+      <div class="card">
+        <div class="card-label">linear-gradient border-box clip</div>
+        <div class="demo bd-gradient">gradient border</div>
+        <pre><span class="p">border</span>: <span class="v">3px solid transparent</span>;
+<span class="p">background</span>:
+  <span class="v">linear-gradient(#0f0f1a,#0f0f1a)</span> <span class="k">padding-box</span>,
+  <span class="v">linear-gradient(135deg,#818cf8,#38bdf8,#34d399)</span> <span class="k">border-box</span>;</pre>
+      </div>
+      <div class="card">
+        <div class="card-label">conic-gradient border-box clip</div>
+        <div class="demo bd-gradient2">rainbow ring</div>
+        <pre><span class="p">border</span>: <span class="v">3px solid transparent</span>;
+<span class="p">background</span>:
+  <span class="v">linear-gradient(#0f0f1a,#0f0f1a)</span> <span class="k">padding-box</span>,
+  <span class="v">conic-gradient(from 0deg, #818cf8,#f472b6,#fb923c,#34d399,#818cf8)</span> <span class="k">border-box</span>;</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- BACKGROUND-CLIP INTERACTION -->
+  <div class="subsec">
+    <div class="subsec-title">background-clip × border interaction</div>
+    <div class="g3">
+      <div class="card">
+        <div class="card-label">background-clip: border-box (default)</div>
+        <div class="demo bd-bgclip-border" style="height:80px;">bg extends under border</div>
+        <pre><span class="p">background-clip</span>: <span class="v">border-box</span>; <span class="c">/* default */</span></pre>
+      </div>
+      <div class="card">
+        <div class="card-label">background-clip: padding-box</div>
+        <div class="demo bd-bgclip-padding" style="height:80px;">bg stops at border edge</div>
+        <pre><span class="p">background-clip</span>: <span class="v">padding-box</span>; <span class="c">/* stops at border */</span></pre>
+      </div>
+      <div class="card">
+        <div class="card-label">background-clip: content-box</div>
+        <div class="demo bd-bgclip-content" style="height:80px;">bg in content only</div>
+        <pre><span class="p">background-clip</span>: <span class="v">content-box</span>; <span class="c">/* padding shows border bg */</span></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOX-DECORATION-BREAK -->
+  <div class="subsec">
+    <div class="subsec-title">box-decoration-break — fragmented inline elements</div>
+    <div class="card full">
+      <div class="card-label">box-decoration-break: clone — each fragment gets full border/radius/padding</div>
+      <p style="padding:16px; line-height:3; font-size:14px;">
+        Inline text:
+        <span class="bd-decoration-break">This is an inline element with border and border-radius that wraps across lines — with clone each fragment looks complete.</span>
+      </p>
+      <pre><span class="p">-webkit-box-decoration-break</span>: <span class="v">clone</span>;
+<span class="p">box-decoration-break</span>: <span class="v">clone</span>;
+<span class="c">/* slice = default: border drawn as if element weren't broken */</span></pre>
+    </div>
+  </div>
+
+</section>
+
+<!-- ═══════════════════════ CHAPTER 2 — BORDER-IMAGE ═══════════════════════ -->
+<section class="chapter" id="border-image">
+  <div class="chapter-header">
+    <span class="ch-num ch-border">02 — border-image</span>
+    <h2>Border-image — the full 6-property family</h2>
+  </div>
+
+  <div class="callout">
+    <strong>border-image</strong> is its own 5-property system: <code>border-image-source</code>, <code>border-image-slice</code>, <code>border-image-width</code>, <code>border-image-outset</code>, <code>border-image-repeat</code>. The shorthand order is: <code>source slice / width / outset repeat</code>. Note: <code>border-image</code> overrides <code>border-style</code> visually but does <em>not</em> replace it in the cascade — you still need a <code>border-width</code> set.
+  </div>
+
+  <div class="subsec">
+    <div class="subsec-title">border-image-repeat values — stretch · round · space</div>
+    <div class="g3">
+      <div class="card">
+        <div class="card-label">border-image — linear-gradient source</div>
+        <div class="demo bi-gradient">gradient image border</div>
+        <pre><span class="p">border-image</span>: <span class="v">linear-gradient(135deg,#818cf8,#f472b6)</span> <span class="v">10</span>;</pre>
+        <p class="note">slice=10, repeat=stretch (default)</p>
+      </div>
+      <div class="card">
+        <div class="card-label">repeating-linear-gradient — stripe</div>
+        <div class="demo bi-repeating">stripe border</div>
+        <pre><span class="p">border-image</span>: <span class="v">repeating-linear-gradient(
+  45deg,#fb923c 0 8px,#38bdf8 8px 16px) 10</span>;</pre>
+      </div>
+      <div class="card">
+        <div class="card-label">conic-gradient — rainbow</div>
+        <div class="demo bi-conic">conic border</div>
+        <pre><span class="p">border-image</span>: <span class="v">conic-gradient(
+  from 0deg,#818cf8,#38bdf8,#34d399,#f472b6,#818cf8) 8</span>;</pre>
+      </div>
+      <div class="card">
+        <div class="card-label">border-image-repeat: stretch (default)</div>
+        <div class="demo bi-stretch">stretch</div>
+        <pre><span class="p">border-image-repeat</span>: <span class="v">stretch</span>;</pre>
+      </div>
+      <div class="card">
+        <div class="card-label">border-image-repeat: round</div>
+        <div class="demo bi-round">round</div>
+        <pre><span class="p">border-image-repeat</span>: <span class="v">round</span>;
+<span class="c">/* tiles, scaled so full tiles fit */</span></pre>
+      </div>
+      <div class="card">
+        <div class="card-label">border-image-slice: fill keyword</div>
+        <div class="demo bi-fill">fill (colors center too)</div>
+        <pre><span class="p">border-image-slice</span>: <span class="v">16 fill</span>;
+<span class="c">/* fill = center region also painted */</span></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="subsec">
+    <div class="subsec-title">border-image full longhand breakdown</div>
+    <div class="card full">
+      <pre><span class="c">/* full shorthand syntax */</span>
+<span class="p">border-image</span>: <span class="k">source</span> <span class="k">slice</span> / <span class="k">width</span> / <span class="k">outset</span> <span class="k">repeat</span>;
+
+<span class="c">/* each longhand */</span>
+<span class="p">border-image-source</span>: <span class="v">url('frame.png')</span> | <span class="v">linear-gradient(...)</span> | <span class="v">none</span>;
+<span class="p">border-image-slice</span>:  <span class="v">27%</span> | <span class="v">27</span> | <span class="v">27% fill</span>; <span class="c">/* number = px on raster, % on dimensions */</span>
+<span class="p">border-image-width</span>:  <span class="v">auto</span> | <span class="v">1</span> | <span class="v">30px</span> | <span class="v">30%</span>; <span class="c">/* multiplier of border-width if unitless */</span>
+<span class="p">border-image-outset</span>: <span class="v">0</span> | <span class="v">10px</span> | <span class="v">1.5</span>; <span class="c">/* extends image beyond border-box */</span>
+<span class="p">border-image-repeat</span>: <span class="v">stretch</span> | <span class="v">round</span> | <span class="v">space</span>; <span class="c">/* space = tiles + distribute gap */</span></pre>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ CHAPTER 3 — LOGICAL BORDERS ═══════════════════════ -->
+<section class="chapter" id="border-logical">
+  <div class="chapter-header">
+    <span class="ch-num ch-border">03 — logical borders</span>
+    <h2>Logical border properties — RTL &amp; vertical writing support</h2>
+  </div>
+
+  <div class="callout info">
+    <strong>Logical properties</strong> use writing-mode-relative directions instead of physical top/right/bottom/left. <code>block-start</code> = top in horizontal LTR, but = right in vertical-rl. Essential for internationalization.
+  </div>
+
+  <div class="subsec">
+    <div class="subsec-title">logical border shorthands</div>
+    <div class="g2">
+      <div class="card">
+        <div class="card-label">border-block (block-start + block-end)</div>
+        <div class="demo bd-block">top + bottom borders</div>
+        <pre><span class="p">border-block</span>: <span class="v">3px solid #818cf8</span>;
+<span class="c">/* = border-top + border-bottom in LTR horizontal */</span></pre>
+      </div>
+      <div class="card">
+        <div class="card-label">border-inline (inline-start + inline-end)</div>
+        <div class="demo bd-inline">left + right borders</div>
+        <pre><span class="p">border-inline</span>: <span class="v">3px solid #38bdf8</span>;
+<span class="c">/* = border-left + border-right in LTR horizontal */</span></pre>
+      </div>
+      <div class="card">
+        <div class="card-label">border-block-start</div>
+        <div class="demo bd-block-start">top border only</div>
+        <pre><span class="p">border-block-start</span>: <span class="v">3px solid #34d399</span>;</pre>
+      </div>
+      <div class="card">
+        <div class="card-label">border-block-end</div>
+        <div class="demo bd-block-end">bottom border only</div>
+        <pre><span class="p">border-block-end</span>: <span class="v">3px dashed #fb923c</span>;</pre>
+      </div>
+      <div class="card">
+        <div class="card-label">border-inline-start</div>
+        <div class="demo bd-inline-start">left border (LTR)</div>
+        <pre><span class="p">border-inline-start</span>: <span class="v">4px solid #f472b6</span>;
+<span class="c">/* = right border in RTL! */</span></pre>
+      </div>
+      <div class="card">
+        <div class="card-label">border-inline-end</div>
+        <div class="demo bd-inline-end">right border (LTR)</div>
+        <pre><span class="p">border-inline-end</span>: <span class="v">4px dotted #facc15</span>;
+<span class="c">/* = left border in RTL! */</span></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="subsec">
+    <div class="subsec-title">logical longhands — width, style, color</div>
+    <div class="card full">
+      <pre><span class="c">/* all logical border longhands (all major browsers, 2024+) */</span>
+<span class="p">border-block-start-width</span>   <span class="p">border-block-start-style</span>   <span class="p">border-block-start-color</span>
+<span class="p">border-block-end-width</span>     <span class="p">border-block-end-style</span>     <span class="p">border-block-end-color</span>
+<span class="p">border-inline-start-width</span>  <span class="p">border-inline-start-style</span>  <span class="p">border-inline-start-color</span>
+<span class="p">border-inline-end-width</span>    <span class="p">border-inline-end-style</span>    <span class="p">border-inline-end-color</span>
+
+<span class="c">/* demo: RTL-safe nav accent */</span>
+[<span class="p">dir</span>="<span class="v">ltr</span>"] .nav-item,
+[<span class="p">dir</span>="<span class="v">rtl</span>"] .nav-item {
+  <span class="p">border-inline-start</span>: <span class="v">3px solid #818cf8</span>; <span class="c">/* always the "start" side */</span>
+}</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ CHAPTER 4 — OUTLINE ═══════════════════════ -->
+<section class="chapter" id="outline">
+  <div class="chapter-header">
+    <span class="ch-num ch-outline">04 — outline</span>
+    <h2>Outline — all 4 properties, all styles, offset extremes</h2>
+  </div>
+
+  <div class="callout a11y">
+    <strong>Key difference from border:</strong> outline takes NO layout space, does not affect element size or box model. It draws outside the border-box (or inside with negative offset). Critical for focus accessibility — <strong>never set <code>outline: none</code> without a custom replacement</strong>.
+  </div>
+
+  <!-- ALL STYLES -->
+  <div class="subsec">
+    <div class="subsec-title">outline-style — all 10 values</div>
+    <div class="g4">
+      <div class="card"><div class="card-label">solid</div><div class="demo-sm ol-solid" style="margin:4px;">solid</div><pre><span class="p">outline-style</span>: <span class="v">solid</span>;</pre></div>
+      <div class="card"><div class="card-label">dashed</div><div class="demo-sm ol-dashed" style="margin:4px;">dashed</div><pre><span class="p">outline-style</span>: <span class="v">dashed</span>;</pre></div>
+      <div class="card"><div class="card-label">dotted</div><div class="demo-sm ol-dotted" style="margin:4px;">dotted</div><pre><span class="p">outline-style</span>: <span class="v">dotted</span>;</pre></div>
+      <div class="card"><div class="card-label">double</div><div class="demo-sm ol-double" style="margin:4px;">double</div><pre><span class="p">outline-style</span>: <span class="v">double</span>;</pre></div>
+      <div class="card"><div class="card-label">groove</div><div class="demo-sm ol-groove" style="margin:4px;">groove</div><pre><span class="p">outline-style</span>: <span class="v">groove</span>;</pre></div>
+      <div class="card"><div class="card-label">ridge</div><div class="demo-sm ol-ridge" style="margin:4px;">ridge</div><pre><span class="p">outline-style</span>: <span class="v">ridge</span>;</pre></div>
+      <div class="card"><div class="card-label">inset</div><div class="demo-sm ol-inset" style="margin:4px;">inset</div><pre><span class="p">outline-style</span>: <span class="v">inset</span>;</pre></div>
+      <div class="card"><div class="card-label">outset</div><div class="demo-sm ol-outset" style="margin:4px;">outset</div><pre><span class="p">outline-style</span>: <span class="v">outset</span>;</pre></div>
+      <div class="card"><div class="card-label">auto (UA default)</div><div class="demo-sm" style="margin:8px; outline:auto; border:1px solid var(--bd); background:rgba(52,211,153,.05);">auto</div><pre><span class="p">outline-style</span>: <span class="v">auto</span>;
+<span class="c">/* UA-defined, often platform focus ring */</span></pre></div>
+      <div class="card"><div class="card-label">none (removes outline)</div><div class="demo-sm ol-none">none ⚠ a11y risk</div><pre><span class="p">outline</span>: <span class="v">none</span>;
+<span class="c">/* ⚠ removes focus indicator */</span></pre></div>
+    </div>
+  </div>
+
+  <!-- WIDTH KEYWORDS -->
+  <div class="subsec">
+    <div class="subsec-title">outline-width keywords — thin · medium · thick</div>
+    <div class="g3">
+      <div class="card"><div class="card-label">thin</div><div class="demo-sm ol-thin" style="margin:4px;">thin</div><pre><span class="p">outline-width</span>: <span class="v">thin</span>;</pre></div>
+      <div class="card"><div class="card-label">medium</div><div class="demo-sm ol-medium" style="margin:4px;">medium</div><pre><span class="p">outline-width</span>: <span class="v">medium</span>;</pre></div>
+      <div class="card"><div class="card-label">thick</div><div class="demo-sm ol-thick" style="margin:4px;">thick</div><pre><span class="p">outline-width</span>: <span class="v">thick</span>;</pre></div>
+    </div>
+  </div>
+
+  <!-- OUTLINE-OFFSET SPECTRUM -->
+  <div class="subsec">
+    <div class="subsec-title">outline-offset — full spectrum from negative to large positive</div>
+    <div class="g3">
+      <div class="card"><div class="card-label">offset: -12px (deep inside)</div><div class="demo ol-off-neg12">−12px inside</div><pre><span class="p">outline-offset</span>: <span class="v">-12px</span>;</pre></div>
+      <div class="card"><div class="card-label">offset: -4px (just inside)</div><div class="demo ol-off-neg4">−4px</div><pre><span class="p">outline-offset</span>: <span class="v">-4px</span>;</pre></div>
+      <div class="card"><div class="card-label">offset: 0 (flush with border)</div><div class="demo ol-off-0" style="margin:2px;">0px</div><pre><span class="p">outline-offset</span>: <span class="v">0</span>;</pre></div>
+      <div class="card"><div class="card-label">offset: 4px (small gap)</div><div class="demo ol-off-4">+4px</div><pre><span class="p">outline-offset</span>: <span class="v">4px</span>;</pre></div>
+      <div class="card"><div class="card-label">offset: 10px (clear separation)</div><div class="demo ol-off-10">+10px</div><pre><span class="p">outline-offset</span>: <span class="v">10px</span>;</pre></div>
+      <div class="card"><div class="card-label">explicit longhands (all 4)</div><div class="demo ol-longhands" style="margin:10px;">explicit longhands</div><pre><span class="p">outline-width</span>: <span class="v">3px</span>;
+<span class="p">outline-style</span>: <span class="v">solid</span>;
+<span class="p">outline-color</span>: <span class="v">#818cf8</span>;
+<span class="p">outline-offset</span>: <span class="v">6px</span>;</pre></div>
+    </div>
+  </div>
+
+  <!-- outline-color: auto note -->
+  <div class="subsec">
+    <div class="subsec-title">outline-color special values</div>
+    <div class="callout warn">
+      <strong>outline-color: auto</strong> — specified in CSS UI Level 4 to resolve to the platform's native focus ring color. However, as of March 2026, MDN notes this value is <strong>not currently supported in browsers</strong>. When implemented, it interacts with <code>outline-style: auto</code>. Do not use in production.
+    </div>
+    <div class="g2">
+      <div class="card">
+        <div class="card-label">outline-color: Highlight (forced-colors safe)</div>
+        <div class="demo ol-invert" style="margin:4px;">Highlight keyword</div>
+        <pre><span class="p">outline-color</span>: <span class="v">Highlight</span>; <span class="c">/* CSS system color, safe in forced-colors */</span>
+<span class="p">outline-color</span>: <span class="v">ButtonText</span>;
+<span class="c">/* ⚠ outline-color: auto — not yet supported in browsers */</span></pre>
+      </div>
+      <div class="card">
+        <div class="card-label">global keywords for outline properties</div>
+        <div class="demo-sm" style="outline:initial;border:1px solid var(--bd);background:rgba(255,255,255,.03);margin:2px;">initial reset</div>
+        <pre><span class="p">outline</span>: <span class="v">inherit</span>;
+<span class="p">outline</span>: <span class="v">initial</span>;   <span class="c">/* resets to UA default (usually none) */</span>
+<span class="p">outline</span>: <span class="v">unset</span>;
+<span class="p">outline</span>: <span class="v">revert</span>;    <span class="c">/* reverts to browser stylesheet */</span>
+<span class="p">outline</span>: <span class="v">revert-layer</span>;</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- animated -->
+  <div class="subsec">
+    <div class="subsec-title">animated outline</div>
+    <div class="g2">
+      <div class="card">
+        <div class="card-label">outline cycling animation (live)</div>
+        <div class="demo anim-outline" style="margin:4px;">color + offset animating</div>
+        <pre><span class="k">@keyframes</span> outline-pulse {
+  <span class="v">0%</span>   { <span class="p">outline-color</span>:<span class="v">#818cf8</span>; <span class="p">outline-offset</span>:<span class="v">0px</span>; }
+  <span class="v">33%</span>  { <span class="p">outline-color</span>:<span class="v">#38bdf8</span>; <span class="p">outline-offset</span>:<span class="v">8px</span>; }
+  <span class="v">100%</span> { <span class="p">outline-color</span>:<span class="v">#818cf8</span>; <span class="p">outline-offset</span>:<span class="v">0px</span>; }
+}
+<span class="p">animation</span>: <span class="v">outline-pulse 3s ease-in-out infinite</span>;</pre>
+      </div>
+      <div class="card">
+        <div class="card-label">outline + border double ring</div>
+        <div class="demo ol-plus-border" style="margin:12px;">border + outline ring</div>
+        <pre><span class="p">border</span>: <span class="v">2px solid rgba(129,140,248,.5)</span>;
+<span class="p">outline</span>: <span class="v">3px solid #f472b6</span>;
+<span class="p">outline-offset</span>: <span class="v">5px</span>;
+<span class="c">/* border + outline = 3 visible edges */</span></pre>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ═══════════════════════ CHAPTER 5 — BOX-SHADOW ═══════════════════════ -->
+<section class="chapter" id="box-shadow">
+  <div class="chapter-header">
+    <span class="ch-num ch-shadow">05 — box-shadow</span>
+    <h2>Box-shadow — every syntax variant, technique, and edge case</h2>
+  </div>
+
+  <div class="subsec">
+    <div class="subsec-title">full syntax reference</div>
+    <div class="card full">
+      <pre><span class="c">/* full grammar */</span>
+<span class="p">box-shadow</span>: <span class="k">none</span> | &lt;shadow&gt; [, &lt;shadow&gt;]*;
+
+<span class="c">/* &lt;shadow&gt; = [inset?] offset-x offset-y [blur [spread]] [color] */</span>
+<span class="p">box-shadow</span>: <span class="v">offset-x  offset-y  blur     spread   color</span>;
+<span class="p">box-shadow</span>: <span class="v">4px       8px       12px     -2px     rgba(0,0,0,0.4)</span>;
+<span class="p">box-shadow</span>: <span class="k">inset</span> <span class="v">2px  3px       6px      0        #818cf8</span>;
+
+<span class="c">/* offset-x:  + = right,   – = left    */</span>
+<span class="c">/* offset-y:  + = down,    – = up      */</span>
+<span class="c">/* blur:      0 = hard edge, ↑ = softer (no negatives) */</span>
+<span class="c">/* spread:    + = expands,  – = contracts              */</span>
+<span class="c">/* omit color = currentColor                           */</span>
+<span class="c">/* inset:     inside element, above bg, below content  */</span>
+
+<span class="c">/* global keywords */</span>
+<span class="p">box-shadow</span>: <span class="v">inherit</span> | <span class="v">initial</span> | <span class="v">unset</span> | <span class="v">revert</span> | <span class="v">revert-layer</span>;</pre>
+    </div>
+  </div>
+
+  <!-- NONE + HARD SHADOWS -->
+  <div class="subsec">
+    <div class="subsec-title">none · hard shadows (blur:0) · zero-blur rings</div>
+    <div class="g3">
+      <div class="card">
+        <div class="card-label">box-shadow: none</div>
+        <div class="demo bs-none">no shadow</div>
+        <pre><span class="p">box-shadow</span>: <span class="v">none</span>; <span class="c">/* explicit reset */</span></pre>
+      </div>
+      <div class="card">
+        <div class="card-label">hard shadow — blur: 0 (offset only)</div>
+        <div class="demo bs-hard1">offset shadow</div>
+        <pre><span class="p">box-shadow</span>: <span class="v">6px 6px 0 #fb923c</span>;
+<span class="c">/* blur=0 → sharp, solid displaced copy */</span></pre>
+      </div>
+      <div class="card">
+        <div class="card-label">stacked hard shadows (brutalist)</div>
+        <div class="demo bs-hard2">layered hard</div>
+        <pre><span class="p">box-shadow</span>:
+  <span class="v">8px 8px 0 #818cf8</span>,
+  <span class="v">16px 16px 0 rgba(129,140,248,.2)</span>;</pre>
+      </div>
+      <div class="card">
+        <div class="card-label">diagonal hard (retro UI)</div>
+        <div class="demo bs-hard3">retro</div>
+        <pre><span class="p">box-shadow</span>:
+  <span class="v">4px 4px 0 #f472b6</span>,
+  <span class="v">8px 8px 0 #818cf8</span>;</pre>
+      </div>
+      <div class="card">
+        <div class="card-label">zero-blur spread ring (fake border)</div>
+        <div class="demo bs-zero-blur">spread rings</div>
+        <pre><span class="p">box-shadow</span>:
+  <span class="v">0 0 0 2px #34d399</span>,
+  <span class="v">0 0 0 5px rgba(52,211,153,.25)</span>,
+  <span class="v">0 0 0 8px rgba(52,211,153,.1)</span>;</pre>
+        <p class="note">blur=0, offset=0 → pure ring from spread</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- NEGATIVE OFFSETS / SPREAD -->
+  <div class="subsec">
+    <div class="subsec-title">negative offset-x · offset-y · negative spread</div>
+    <div class="g3">
+      <div class="card">
+        <div class="card-label">negative x + y offsets</div>
+        <div class="demo bs-neg-xy">shadow top-left</div>
+        <pre><span class="p">box-shadow</span>:
+  <span class="v">-8px -8px 16px rgba(0,0,0,.6)</span>,
+  <span class="v">4px 4px 8px rgba(255,255,255,.03)</span>;</pre>
+      </div>
+      <div class="card">
+        <div class="card-label">negative x only (left glow)</div>
+        <div class="demo bs-neg-x">left shadow</div>
+        <pre><span class="p">box-shadow</span>: <span class="v">-12px 0 20px rgba(56,189,248,.3)</span>;</pre>
+      </div>
+      <div class="card">
+        <div class="card-label">negative y only (top shadow)</div>
+        <div class="demo bs-neg-y">top shadow</div>
+        <pre><span class="p">box-shadow</span>: <span class="v">0 -10px 20px rgba(129,140,248,.3)</span>;</pre>
+      </div>
+      <div class="card">
+        <div class="card-label">negative spread (shrinks shadow, one-edge effect)</div>
+        <div class="demo bs-neg-spread">bottom edge only</div>
+        <pre><span class="p">box-shadow</span>: <span class="v">0 20px 30px -10px rgba(0,0,0,.9)</span>;
+<span class="c">/* negative spread hides side bleeding */</span></pre>
+      </div>
+      <div class="card">
+        <div class="card-label">negative spread accent line</div>
+        <div class="demo bs-neg-spread2">subtle colored underline</div>
+        <pre><span class="p">box-shadow</span>: <span class="v">0 8px 8px -4px #818cf8</span>;
+<span class="c">/* tight shadow with negative spread = bottom glow line */</span></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- INSET VARIANTS -->
+  <div class="subsec">
+    <div class="subsec-title">inset shadows — pressed · inside glow · mixed inset+outset</div>
+    <div class="g3">
+      <div class="card">
+        <div class="card-label">inset pressed state</div>
+        <div class="demo bs-inset-pressed">pressed / sunken</div>
+        <pre><span class="p">box-shadow</span>: <span class="k">inset</span> <span class="v">0 3px 8px rgba(0,0,0,.8)</span>,
+             <span class="k">inset</span> <span class="v">0 -1px 3px rgba(255,255,255,.04)</span>;</pre>
+      </div>
+      <div class="card">
+        <div class="card-label">inset from both sides (neumorphic)</div>
+        <div class="demo bs-inset-both">concave surface</div>
+        <pre><span class="p">box-shadow</span>:
+  <span class="k">inset</span> <span class="v">6px 6px 12px rgba(0,0,0,.7)</span>,
+  <span class="k">inset</span> <span class="v">-4px -4px 10px rgba(255,255,255,.04)</span>,
+  <span class="v">0 2px 8px rgba(129,140,248,.15)</span>;</pre>
+      </div>
+      <div class="card">
+        <div class="card-label">inset glow</div>
+        <div class="demo bs-inset-glow">inner light</div>
+        <pre><span class="p">box-shadow</span>:
+  <span class="k">inset</span> <span class="v">0 0 20px rgba(56,189,248,.2)</span>,
+  <span class="k">inset</span> <span class="v">0 0 40px rgba(56,189,248,.08)</span>;</pre>
+      </div>
+      <div class="card">
+        <div class="card-label">mixed — outset drop + inset top highlight</div>
+        <div class="demo bs-mixed">glass card feel</div>
+        <pre><span class="p">box-shadow</span>:
+  <span class="v">0 4px 20px rgba(129,140,248,.3)</span>,     <span class="c">/* outset */</span>
+  <span class="k">inset</span> <span class="v">0 1px 0 rgba(255,255,255,.08)</span>,  <span class="c">/* inset top */</span>
+  <span class="k">inset</span> <span class="v">0 -1px 0 rgba(0,0,0,.3)</span>;        <span class="c">/* inset bottom */</span></pre>
+      </div>
+      <div class="card">
+        <div class="card-label">mixed — hard offset + inset warmth</div>
+        <div class="demo bs-mixed2">warm depth</div>
+        <pre><span class="p">box-shadow</span>:
+  <span class="v">6px 6px 0 #fb923c</span>,                 <span class="c">/* hard outset */</span>
+  <span class="k">inset</span> <span class="v">0 0 20px rgba(251,146,60,.1)</span>; <span class="c">/* warm fill */</span></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ELEVATION SCALE -->
+  <div class="subsec">
+    <div class="subsec-title">elevation scale — 0 → 5 (hover any card)</div>
+    <div class="el-grid">
+      <div class="el-card el-0"><div class="el-label">0</div>box-shadow: none</div>
+      <div class="el-card el-1"><div class="el-label">1</div>0 1px 3px</div>
+      <div class="el-card el-2"><div class="el-label">2</div>0 3px 10px</div>
+      <div class="el-card el-3"><div class="el-label">3</div>0 8px 24px</div>
+      <div class="el-card el-4"><div class="el-label">4</div>0 16px 48px</div>
+      <div class="el-card el-5"><div class="el-label">5</div>0 32px 64px</div>
+    </div>
+  </div>
+
+  <!-- LAYERED REALISTIC -->
+  <div class="subsec">
+    <div class="subsec-title">layered realistic shadow (exponential doubling technique)</div>
+    <div class="g2">
+      <div class="card">
+        <div class="card-label">6-layer smooth shadow</div>
+        <div class="demo bs-layered" style="height:100px;">smooth depth</div>
+        <pre><span class="p">box-shadow</span>:
+  <span class="v">0 1px 2px rgba(0,0,0,.07)</span>,
+  <span class="v">0 2px 4px rgba(0,0,0,.07)</span>,
+  <span class="v">0 4px 8px rgba(0,0,0,.07)</span>,
+  <span class="v">0 8px 16px rgba(0,0,0,.07)</span>,
+  <span class="v">0 16px 32px rgba(0,0,0,.07)</span>,
+  <span class="v">0 32px 64px rgba(0,0,0,.04)</span>;</pre>
+        <p class="note">Tobias Ahlin technique — exponentially doubled offsets simulate natural light falloff</p>
+      </div>
+      <div class="card">
+        <div class="card-label">breathing shadow (live animation)</div>
+        <div class="demo anim-shadow" style="height:100px;">pulsing glow</div>
+        <pre><span class="k">@keyframes</span> shadow-breathe {
+  <span class="v">0%,100%</span> { <span class="p">box-shadow</span>: <span class="v">0 0 16px rgba(129,140,248,.3)</span>; }
+  <span class="v">50%</span>     { <span class="p">box-shadow</span>: <span class="v">0 0 44px rgba(129,140,248,.6)</span>; }
+}</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- NEUMORPHIC -->
+  <div class="subsec">
+    <div class="subsec-title">neumorphic — raised and pressed</div>
+    <div class="g2">
+      <div class="card">
+        <div class="card-label">neumorphic raised</div>
+        <div class="demo bs-nm-raised" style="height:80px;">raised surface</div>
+        <pre><span class="p">background</span>: <span class="v">#18182a</span>;
+<span class="p">box-shadow</span>:
+  <span class="v">8px 8px 18px rgba(0,0,0,.75)</span>,
+  <span class="v">-5px -5px 14px rgba(255,255,255,.04)</span>;</pre>
+      </div>
+      <div class="card">
+        <div class="card-label">neumorphic inset (pressed)</div>
+        <div class="demo bs-nm-inset" style="height:80px;">concave pressed</div>
+        <pre><span class="p">background</span>: <span class="v">#13131f</span>;
+<span class="p">box-shadow</span>:
+  <span class="k">inset</span> <span class="v">5px 5px 14px rgba(0,0,0,.75)</span>,
+  <span class="k">inset</span> <span class="v">-3px -3px 10px rgba(255,255,255,.04)</span>;</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- DROP-SHADOW COMPARISON -->
+  <div class="subsec">
+    <div class="subsec-title">box-shadow vs filter: drop-shadow() — the critical difference</div>
+    <div class="callout">
+      <strong>box-shadow</strong> follows the <em>box model</em> — it always casts from the rectangular bounding box, even if the element uses <code>border-radius</code>, <code>clip-path</code>, or transparent PNG areas. <strong>filter: drop-shadow()</strong> follows the <em>rendered alpha shape</em> — it casts from the actual visible pixels. Prefer <code>drop-shadow()</code> for images, SVGs, and clipped shapes.
+    </div>
+
+    <div class="ds-compare">
+      <div class="ds-item">
+        <div class="card-label" style="text-align:center;margin-bottom:16px;">box-shadow on rectangle</div>
+        <div class="ds-box use-box-shadow"></div>
+        <p style="font-family:var(--mono);font-size:11px;color:var(--muted);text-align:center;">follows box — rectangle</p>
+        <pre style="margin-top:12px;"><span class="p">box-shadow</span>: <span class="v">10px 10px 20px rgba(0,0,0,.6)</span>;</pre>
+      </div>
+      <div class="ds-item">
+        <div class="card-label" style="text-align:center;margin-bottom:16px;">filter: drop-shadow() on clip-path</div>
+        <div class="ds-shape use-filter"></div>
+        <p style="font-family:var(--mono);font-size:11px;color:var(--muted);text-align:center;">follows alpha — polygon shape</p>
+        <pre style="margin-top:12px;"><span class="p">filter</span>: <span class="v">drop-shadow(6px 6px 12px rgba(251,146,60,.8))</span>;</pre>
+      </div>
+    </div>
+    <div class="card full" style="margin-top:16px;">
+      <pre><span class="c">/* drop-shadow() syntax (CSS Filters Level 1) */</span>
+<span class="p">filter</span>: <span class="v">drop-shadow(offset-x offset-y blur color)</span>;
+<span class="c">/* NO spread radius, NO inset keyword in drop-shadow() */</span>
+
+<span class="c">/* when to use each */</span>
+<span class="c">/* box-shadow:   UI cards, buttons, input fields, consistent box decorations */</span>
+<span class="c">/* drop-shadow: PNGs with transparency, SVGs, clip-path shapes, icons        */</span></pre>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ CHAPTER 6 — COMBINED ═══════════════════════ -->
+<section class="chapter" id="combined">
+  <div class="chapter-header">
+    <span class="ch-num ch-combined">06 — combined</span>
+    <h2>Real-world patterns — all three properties working together</h2>
+  </div>
+
+  <!-- HERO CARD -->
+  <div class="subsec">
+    <div class="subsec-title">hero card — gradient image + border + multi-shadow + outline</div>
+    <div class="mega">
+      <div class="mega-content">
+        <h3>All three properties,<br>one element.</h3>
+        <p>border: 1px solid rgba(white, .12) · box-shadow: 5 layers (3 drop + inset highlight + ambient colored) · outline: 1px offset ring. Linear-gradient color overlay on real image background.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- IMAGE FRAMES -->
+  <div class="subsec">
+    <div class="subsec-title">image frames with border + shadow + outline combos</div>
+    <div class="img-grid">
+      <div class="img-frame if1">
+        <img src="https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=600&q=80" alt="circuit board">
+        <div class="img-tag">solid border + shadow + outline offset</div>
+      </div>
+      <div class="img-frame if2">
+        <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&q=80" alt="tech">
+        <div class="img-tag">gradient border-box clip + colored shadow</div>
+      </div>
+      <div class="img-frame if3">
+        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80" alt="abstract">
+        <div class="img-tag">conic border-image + deep shadow</div>
+      </div>
+      <div class="img-frame if4">
+        <img src="https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=600&q=80" alt="laptop">
+        <div class="img-tag">inset shadow glow + dashed outline offset</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ CHAPTER 7 — ACCESSIBILITY ═══════════════════════ -->
+<section class="chapter" id="a11y">
+  <div class="chapter-header">
+    <span class="ch-num ch-outline">07 — accessibility <span class="badge badge-a11y">a11y</span></span>
+    <h2>Focus rings — :focus-visible, forced-colors, keyboard patterns</h2>
+  </div>
+
+  <div class="callout a11y">
+    <strong>WCAG 2.2 SC 2.4.11</strong> requires focus indicators with at least 2px outline and sufficient contrast. Use <code>:focus-visible</code> (not <code>:focus</code>) so focus rings only appear for keyboard navigation, not mouse clicks.
+  </div>
+
+  <div class="subsec">
+    <div class="subsec-title">three focus ring strategies — Tab or click each button</div>
+    <div class="g3">
+      <div class="card">
+        <div class="card-label">outline on :focus-visible (best practice)</div>
+        <div style="padding:24px; display:flex; justify-content:center;">
+          <button class="fv-base" tabindex="0">outline:focus-visible</button>
+        </div>
+        <pre><span class="p">outline</span>: <span class="v">none</span>;
+<span class="k">:focus-visible</span> {
+  <span class="p">outline</span>: <span class="v">2px solid #38bdf8</span>;
+  <span class="p">outline-offset</span>: <span class="v">3px</span>;
+}</pre>
+        <p class="note">✓ WCAG-safe: visible for keyboard, hidden on mouse click</p>
+      </div>
+      <div class="card">
+        <div class="card-label">box-shadow ring on :focus-visible</div>
+        <div style="padding:24px; display:flex; justify-content:center;">
+          <button class="fv-shadow" tabindex="0">box-shadow:focus-visible</button>
+        </div>
+        <pre><span class="k">:focus-visible</span> {
+  <span class="p">box-shadow</span>:
+    <span class="v">0 0 0 3px rgba(129,140,248,.4)</span>,
+    <span class="v">0 0 0 6px rgba(129,140,248,.15)</span>;
+}</pre>
+        <p class="note">⚠ box-shadow invisible in forced-colors / high-contrast mode</p>
+      </div>
+      <div class="card">
+        <div class="card-label">outline + forced-colors compatible</div>
+        <div style="padding:24px; display:flex; justify-content:center;">
+          <button class="fv-forced" tabindex="0">forced-colors safe</button>
+        </div>
+        <pre><span class="k">:focus-visible</span> {
+  <span class="p">outline</span>: <span class="v">3px solid #34d399</span>;
+  <span class="p">outline-offset</span>: <span class="v">2px</span>;
+}
+<span class="k">@media (forced-colors: active)</span> {
+  <span class="k">:focus-visible</span> { <span class="p">outline-color</span>: <span class="v">Highlight</span>; }
+}</pre>
+        <p class="note">✓ correct in Windows High Contrast Mode</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="subsec">
+    <div class="subsec-title">input focus patterns — click to focus</div>
+    <div class="g3">
+      <div class="card">
+        <label class="inp-label">border-color + box-shadow glow</label>
+        <input class="inp inp-a" type="text" placeholder="focus for border+shadow glow">
+        <pre style="margin-top:12px;"><span class="k">:focus</span> {
+  <span class="p">border-color</span>: <span class="v">#38bdf8</span>;
+  <span class="p">box-shadow</span>: <span class="v">0 0 0 3px rgba(56,189,248,.15)</span>;
+}</pre>
+      </div>
+      <div class="card">
+        <label class="inp-label">inset shadow base + outline</label>
+        <input class="inp inp-b" type="text" placeholder="inset shadow + outline on focus">
+        <pre style="margin-top:12px;"><span class="k">:focus</span> {
+  <span class="p">box-shadow</span>: <span class="k">inset</span> <span class="v">0 2px 6px rgba(0,0,0,.7)</span>,
+    <span class="v">0 0 0 2px #818cf8</span>;
+}</pre>
+      </div>
+      <div class="card">
+        <label class="inp-label">outline:focus-visible with ambient</label>
+        <input class="inp inp-c" type="text" placeholder="outline:focus-visible + ambient shadow">
+        <pre style="margin-top:12px;"><span class="k">:focus-visible</span> {
+  <span class="p">outline</span>: <span class="v">2px solid #fb923c</span>;
+  <span class="p">outline-offset</span>: <span class="v">1px</span>;
+  <span class="p">box-shadow</span>: <span class="v">0 4px 20px rgba(251,146,60,.15)</span>;
+}</pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ CHAPTER 8 — FUTURE/SPEC ═══════════════════════ -->
+<section class="chapter" id="future">
+  <div class="chapter-header">
+    <span class="ch-num ch-future">08 — future spec</span>
+    <h2>CSS Level 4 &amp; new properties <span class="badge badge-spec">spec / experimental</span></h2>
+  </div>
+
+  <div class="callout future">
+    These properties come from <strong>CSS Borders and Box Decorations Level 4</strong> (W3C) and MDN. Most have no browser support as of March 2026 (except <code>corner-shape</code>, which landed in Chrome 133). Include in progressive enhancement only.
+  </div>
+
+  <!-- CORNER-SHAPE (REAL SUPPORT!) -->
+  <div class="subsec">
+    <div class="subsec-title">corner-shape — Chrome 133+ (real support)</div>
+    <div class="g3">
+      <div class="card">
+        <div class="card-label">corner-shape: bevel <span class="badge badge-new">Chrome 133+</span></div>
+        <div class="demo cs-demo cs-bevel" style="height:64px;">bevel (if supported)</div>
+        <pre><span class="p">corner-shape</span>: <span class="v">bevel</span>; <span class="c">/* cuts corner flat */</span>
+<span class="p">border-radius</span>: <span class="v">16px</span>; <span class="c">/* radius controls cut size */</span></pre>
+      </div>
+      <div class="card">
+        <div class="card-label">corner-shape: notch</div>
+        <div class="demo cs-demo cs-notch" style="height:64px;">notch (if supported)</div>
+        <pre><span class="p">corner-shape</span>: <span class="v">notch</span>; <span class="c">/* inward chamfer */</span></pre>
+      </div>
+      <div class="card">
+        <div class="card-label">corner-shape: scoop</div>
+        <div class="demo cs-demo cs-scoop" style="height:64px;">scoop (if supported)</div>
+        <pre><span class="p">corner-shape</span>: <span class="v">scoop</span>; <span class="c">/* concave rounding */</span></pre>
+      </div>
+      <div class="card">
+        <div class="card-label">corner-shape: squircle</div>
+        <div class="demo cs-demo cs-squircle" style="height:64px;">squircle (if supported)</div>
+        <pre><span class="p">corner-shape</span>: <span class="v">squircle</span>; <span class="c">/* iOS-style rounding */</span></pre>
+      </div>
+    </div>
+    <div class="card full" style="margin-top:16px;">
+      <pre><span class="c">/* progressive enhancement pattern */</span>
+<span class="k">@supports (corner-shape: bevel)</span> {
+  .card {
+    <span class="p">border-radius</span>: <span class="v">20px</span>;
+    <span class="p">corner-shape</span>: <span class="v">bevel</span>;
+    <span class="c">/* border, outline, and box-shadow all follow the corner shape */</span>
+  }
+}
+<span class="c">/* Note: can per-corner too — corner-top-left-shape, etc. (spec) */</span></pre>
+    </div>
+  </div>
+
+  <!-- UNSUPPORTED FUTURE -->
+  <div class="subsec">
+    <div class="subsec-title">future properties — no browser support yet</div>
+    <div class="future-panel">
+      <div class="future-prop">
+        <div class="fp-name">border-shape <span class="badge badge-spec">Level 4</span></div>
+        <div class="fp-desc">Allows arbitrary shapes for borders, separate from corner-shape. Enables non-rectangular border outlines.</div>
+      </div>
+      <div class="future-prop">
+        <div class="fp-name">border-limit</div>
+        <div class="fp-desc">Limits how far a border extends around an element, enabling partial borders (e.g. only 50% of each side). Related to partial-border design patterns.</div>
+      </div>
+      <div class="future-prop">
+        <div class="fp-name">border-clip / border-clip-top/right/bottom/left</div>
+        <div class="fp-desc">Clips portions of the border, enabling decorative gaps, half-borders, and interrupted border patterns without pseudo-elements.</div>
+      </div>
+      <div class="future-prop">
+        <div class="fp-name">box-shadow-color</div>
+        <div class="fp-desc">Longhand for the color component of box-shadow. Part of Borders Level 4. Allows animating shadow color independently of other components.</div>
+      </div>
+      <div class="future-prop">
+        <div class="fp-name">box-shadow-offset</div>
+        <div class="fp-desc">Longhand for offset-x and offset-y. Enables smooth individual-axis shadow animation.</div>
+      </div>
+      <div class="future-prop">
+        <div class="fp-name">box-shadow-blur</div>
+        <div class="fp-desc">Longhand for the blur-radius component. Animate blur radius independently for subtle depth effects.</div>
+      </div>
+      <div class="future-prop">
+        <div class="fp-name">box-shadow-spread</div>
+        <div class="fp-desc">Longhand for spread-radius. Part of the same Level 4 shorthand decomposition.</div>
+      </div>
+      <div class="future-prop">
+        <div class="fp-name">box-shadow-position</div>
+        <div class="fp-desc">Controls inset vs outset independently from other components in the Level 4 grammar.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ CHAPTER 9 — REFERENCE TABLE ═══════════════════════ -->
+<section class="chapter" id="reference">
+  <div class="chapter-header">
+    <span class="ch-num ch-combined">09 — reference</span>
+    <h2>Property-by-property comparison table</h2>
+  </div>
+
+  <div class="card full">
+    <table class="comp-table">
+      <thead>
+        <tr>
+          <th>Property</th>
+          <th>Layout space?</th>
+          <th>Follows border-radius?</th>
+          <th>Per-side?</th>
+          <th>Inset/inside?</th>
+          <th>offset control?</th>
+          <th>Logical variant?</th>
+          <th>High-contrast safe?</th>
+          <th>Animatable?</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>border</td>
+          <td class="yes">yes</td>
+          <td class="yes">yes</td>
+          <td class="yes">yes</td>
+          <td class="no">no</td>
+          <td class="no">no</td>
+          <td class="yes">yes (border-block/inline)</td>
+          <td class="yes">yes</td>
+          <td class="yes">yes</td>
+        </tr>
+        <tr>
+          <td>border-image</td>
+          <td class="yes">yes (uses border-width)</td>
+          <td class="no">no (overrides)</td>
+          <td class="partial">partial (slice)</td>
+          <td class="no">no</td>
+          <td class="yes">outset</td>
+          <td class="no">no</td>
+          <td class="no">poor</td>
+          <td class="partial">partial</td>
+        </tr>
+        <tr>
+          <td>outline</td>
+          <td class="no">no</td>
+          <td class="partial">partial (modern browsers)</td>
+          <td class="no">no</td>
+          <td class="yes">yes (negative offset)</td>
+          <td class="yes">outline-offset</td>
+          <td class="no">no</td>
+          <td class="yes">yes</td>
+          <td class="yes">yes</td>
+        </tr>
+        <tr>
+          <td>box-shadow</td>
+          <td class="no">no</td>
+          <td class="yes">yes</td>
+          <td class="no">no (use multi-shadow)</td>
+          <td class="yes">yes (inset keyword)</td>
+          <td class="no">no</td>
+          <td class="no">no</td>
+          <td class="no">no (invisible in forced-colors)</td>
+          <td class="yes">yes</td>
+        </tr>
+        <tr>
+          <td>filter: drop-shadow()</td>
+          <td class="no">no</td>
+          <td class="yes">yes (follows alpha)</td>
+          <td class="no">no</td>
+          <td class="no">no</td>
+          <td class="no">no</td>
+          <td class="no">no</td>
+          <td class="no">no</td>
+          <td class="yes">yes</td>
+        </tr>
+        <tr>
+          <td>corner-shape</td>
+          <td class="yes">yes (layout affected)</td>
+          <td class="yes">yes (integrated)</td>
+          <td class="partial">per-corner in spec</td>
+          <td class="no">n/a</td>
+          <td class="no">n/a</td>
+          <td class="no">no</td>
+          <td class="yes">yes</td>
+          <td class="partial">partial</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card full" style="margin-top:16px;">
+    <div class="card-label">complete shorthand syntax summary</div>
+    <pre><span class="c">/* BORDER */</span>
+<span class="p">border</span>: &lt;line-width&gt; || &lt;line-style&gt; || &lt;color&gt;;
+<span class="p">border-radius</span>: &lt;h-radius&gt; [/ &lt;v-radius&gt;];  <span class="c">/* 1–4 values each side of / */</span>
+<span class="p">border-image</span>: &lt;source&gt; &lt;slice&gt; [/ &lt;width&gt;] [/ &lt;outset&gt;] || &lt;repeat&gt;;
+
+<span class="c">/* OUTLINE */</span>
+<span class="p">outline</span>: &lt;outline-color&gt; || &lt;outline-style&gt; || &lt;outline-width&gt;;
+<span class="p">outline-offset</span>: &lt;length&gt;;  <span class="c">/* positive = outside, negative = inside */</span>
+
+<span class="c">/* BOX-SHADOW */</span>
+<span class="p">box-shadow</span>: <span class="k">none</span> | [<span class="k">inset</span>?] &lt;x&gt; &lt;y&gt; [&lt;blur&gt; [&lt;spread&gt;]] [&lt;color&gt;] [, …];
+
+<span class="c">/* CORNER-SHAPE (Chrome 133+) */</span>
+<span class="p">corner-shape</span>: <span class="v">round</span> | <span class="v">bevel</span> | <span class="v">notch</span> | <span class="v">scoop</span> | <span class="v">squircle</span>;
+
+<span class="c">/* LOGICAL PROPERTY PATTERN */</span>
+<span class="p">border-block</span>:         <span class="c">/* top + bottom in horizontal writing */</span>
+<span class="p">border-inline</span>:        <span class="c">/* left + right in LTR */</span>
+<span class="p">border-inline-start</span>:  <span class="c">/* left in LTR, right in RTL */</span>
+<span class="p">border-start-start-radius</span>: <span class="c">/* TL in LTR horizontal */</span></pre>
+  </div>
+</section>
+
+</main>
+
+<footer style="border-top:1px solid var(--bd); padding:48px; text-align:center; background:linear-gradient(0deg,rgba(129,140,248,.04) 0%,transparent 100%); font-family:var(--mono); font-size:12px; color:var(--muted);">
+  <p>CSS Border · Outline · Box-Shadow — Complete Reference · March 2026</p>
+  <p style="margin-top:8px; font-size:11px; color:var(--muted);">Sources: MDN Web Docs · W3C CSS Borders and Box Decorations Level 4 · CSS UI Level 4</p>
+</footer>
+
+</body>
+</html>
