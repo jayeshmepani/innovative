@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Poetry Analyzer — Sidebar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
+
+<link rel="stylesheet" href="sidebar.css">
+
+</head>
+
+<body>
+
+  <!-- Mobile toggle -->
+  <button class="sidebar-mobile-toggle" id="mobileToggle" aria-label="Open sidebar">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <line x1="3" y1="6" x2="21" y2="6" />
+      <line x1="3" y1="12" x2="21" y2="12" />
+      <line x1="3" y1="18" x2="21" y2="18" />
+    </svg>
+  </button>
+
+  <div class="layout">
+
+    <!-- ═══ SIDEBAR ════════════════════════════════════════════════════ -->
+    <aside class="sidebar" id="sidebar">
+
+      <div class="sidebar-brand">
+        <a href="#" class="sidebar-logo">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+          </svg>
+          <span class="sidebar-logo-text">Poetry Analyzer</span>
+        </a>
+      </div>
+
+      <nav class="sidebar-nav">
+
+        <!-- Dashboard -->
+        <p class="sidebar-section-label">Dashboard</p>
+        <ul class="sidebar-menu">
+          <li class="sidebar-item active">
+            <a href="#" class="sidebar-link">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7" />
+                <rect x="14" y="3" width="7" height="7" />
+                <rect x="14" y="14" width="7" height="7" />
+                <rect x="3" y="14" width="7" height="7" />
+              </svg>
+              <span class="sidebar-link-text">Overview</span>
+            </a>
+          </li>
+        </ul>
+
+        <!-- Analysis -->
+        <p class="sidebar-section-label">Analysis</p>
+        <ul class="sidebar-menu">
+
+          <li class="sidebar-item">
+            <a href="#" class="sidebar-link">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="12 2 2 7 12 12 22 7 12 2" />
+                <polyline points="2 17 12 22 22 17" />
+                <polyline points="2 12 12 17 22 12" />
+              </svg>
+              <span class="sidebar-link-text">Analyze</span>
+            </a>
+          </li>
+
+          <!-- Results — has submenu -->
+          <li class="sidebar-item sidebar-has-sub" id="resultsMenu">
+            <a href="#" class="sidebar-link sidebar-toggle-sub" id="resultsToggle">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="8" y1="6" x2="21" y2="6" />
+                <line x1="8" y1="12" x2="21" y2="12" />
+                <line x1="8" y1="18" x2="21" y2="18" />
+                <line x1="3" y1="6" x2="3.01" y2="6" />
+                <line x1="3" y1="12" x2="3.01" y2="12" />
+                <line x1="3" y1="18" x2="3.01" y2="18" />
+              </svg>
+              <span class="sidebar-link-text">Results</span>
+              <svg class="sidebar-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2">
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </a>
+            <ul class="sidebar-submenu">
+              <li>
+                <a href="#" class="sidebar-sublink">View Results</a>
+              </li>
+              <li>
+                <a href="#" class="sidebar-sublink active" aria-current="page">History</a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="sidebar-item">
+            <a href="#" class="sidebar-link">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" />
+                <polyline points="13 2 13 9 20 9" />
+              </svg>
+              <span class="sidebar-link-text">Batch</span>
+            </a>
+          </li>
+
+          <li class="sidebar-item">
+            <a href="#" class="sidebar-link">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="20" x2="18" y2="10" />
+                <line x1="12" y1="20" x2="12" y2="4" />
+                <line x1="6" y1="20" x2="6" y2="14" />
+              </svg>
+              <span class="sidebar-link-text">Compare</span>
+            </a>
+          </li>
+        </ul>
+
+        <!-- Tools -->
+        <p class="sidebar-section-label">Tools</p>
+        <ul class="sidebar-menu">
+          <li class="sidebar-item"><a href="#" class="sidebar-link">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+              <span class="sidebar-link-text">Meters</span></a></li>
+          <li class="sidebar-item"><a href="#" class="sidebar-link">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M8 14s1.5 2 4 2 4-2 4-2" />
+                <line x1="9" y1="9" x2="9.01" y2="9" />
+                <line x1="15" y1="9" x2="15.01" y2="9" />
+              </svg>
+              <span class="sidebar-link-text">Rasas</span></a></li>
+          <li class="sidebar-item"><a href="#" class="sidebar-link">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+              </svg>
+              <span class="sidebar-link-text">Theory</span></a></li>
+          <li class="sidebar-item"><a href="#" class="sidebar-link">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 6v12" />
+                <path d="M8 12h8" />
+              </svg>
+              <span class="sidebar-link-text">Touchstone</span></a></li>
+          <li class="sidebar-item"><a href="#" class="sidebar-link">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="18" height="18" rx="2" />
+                <path d="M9 9h6v6H9z" />
+              </svg>
+              <span class="sidebar-link-text">Constraints</span></a></li>
+          <li class="sidebar-item"><a href="#" class="sidebar-link">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 17l6-6 4 4 8-8" />
+                <path d="M14 7h7v7" />
+              </svg>
+              <span class="sidebar-link-text">Performance</span></a></li>
+          <li class="sidebar-item"><a href="#" class="sidebar-link">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 11l3 3L22 4" />
+                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+              </svg>
+              <span class="sidebar-link-text">Rubrics</span></a></li>
+          <li class="sidebar-item"><a href="#" class="sidebar-link">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3" />
+                <path
+                  d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+              </svg>
+              <span class="sidebar-link-text">Settings</span></a></li>
+        </ul>
+
+        <!-- Admin -->
+        <p class="sidebar-section-label">Admin</p>
+        <ul class="sidebar-menu">
+          <li class="sidebar-item">
+            <a href="#" class="sidebar-link">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg>
+              <span class="sidebar-link-text">Users</span>
+            </a>
+          </li>
+        </ul>
+
+      </nav>
+
+      <div class="sidebar-user">
+        <div class="sidebar-user-avatar">J</div>
+        <div class="sidebar-user-info">
+          <span class="sidebar-user-name">Jayesh Mepani</span>
+          <span class="sidebar-user-role">Superadmin</span>
+        </div>
+        <a href="#" class="sidebar-logout-btn" title="Logout">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+            <polyline points="16 17 21 12 16 7" />
+            <line x1="21" y1="12" x2="9" y2="12" />
+          </svg>
+        </a>
+      </div>
+
+    </aside>
+
+    <!-- ═══ MAIN CONTENT ════════════════════════════════════════════ -->
+    <main class="main-content">
+      <div class="content-placeholder">
+        <h1>Poetry Analyzer</h1>
+        <p>A deep-analysis platform for Sanskrit and classical poetry. Explore meters, rasas, and rhetorical patterns
+          with precision tools built for scholars and enthusiasts alike.</p>
+        <div class="badge-row">
+          <span class="badge gold">CSS Anchor Positioning</span>
+          <span class="badge">Sidebar Demo</span>
+          <span class="badge">DM Serif Display</span>
+          <span class="badge">allow-discrete</span>
+        </div>
+      </div>
+    </main>
+
+  </div>
+
+  <!-- Overlay -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <script>
+    // ── Submenu toggle ──────────────────────────────────────────────
+    document.querySelectorAll('.sidebar-toggle-sub').forEach(toggle => {
+      toggle.addEventListener('click', e => {
+        e.preventDefault();
+        const item = toggle.closest('.sidebar-has-sub');
+        const isOpen = item.classList.contains('open');
+
+        // close all others
+        document.querySelectorAll('.sidebar-has-sub.open').forEach(el => {
+          if (el !== item) el.classList.remove('open');
+        });
+
+        item.classList.toggle('open', !isOpen);
+      });
+    });
+
+    // ── Active link ─────────────────────────────────────────────────
+    document.querySelectorAll('.sidebar-link:not(.sidebar-toggle-sub), .sidebar-sublink').forEach(link => {
+      link.addEventListener('click', e => {
+        if (link.classList.contains('sidebar-toggle-sub')) return;
+        e.preventDefault();
+
+        // clear active
+        document.querySelectorAll('.sidebar-item.active').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.sidebar-sublink.active').forEach(el => el.classList.remove('active'));
+
+        const item = link.closest('.sidebar-item');
+        if (item) item.classList.add('active');
+
+        const parentSub = link.closest('.sidebar-has-sub');
+        if (parentSub) parentSub.classList.add('active');
+
+        if (link.classList.contains('sidebar-sublink')) link.classList.add('active');
+      });
+    });
+
+    // ── Mobile sidebar ──────────────────────────────────────────────
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    const mobileToggle = document.getElementById('mobileToggle');
+
+    mobileToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('mobile-open');
+      overlay.classList.toggle('active');
+    });
+    overlay.addEventListener('click', () => {
+      sidebar.classList.remove('mobile-open');
+      overlay.classList.remove('active');
+    });
+
+    // ── Open Results submenu by default (demo) ──────────────────────
+    document.getElementById('resultsMenu').classList.add('open');
+  </script>
+
+</body>
+
+</html>
