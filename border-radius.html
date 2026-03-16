@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Interactive Border Radius Lab</title>
+    <style>
+        :root {
+            --bg: #0b1220;
+            --panel: #111a2e;
+            --ink: #e6eefc;
+            --muted: #a6b2c9;
+            --brand: #6ea8fe;
+            --accent: #7cf3d7;
+            --ring: 0 0 0 2px color-mix(in oklab, var(--brand) 60%, transparent);
+            --shadow: 0 10px 30px rgba(0, 0, 0, .35);
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        html,
+        body {
+            height: 100%
+        }
+
+        body {
+            margin: 0;
+            font: 14px/1.35 system-ui, -apple-system, Segoe UI, Roboto, Inter, "Helvetica Neue", Arial, Noto Sans, "Apple Color Emoji", "Segoe UI Emoji";
+            color: var(--ink);
+            background: linear-gradient(180deg, #0a1020, #0b1220 30% 70%, #0a0f1b);
+        }
+
+        .wrap {
+            max-width: 90%;
+            margin: auto;
+            padding: 28px 20px 40px;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 18px
+        }
+
+        h1 {
+            font-size: clamp(18px, 2.6vw, 28px);
+            margin: 0;
+            letter-spacing: .2px
+        }
+
+        .sub {
+            color: var(--muted)
+        }
+
+        .panels {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 18px;
+        }
+
+        @media (max-width:980px) {
+            .panels {
+                grid-template-columns: 1fr
+            }
+        }
+
+        .card {
+            background: var(--panel);
+            border: 1px solid #1a2542;
+            border-radius: 14px;
+            box-shadow: var(--shadow)
+        }
+
+        .card h2 {
+            font-size: 15px;
+            letter-spacing: .3px;
+            margin: 0;
+            padding: 12px 14px;
+            border-bottom: 1px solid #1a2542;
+            background: linear-gradient(180deg, #13203a, #121b32)
+        }
+
+        .pad {
+            padding: 14px
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 10px;
+            align-items: center;
+            margin: 10px 0
+        }
+
+        .row .meta {
+            font-variant-numeric: tabular-nums;
+            color: var(--muted)
+        }
+
+        .stack {
+            display: grid;
+            gap: 10px
+        }
+
+        .inputs {
+            display: grid;
+            gap: 12px
+        }
+
+        .field {
+            display: grid;
+            gap: 6px
+        }
+
+        .field label {
+            font-size: 12px;
+            color: var(--muted)
+        }
+
+        .control {
+            display: flex;
+            gap: 8px;
+            align-items: center
+        }
+
+        input[type="range"] {
+            width: 100%
+        }
+
+        input[type="number"],
+        input[type="text"] {
+            width: 110px;
+            background: #0f1730;
+            color: var(--ink);
+            border: 1px solid #223058;
+            padding: 6px 8px;
+            border-radius: 8px
+        }
+
+        input[type="number"]:focus,
+        input[type="text"]:focus {
+            outline: none;
+            box-shadow: var(--ring);
+            border-color: color-mix(in oklab, var(--brand) 60%, #223058)
+        }
+
+        .hint {
+            font-size: 12px;
+            color: var(--muted)
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: #0e1a33;
+            border: 1px solid #20305a;
+            color: #a7c4ff;
+            width: max-content
+        }
+
+        .switcher {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap
+        }
+
+        .tab {
+            cursor: pointer;
+            padding: 8px 10px;
+            border-radius: 10px;
+            border: 1px solid #23325f;
+            background: #101a36;
+            color: #b9c9ff
+        }
+
+        .tab[aria-selected="true"] {
+            background: linear-gradient(180deg, #192a54, #172548);
+            color: white;
+            box-shadow: var(--ring)
+        }
+
+        /* Preview canvas */
+        .stage {
+            position: relative;
+            min-height: 380px;
+            background: radial-gradient(1200px 500px at 20% -10%, #15264e 20%, transparent 60%),
+                radial-gradient(1000px 600px at 120% 20%, #0e1f45 10%, transparent 60%),
+                linear-gradient(180deg, #0e1831, #0d162e 40%, #0b1328)
+        }
+
+        .stage .grid {
+            position: absolute;
+            inset: 0;
+            background-image: linear-gradient(#1a274d 1px, transparent 1px), linear-gradient(90deg, #1a274d 1px, transparent 1px);
+            background-size: 20px 20px;
+            opacity: .35;
+            mask: linear-gradient(#000, transparent 90%)
+        }
+
+        .frame {
+            position: absolute;
+            inset: 28px;
+            border: 1px dashed #2a3a6a;
+            border-radius: 12px
+        }
+
+        .outer {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(180deg, #12224a, #101d3f);
+            border: 1px solid #23325f
+        }
+
+        .inner {
+            position: absolute;
+            inset: var(--gap, 16px);
+            background: linear-gradient(180deg, #172d64, #0f2557);
+            border: 1px solid #2a3a6a
+        }
+
+        .readout {
+            position: absolute;
+            right: 10px;
+            bottom: 10px;
+            display: grid;
+            gap: 6px;
+            background: #0d1a36d0;
+            border: 1px solid #20305a;
+            border-radius: 12px;
+            padding: 10px 12px
+        }
+
+        .kv {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px
+        }
+
+        .kv span {
+            font-variant-numeric: tabular-nums
+        }
+
+        .split {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px
+        }
+
+        @media (max-width:600px) {
+            .split {
+                grid-template-columns: 1fr
+            }
+        }
+
+        .btn {
+            cursor: pointer;
+            padding: 8px 10px;
+            border-radius: 10px;
+            border: 1px solid #23325f;
+            color: #dfe8ff;
+            background: #0f1b36
+        }
+
+        .btn:hover {
+            filter: brightness(1.1)
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrap">
+        <header>
+            <div>
+                <h1>Interactive Border Radius Lab</h1>
+                <div class="sub">Explore two common systems: <b>outer = inner + gap</b> and <b>r = k · min(h, w)</b>.
+                    Move the sliders — the preview updates live and you can copy the resulting CSS.</div>
+            </div>
+            <div class="badge">🔧 Pixels are rounded visually in the browser.</div>
+        </header>
+
+        <div class="panels">
+            <!-- Controls -->
+            <section class="card">
+                <h2>Controls</h2>
+                <div class="pad stack">
+                    <div class="switcher" role="tablist" aria-label="Radius models">
+                        <button class="tab" id="tab-a" role="tab" aria-selected="true" aria-controls="panel-a">outer =
+                            inner + gap</button>
+                        <button class="tab" id="tab-b" role="tab" aria-selected="false" aria-controls="panel-b">r = k ·
+                            min(h, w)</button>
+                    </div>
+
+                    <!-- Model A -->
+                    <div id="panel-a" role="tabpanel" aria-labelledby="tab-a" class="stack" style="display:block">
+                        <div class="hint">Keeps the <em>visual curvature</em> consistent when padding grows:
+                            <code>r<sub>outer</sub> = r<sub>inner</sub> + gap</code>.</div>
+                        <div class="inputs">
+                            <div class="field">
+                                <label>Container width × height (px)</label>
+                                <div class="split">
+                                    <div class="control"><input id="a-w" type="range" min="120" max="900" step="1"
+                                            value="560"><input id="a-w-n" type="number" value="560"></div>
+                                    <div class="control"><input id="a-h" type="range" min="120" max="620" step="1"
+                                            value="340"><input id="a-h-n" type="number" value="340"></div>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label>Gap / padding (px)</label>
+                                <div class="control"><input id="a-gap" type="range" min="0" max="120" step="1"
+                                        value="24"><input id="a-gap-n" type="number" value="24"></div>
+                            </div>
+                            <div class="field">
+                                <label>Inner radius r<sub>inner</sub> (px)</label>
+                                <div class="control"><input id="a-rin" type="range" min="0" max="160" step="1"
+                                        value="18"><input id="a-rin-n" type="number" value="18"></div>
+                            </div>
+                            <div class="row">
+                                <div class="meta">Formula</div>
+                                <div><code>r<sub>outer</sub> = r<sub>inner</sub> + gap</code></div>
+                            </div>
+                            <div class="row">
+                                <div class="meta">Computed r<sub>outer</sub></div>
+                                <div id="a-rout" class="meta">—</div>
+                            </div>
+                            <div class="control">
+                                <button class="btn" id="copy-a">Copy CSS for both</button>
+                                <span class="hint" id="copy-a-hint"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Model B -->
+                    <div id="panel-b" role="tabpanel" aria-labelledby="tab-b" class="stack" style="display:none">
+                        <div class="hint">Scale radius by the shorter side: <code>r = k · min(h, w)</code>. Typical
+                            <code>k</code> is 0.1 – 0.25.</div>
+                        <div class="inputs">
+                            <div class="field">
+                                <label>Box width × height (px)</label>
+                                <div class="split">
+                                    <div class="control"><input id="b-w" type="range" min="80" max="880" step="1"
+                                            value="420"><input id="b-w-n" type="number" value="420"></div>
+                                    <div class="control"><input id="b-h" type="range" min="80" max="620" step="1"
+                                            value="260"><input id="b-h-n" type="number" value="260"></div>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label>k (0 – 0.5)</label>
+                                <div class="control"><input id="b-k" type="range" min="0" max="0.5" step="0.005"
+                                        value="0.18"><input id="b-k-n" type="number" step="0.005" min="0" max="0.5"
+                                        value="0.18"></div>
+                            </div>
+                            <div class="row">
+                                <div class="meta">Formula</div>
+                                <div><code>r = k · min(h, w)</code></div>
+                            </div>
+                            <div class="row">
+                                <div class="meta">Computed r</div>
+                                <div id="b-r" class="meta">—</div>
+                            </div>
+                            <div class="control">
+                                <button class="btn" id="copy-b">Copy CSS</button>
+                                <span class="hint" id="copy-b-hint"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Preview -->
+            <section class="card">
+                <h2>Live Preview</h2>
+                <div class="stage" id="stage">
+                    <div class="grid" aria-hidden="true"></div>
+                    <div class="frame" aria-hidden="true"></div>
+
+                    <!-- Model A preview (outer/inner) -->
+                    <div id="preview-a" style="position:absolute; inset:0">
+                        <div id="outer" class="outer" style="width:560px; height:340px; border-radius:42px">
+                            <div id="inner" class="inner" style="--gap:24px; border-radius:18px"></div>
+                        </div>
+                        <div class="readout" id="readout-a">
+                            <div class="kv"><span>Size</span><span id="ro-a-size">—</span></div>
+                            <div class="kv"><span>Gap</span><span id="ro-a-gap">—</span></div>
+                            <div class="kv"><span>r<sub>inner</sub></span><span id="ro-a-rin">—</span></div>
+                            <div class="kv"><span>r<sub>outer</sub></span><span id="ro-a-rout">—</span></div>
+                        </div>
+                    </div>
+
+                    <!-- Model B preview (k·min) -->
+                    <div id="preview-b" style="display:none; position:absolute; inset:0">
+                        <div id="box" class="outer" style="width:420px; height:260px; border-radius:46.8px"></div>
+                        <div class="readout" id="readout-b">
+                            <div class="kv"><span>Size</span><span id="ro-b-size">—</span></div>
+                            <div class="kv"><span>k</span><span id="ro-b-k">—</span></div>
+                            <div class="kv"><span>min(h, w)</span><span id="ro-b-min">—</span></div>
+                            <div class="kv"><span>r</span><span id="ro-b-r">—</span></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <section class="card" style="margin-top:18px">
+            <h2>Notes & Tips</h2>
+            <div class="pad">
+                <ul>
+                    <li><b>outer = inner + gap</b> keeps the perceived curvature consistent when padding changes. This
+                        is handy for cards with fixed inner radius and variable gutters.</li>
+                    <li><b>r = k · min(h, w)</b> scales smoothly across sizes. Try <code>k</code> between
+                        <code>0.12</code> and <code>0.2</code> for balanced capsules, or up to <code>0.5</code> for full
+                        pill shapes.</li>
+                    <li>The preview uses device pixels; sub‑pixel rounding may alter exact integers at render time.</li>
+                </ul>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        (function () {
+            const $ = (s) => document.querySelector(s);
+            const clamp = (v, min, max) => Math.min(Math.max(v, min), max);
+
+            // --- Tabs ---
+            const tabA = $('#tab-a'), tabB = $('#tab-b');
+            const panelA = $('#panel-a'), panelB = $('#panel-b');
+            const prevA = $('#preview-a'), prevB = $('#preview-b');
+            tabA.addEventListener('click', () => {
+                tabA.setAttribute('aria-selected', 'true'); tabB.setAttribute('aria-selected', 'false');
+                panelA.style.display = 'block'; panelB.style.display = 'none';
+                prevA.style.display = 'block'; prevB.style.display = 'none';
+            });
+            tabB.addEventListener('click', () => {
+                tabB.setAttribute('aria-selected', 'true'); tabA.setAttribute('aria-selected', 'false');
+                panelB.style.display = 'block'; panelA.style.display = 'none';
+                prevB.style.display = 'block'; prevA.style.display = 'none';
+            });
+
+            // --- Model A elements ---
+            const a = {
+                w: $('#a-w'), wn: $('#a-w-n'), h: $('#a-h'), hn: $('#a-h-n'), gap: $('#a-gap'), gapn: $('#a-gap-n'), rin: $('#a-rin'), rinn: $('#a-rin-n'),
+                ro: $('#a-rout'),
+                outer: $('#outer'), inner: $('#inner'),
+                roSize: $('#ro-a-size'), roGap: $('#ro-a-gap'), roRin: $('#ro-a-rin'), roRout: $('#ro-a-rout'),
+                copyBtn: $('#copy-a'), copyHint: $('#copy-a-hint')
+            };
+
+            function syncPair(range, number, on) {
+                const sync = (e) => { const v = parseFloat(e.target.value); range.value = number.value = v; on(v); renderA(); };
+                range.addEventListener('input', sync); number.addEventListener('input', sync);
+            }
+
+            function renderA() {
+                const W = parseFloat(a.w.value), H = parseFloat(a.h.value);
+                const G = parseFloat(a.gap.value);
+                const Rin = parseFloat(a.rin.value);
+                const Rout = Rin + G;
+                // prevent radius exceeding half of size
+                const RoutMax = Math.min(W, H) / 2; const RinMax = Math.min(W - 2 * G, H - 2 * G) / 2;
+                const RoutClamped = Math.min(Rout, RoutMax);
+                const RinClamped = Math.min(Rin, RinMax);
+
+                a.outer.style.width = W + 'px';
+                a.outer.style.height = H + 'px';
+                a.outer.style.borderRadius = RoutClamped + 'px';
+                a.inner.style.setProperty('--gap', G + 'px');
+                a.inner.style.borderRadius = RinClamped + 'px';
+
+                a.ro.textContent = `${Rout.toFixed(2)} px (clamped → ${RoutClamped.toFixed(2)} px)`;
+                a.roSize.textContent = `${W} × ${H}`;
+                a.roGap.textContent = `${G}px`;
+                a.roRin.textContent = `${Rin} px (clamped → ${RinClamped.toFixed(2)} px)`;
+                a.roRout.textContent = `${Rout.toFixed(2)} px`;
+            }
+
+            syncPair(a.w, a.wn, () => { });
+            syncPair(a.h, a.hn, () => { });
+            syncPair(a.gap, a.gapn, () => { });
+            syncPair(a.rin, a.rinn, () => { });
+
+            a.copyBtn.addEventListener('click', () => {
+                const W = parseFloat(a.w.value), H = parseFloat(a.h.value);
+                const G = parseFloat(a.gap.value);
+                const Rin = parseFloat(a.rin.value);
+                const Rout = Rin + G;
+                const css = `/* outer = inner + gap */\n.outer{ width:${W}px; height:${H}px; padding:${G}px; border-radius:${Rout}px; }\n.inner{ border-radius:${Rin}px; }`;
+                navigator.clipboard.writeText(css).then(() => {
+                    a.copyHint.textContent = '✓ Copied!'; setTimeout(() => a.copyHint.textContent = '', 1200);
+                });
+            });
+
+            // --- Model B elements ---
+            const b = {
+                w: $('#b-w'), wn: $('#b-w-n'), h: $('#b-h'), hn: $('#b-h-n'), k: $('#b-k'), kn: $('#b-k-n'),
+                box: $('#box'),
+                roSize: $('#ro-b-size'), rok: $('#ro-b-k'), romin: $('#ro-b-min'), ror: $('#ro-b-r'),
+                copyBtn: $('#copy-b'), copyHint: $('#copy-b-hint')
+            };
+
+            function syncPairB(range, number) {
+                const sync = (e) => { const v = parseFloat(e.target.value); range.value = number.value = v; renderB(); };
+                range.addEventListener('input', sync); number.addEventListener('input', sync);
+            }
+
+            function renderB() {
+                const W = parseFloat(b.w.value), H = parseFloat(b.h.value);
+                const k = parseFloat(b.k.value);
+                const m = Math.min(W, H);
+                const r = k * m;
+                const rClamp = Math.min(r, m / 2);
+
+                b.box.style.width = W + 'px';
+                b.box.style.height = H + 'px';
+                b.box.style.borderRadius = rClamp + 'px';
+
+                b.roSize.textContent = `${W} × ${H}`;
+                b.rok.textContent = k;
+                b.romin.textContent = m + ' px';
+                b.ror.textContent = `${r.toFixed(2)} px (clamped → ${rClamp.toFixed(2)} px)`;
+            }
+
+            syncPairB(b.w, b.wn); syncPairB(b.h, b.hn); syncPairB(b.k, b.kn);
+            b.copyBtn.addEventListener('click', () => {
+                const W = parseFloat(b.w.value), H = parseFloat(b.h.value);
+                const k = parseFloat(b.k.value);
+                const r = (k * Math.min(W, H)).toFixed(2);
+                const css = `/* r = k * min(h, w) */\n.box{ width:${W}px; height:${H}px; border-radius:${r}px; }`;
+                navigator.clipboard.writeText(css).then(() => {
+                    b.copyHint.textContent = '✓ Copied!'; setTimeout(() => b.copyHint.textContent = '', 1200);
+                });
+            });
+
+            // initial paints
+            renderA(); renderB();
+        })();
+    </script>
+</body>
+
+</html>

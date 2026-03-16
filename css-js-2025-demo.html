@@ -1,0 +1,2233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSS & JS 2025–2026 · Living Feature Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700;800&family=DM+Mono:ital,wght@0,300;0,400;1,300&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+
+<!-- =====================================================================
+     STYLE
+     ===================================================================== -->
+<style>
+
+/* ─── Design Tokens ─────────────────────────────────────────────── */
+:root {
+  --ink:        #0a0a0f;
+  --ink-faint:  #1c1c28;
+  --surface:    #f5f4ef;
+  --mid:        #e8e6dc;
+  --muted:      #8a8880;
+  --accent:     #e85c2a;
+  --accent2:    #2a8ce8;
+  --accent3:    #2ae88c;
+  --accent4:    #e8c42a;
+  --white:      #fdfcf8;
+  --code-bg:    #14141e;
+  --code-fg:    #c9e0d4;
+  --radius:     6px;
+  --gap:        clamp(1rem, 3vw, 2.5rem);
+
+  /* used in @function demo */
+  --brand-color: #e85c2a;
+}
+
+/* ─── @function definitions (Chrome 139+) ─────────────────────────
+   Polyfilled via calc/var fallbacks for other browsers             */
+@supports (result: 1) {
+  @function --tint(--base <color>, --amount <number>: 0.15) {
+    result: color-mix(in oklch, var(--base) calc(var(--amount) * 100%), white);
+  }
+
+  @function --shade(--base <color>, --amount <number>: 0.2) {
+    result: color-mix(in oklch, var(--base) calc((1 - var(--amount)) * 100%), black);
+  }
+
+  @function --fluid-space(--min <length>: 1rem, --max <length>: 3rem) {
+    result: clamp(var(--min), 4vw, var(--max));
+  }
+}
+
+/* ─── Reset ─────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
+
+body {
+  font-family: 'Syne', sans-serif;
+  background: var(--surface);
+  color: var(--ink);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ─── Grain overlay ─────────────────────────────────────────────── */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  pointer-events: none; z-index: 9999;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity: .35;
+}
+
+/* ─── Scrollbar ─────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--mid); }
+::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+
+/* ─── Sticky nav ─────────────────────────────────────────────────── */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  display: flex; align-items: center; gap: 1rem;
+  padding: .75rem var(--gap);
+  background: var(--ink); color: var(--white);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  view-transition-name: site-nav;
+
+  /* Scroll State Query demo: changes when scrolled */
+  container-type: scroll-state;
+}
+
+/* Scroll state container query — nav becomes accented when not at top  */
+@container scroll-state(stuck: top) {
+  nav { border-bottom: 2px solid var(--accent); }
+}
+
+nav .brand {
+  font-size: .95rem; font-weight: 800; letter-spacing: -.02em;
+  white-space: nowrap; margin-right: auto;
+  color: var(--accent); text-decoration: none;
+}
+
+nav a {
+  font-size: .7rem; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--muted); text-decoration: none; white-space: nowrap;
+  scroll-snap-align: start;
+  transition: color .2s;
+}
+nav a:hover { color: var(--white); }
+
+/* ─── Hero ────────────────────────────────────────────────────────── */
+.hero {
+  min-height: 92vh;
+  display: grid; place-items: center;
+  padding: 6rem var(--gap) 4rem;
+  position: relative; overflow: hidden;
+}
+
+.hero-bg {
+  position: absolute; inset: 0; z-index: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 70% 40%, oklch(55% .18 30 / .12) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 50% at 20% 80%, oklch(55% .18 240 / .08) 0%, transparent 60%),
+    var(--surface);
+}
+
+.hero-content { position: relative; z-index: 1; max-width: 900px; }
+
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: .5rem;
+  font-size: .7rem; letter-spacing: .15em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 1.5rem;
+}
+.hero-eyebrow::before {
+  content: ''; display: block;
+  width: 24px; height: 1px; background: var(--accent);
+}
+
+h1 {
+  font-family: 'Instrument Serif', serif;
+  font-size: clamp(2.8rem, 8vw, 7rem);
+  line-height: .95; letter-spacing: -.03em;
+  margin-bottom: 1.5rem;
+}
+
+h1 em { font-style: italic; color: var(--accent); }
+
+.hero-sub {
+  font-size: clamp(.9rem, 1.5vw, 1.1rem);
+  color: var(--muted); max-width: 540px;
+  font-family: 'DM Mono', monospace; font-weight: 300;
+  margin-bottom: 2.5rem;
+}
+
+.hero-tags {
+  display: flex; flex-wrap: wrap; gap: .5rem;
+}
+.tag {
+  display: inline-block;
+  padding: .25rem .7rem;
+  border: 1px solid color-mix(in oklch, var(--ink) 20%, transparent);
+  border-radius: 99px;
+  font-size: .65rem; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--muted);
+  animation: tag-in .4s ease backwards;
+}
+.tag:nth-child(1){animation-delay:.1s}
+.tag:nth-child(2){animation-delay:.15s}
+.tag:nth-child(3){animation-delay:.2s}
+.tag:nth-child(4){animation-delay:.25s}
+.tag:nth-child(5){animation-delay:.3s}
+.tag:nth-child(6){animation-delay:.35s}
+.tag:nth-child(7){animation-delay:.4s}
+.tag:nth-child(8){animation-delay:.45s}
+
+@keyframes tag-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Section chrome ─────────────────────────────────────────────── */
+.section {
+  padding: clamp(3rem, 8vw, 7rem) var(--gap);
+  border-top: 1px solid var(--mid);
+  position: relative;
+}
+
+.section:nth-child(even) { background: var(--white); }
+
+.section-label {
+  display: inline-flex; align-items: center; gap: .6rem;
+  font-size: .65rem; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: .75rem;
+}
+
+.section-label .num {
+  display: inline-grid; place-items: center;
+  width: 1.4rem; height: 1.4rem;
+  background: var(--accent); color: var(--white);
+  border-radius: 3px; font-size: .6rem; font-weight: 700;
+}
+
+h2 {
+  font-family: 'Instrument Serif', serif;
+  font-size: clamp(1.8rem, 4vw, 3.2rem);
+  line-height: 1.1; letter-spacing: -.02em;
+  margin-bottom: .5rem;
+}
+
+.section-desc {
+  color: var(--muted); font-family: 'DM Mono', monospace;
+  font-size: .8rem; margin-bottom: 2.5rem; max-width: 600px;
+}
+
+/* ─── Code blocks ─────────────────────────────────────────────────── */
+pre {
+  background: var(--code-bg);
+  color: var(--code-fg);
+  padding: 1.25rem 1.5rem;
+  border-radius: var(--radius);
+  font-family: 'DM Mono', monospace;
+  font-size: .78rem;
+  overflow-x: auto;
+  border-left: 3px solid var(--accent);
+  margin: 1rem 0;
+  line-height: 1.7;
+}
+.kw  { color: #e882a9; }
+.fn  { color: #82c8e8; }
+.val { color: #e8c282; }
+.cmt { color: #5a6070; font-style: italic; }
+.sel { color: #a8e882; }
+
+/* ─── Demo grid ──────────────────────────────────────────────────── */
+.demo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.demo-card {
+  background: var(--white);
+  border: 1px solid var(--mid);
+  border-radius: calc(var(--radius) * 2);
+  padding: 1.5rem;
+  position: relative; overflow: hidden;
+  transition: box-shadow .3s, transform .3s;
+}
+.section:nth-child(even) .demo-card { background: var(--surface); }
+
+.demo-card:hover {
+  box-shadow: 0 12px 40px -8px color-mix(in oklch, var(--accent) 20%, transparent);
+  transform: translateY(-2px);
+}
+
+.demo-card-label {
+  font-size: .65rem; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 1rem;
+  font-family: 'DM Mono', monospace;
+}
+
+/* ─── ① CSS @function ──────────────────────────────────────────────  */
+
+/* Real @function for Chrome 139+ */
+@supports (result: 1) {
+  @function --btn-bg(--color <color>, --dark <number>: 0) {
+    result: color-mix(in oklch, var(--color) calc((1 - var(--dark) * 0.3) * 100%), black);
+  }
+}
+
+.fn-demo-box {
+  display: flex; flex-direction: column; gap: .75rem;
+}
+
+.fn-box {
+  padding: .75rem 1.2rem;
+  border-radius: 5px;
+  font-size: .8rem; font-weight: 700; letter-spacing: .05em;
+  color: white;
+  /* Fallback: regular color-mix */
+  background: var(--accent);
+}
+
+/* @function used below via JS-generated inline styles as fallback */
+.fn-box[data-variant="tint"] {
+  background: color-mix(in oklch, var(--accent) 30%, white);
+  color: var(--ink);
+}
+.fn-box[data-variant="shade"] {
+  background: color-mix(in oklch, var(--accent) 50%, black);
+}
+.fn-box[data-variant="fluid"] {
+  padding: clamp(.5rem, 2vw, 1.5rem) clamp(1rem, 3vw, 2.5rem);
+  background: color-mix(in oklch, var(--accent2) 80%, black);
+}
+
+/* ─── ② corner-shape ──────────────────────────────────────────────── */
+.corner-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+.corner-box {
+  aspect-ratio: 1;
+  background: var(--accent);
+  display: grid; place-items: center;
+  color: white; font-size: .6rem; text-align: center;
+  font-family: 'DM Mono', monospace;
+  border-radius: 30%;
+  transition: transform .4s ease;
+}
+.corner-box:hover { transform: scale(1.08) rotate(3deg); }
+
+/* Squircle via border-radius trick (corner-shape polyfill) */
+.corner-box.squircle {
+  border-radius: 30%;
+  background: var(--accent2);
+}
+.corner-box.notched {
+  border-radius: 0;
+  clip-path: polygon(16px 0%,calc(100% - 16px) 0%,100% 16px,100% calc(100% - 16px),calc(100% - 16px) 100%,16px 100%,0% calc(100% - 16px),0% 16px);
+  background: var(--accent3); color: var(--ink);
+}
+.corner-box.scoop {
+  /* scoop via radial-gradient clipping */
+  border-radius: 40% 40% 0 0 / 30% 30% 0 0;
+  background: var(--accent4); color: var(--ink);
+}
+.corner-box.pill { border-radius: 999px; aspect-ratio: 2/1; background: #e82a82; }
+
+/* corner-shape property for supported browsers */
+@supports (corner-shape: scoop) {
+  .corner-box.scoop {
+    border-radius: 40%;
+    corner-shape: scoop;
+  }
+  .corner-box.notched {
+    border-radius: 20px;
+    corner-shape: notch;
+    clip-path: none;
+  }
+}
+
+/* ─── ③ Customizable <select> ─────────────────────────────────────── */
+.custom-select-wrap {
+  position: relative;
+}
+
+select.styleable {
+  width: 100%;
+  padding: .8rem 1rem;
+  border: 2px solid var(--mid);
+  border-radius: var(--radius);
+  font-family: 'Syne', sans-serif;
+  font-size: .9rem;
+  background: var(--white);
+  color: var(--ink);
+  cursor: pointer;
+  transition: border-color .2s;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+/* appearance: base-select for Chrome 130+ */
+@supports selector(::picker(select)) {
+  select.styleable {
+    appearance: base-select;
+    border: 2px solid var(--mid);
+    border-radius: var(--radius);
+    padding: .8rem 1rem;
+    background: var(--white);
+    font-family: inherit;
+    font-size: .9rem;
+    cursor: pointer;
+  }
+
+  select.styleable::picker(select) {
+    appearance: base-select;
+    background: var(--ink);
+    border: 1px solid var(--ink-faint);
+    border-radius: calc(var(--radius) * 2);
+    padding: .5rem;
+    box-shadow: 0 16px 40px -8px rgba(0,0,0,.4);
+    animation: picker-in .2s ease;
+  }
+
+  select.styleable option {
+    padding: .6rem .9rem;
+    border-radius: 4px;
+    color: var(--white);
+    font-family: inherit;
+  }
+  select.styleable option:hover,
+  select.styleable option:checked {
+    background: var(--accent);
+    color: white;
+  }
+}
+
+@keyframes picker-in {
+  from { opacity: 0; transform: translateY(-8px) scale(.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+select.styleable:focus { outline: none; border-color: var(--accent); }
+
+/* ─── ④ Popover API ───────────────────────────────────────────────── */
+.popover-demo { display: flex; gap: .75rem; flex-wrap: wrap; }
+
+[popover] {
+  padding: 1rem 1.4rem;
+  border: 1px solid var(--mid);
+  border-radius: calc(var(--radius) * 2);
+  background: var(--ink);
+  color: var(--white);
+  font-family: 'DM Mono', monospace;
+  font-size: .8rem;
+  max-width: 260px;
+  box-shadow: 0 8px 32px -4px rgba(0,0,0,.4);
+
+  /* native popover animation */
+  transition:
+    opacity .2s,
+    display .2s allow-discrete,
+    overlay .2s allow-discrete;
+  opacity: 0;
+}
+
+[popover]:popover-open {
+  opacity: 1;
+}
+
+@starting-style {
+  [popover]:popover-open { opacity: 0; transform: translateY(-6px); }
+}
+
+[popover="hint"] {
+  background: color-mix(in oklch, var(--accent) 90%, black);
+  font-size: .75rem; padding: .5rem .9rem;
+}
+
+.pop-btn {
+  padding: .5rem 1rem;
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius);
+  background: transparent;
+  font-family: 'Syne', sans-serif;
+  font-size: .8rem; font-weight: 700;
+  cursor: pointer;
+  transition: background .2s, color .2s;
+}
+.pop-btn:hover { background: var(--ink); color: var(--white); }
+
+/* ─── ⑤ Invoker Commands ─────────────────────────────────────────── */
+.invoker-demo { display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-start; }
+
+.invoker-dialog {
+  padding: 0;
+  border: none;
+  border-radius: calc(var(--radius) * 2);
+  background: var(--ink);
+  color: var(--white);
+  max-width: 360px; width: 90vw;
+  box-shadow: 0 24px 64px -12px rgba(0,0,0,.6);
+  overflow: hidden;
+}
+
+.invoker-dialog::backdrop {
+  background: rgba(0,0,0,.5);
+  backdrop-filter: blur(4px);
+  animation: bd-in .3s ease;
+}
+
+@keyframes bd-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.dialog-inner {
+  padding: 2rem;
+}
+
+.dialog-inner h3 {
+  font-family: 'Instrument Serif', serif;
+  font-size: 1.5rem; margin-bottom: .5rem;
+}
+
+.dialog-inner p {
+  font-family: 'DM Mono', monospace;
+  font-size: .78rem; color: var(--muted);
+  margin-bottom: 1.5rem;
+}
+
+.dialog-inner .close-btn {
+  padding: .5rem 1.2rem;
+  background: var(--accent);
+  border: none; border-radius: var(--radius);
+  color: white; font-family: 'Syne', sans-serif;
+  font-size: .8rem; font-weight: 700;
+  cursor: pointer;
+}
+
+/* closedby light-dismiss */
+#light-dialog {
+  border-radius: calc(var(--radius) * 2);
+  background: var(--ink); color: var(--white);
+  border: 1px solid var(--ink-faint);
+  padding: 1.5rem 2rem; max-width: 320px;
+}
+
+/* ─── ⑥ View Transitions ─────────────────────────────────────────── */
+::view-transition-old(section-content) {
+  animation: vt-out .3s ease forwards;
+}
+::view-transition-new(section-content) {
+  animation: vt-in .3s ease forwards;
+}
+
+@keyframes vt-out {
+  to { opacity: 0; transform: translateX(-20px); }
+}
+@keyframes vt-in {
+  from { opacity: 0; transform: translateX(20px); }
+}
+
+.vt-demo {
+  view-transition-name: section-content;
+  min-height: 100px;
+  padding: 1.25rem;
+  background: var(--code-bg);
+  border-radius: var(--radius);
+  font-family: 'DM Mono', monospace;
+  font-size: .85rem; color: var(--code-fg);
+  line-height: 1.7;
+}
+
+.vt-controls { display: flex; gap: .75rem; margin-bottom: 1rem; flex-wrap: wrap; }
+.vt-btn {
+  padding: .45rem 1rem;
+  border: 1.5px solid var(--mid);
+  border-radius: var(--radius);
+  background: transparent;
+  font-family: 'Syne', sans-serif; font-size: .75rem; font-weight: 700;
+  cursor: pointer; transition: all .2s;
+  color: var(--ink);
+}
+.vt-btn:hover, .vt-btn.active { background: var(--accent); border-color: var(--accent); color: white; }
+
+/* ─── ⑦ CSS Scroll-State Queries ─────────────────────────────────── */
+.scroll-state-demo {
+  height: 160px; overflow-y: scroll;
+  border: 1px solid var(--mid);
+  border-radius: var(--radius);
+  container-type: scroll-state;
+  position: relative;
+}
+
+.scroll-sticky-header {
+  position: sticky; top: 0;
+  background: var(--white);
+  padding: .6rem 1rem;
+  font-size: .75rem; font-weight: 700; letter-spacing: .05em;
+  border-bottom: 2px solid transparent;
+  transition: border-color .3s, background .3s;
+  z-index: 10;
+}
+
+@container scroll-state(stuck: top) {
+  .scroll-sticky-header {
+    background: var(--ink);
+    color: var(--white);
+    border-bottom-color: var(--accent);
+  }
+}
+
+.scroll-content-items {
+  padding: .5rem 1rem 1.5rem;
+}
+.scroll-item {
+  padding: .6rem .5rem;
+  border-bottom: 1px solid var(--mid);
+  font-family: 'DM Mono', monospace; font-size: .75rem;
+  color: var(--muted);
+  /* sibling-index will be emulated via CSS counter */
+  counter-increment: item;
+}
+.scroll-item::before {
+  content: counter(item, decimal-leading-zero) ' ';
+  color: var(--accent); font-weight: 700;
+}
+
+/* ─── ⑧ sibling-count() / sibling-index() ────────────────────────── */
+.sibling-demo {
+  display: flex; gap: .5rem; flex-wrap: wrap;
+}
+
+/* Real sibling-index for Chrome 131+ */
+@supports (color: sibling-index()) {
+  .sib-item {
+    background: oklch(55% .18 calc(sibling-index() * (360 / sibling-count())));
+    opacity: calc(sibling-index() / sibling-count());
+    scale: calc(0.6 + sibling-index() / sibling-count() * 0.6);
+  }
+}
+
+.sib-item {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--accent);
+  transition: transform .3s;
+}
+.sib-item:hover { transform: scale(1.3); }
+
+/* Fallback: nth-child progressive coloring */
+@supports not (color: sibling-index()) {
+  .sib-item:nth-child(1)  { background: oklch(55% .18   0); opacity: .15; scale: .65; }
+  .sib-item:nth-child(2)  { background: oklch(55% .18  40); opacity: .25; scale: .7; }
+  .sib-item:nth-child(3)  { background: oklch(55% .18  80); opacity: .35; scale: .75; }
+  .sib-item:nth-child(4)  { background: oklch(55% .18 120); opacity: .45; scale: .8; }
+  .sib-item:nth-child(5)  { background: oklch(55% .18 160); opacity: .55; scale: .85; }
+  .sib-item:nth-child(6)  { background: oklch(55% .18 200); opacity: .65; scale: .9; }
+  .sib-item:nth-child(7)  { background: oklch(55% .18 240); opacity: .75; scale: .93; }
+  .sib-item:nth-child(8)  { background: oklch(55% .18 280); opacity: .85; scale: .96; }
+  .sib-item:nth-child(9)  { background: oklch(55% .18 320); opacity: .92; scale: .98; }
+  .sib-item:nth-child(10) { background: oklch(55% .18 360); opacity: 1;   scale: 1; }
+}
+
+/* ─── ⑨ field-sizing: content ────────────────────────────────────── */
+.field-sizing-demo { display: flex; flex-direction: column; gap: .75rem; }
+
+.auto-grow {
+  field-sizing: content;
+  min-height: 2.5rem;
+  padding: .65rem .9rem;
+  border: 2px solid var(--mid);
+  border-radius: var(--radius);
+  font-family: 'DM Mono', monospace;
+  font-size: .85rem;
+  resize: none;
+  width: 100%;
+  background: var(--white);
+  transition: border-color .2s;
+}
+.auto-grow:focus { outline: none; border-color: var(--accent); }
+
+.auto-input {
+  field-sizing: content;
+  min-width: 3ch;
+  padding: .4rem .7rem;
+  border: 2px solid var(--mid);
+  border-radius: var(--radius);
+  font-family: 'Syne', sans-serif; font-size: .9rem;
+  background: var(--white);
+  transition: border-color .2s;
+}
+.auto-input:focus { outline: none; border-color: var(--accent); }
+
+/* ─── ⑩ animate to auto ──────────────────────────────────────────── */
+.accordion {
+  border: 1px solid var(--mid);
+  border-radius: calc(var(--radius) * 2);
+  overflow: hidden;
+}
+
+.accordion details {
+  border-bottom: 1px solid var(--mid);
+}
+.accordion details:last-child { border-bottom: none; }
+
+.accordion summary {
+  padding: 1rem 1.25rem;
+  font-weight: 700; font-size: .9rem;
+  cursor: pointer;
+  list-style: none;
+  display: flex; justify-content: space-between; align-items: center;
+  transition: background .2s;
+}
+.accordion summary:hover { background: var(--mid); }
+.accordion summary::after {
+  content: '+'; color: var(--accent); font-size: 1.2rem;
+  transition: rotate .3s;
+}
+.accordion details[open] summary::after { rotate: 45deg; }
+
+.accordion-body {
+  overflow: hidden;
+  height: 0;
+  /* animate to auto — Chrome 129+ */
+  transition: height .4s ease, padding .4s ease;
+  padding: 0 1.25rem;
+  font-family: 'DM Mono', monospace;
+  font-size: .8rem; color: var(--muted); line-height: 1.7;
+}
+
+.accordion details[open] .accordion-body {
+  height: auto;
+  /* interpolate-size: allow-keywords needed in supporting browsers */
+  padding: .75rem 1.25rem 1.25rem;
+}
+
+@keyframes details-open {
+  from { height: 0; }
+}
+
+/* ─── ⑪ light-dark() ─────────────────────────────────────────────── */
+.light-dark-demo {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+}
+
+.ld-card {
+  padding: 1.25rem;
+  border-radius: var(--radius);
+  background: light-dark(#f0ede5, #1a1a28);
+  color: light-dark(#111, #eee);
+  border: 1px solid light-dark(#ddd, #333);
+  font-family: 'DM Mono', monospace; font-size: .8rem;
+  transition: all .3s;
+}
+
+.ld-card h4 {
+  font-size: .9rem; margin-bottom: .4rem;
+  color: light-dark(var(--accent), #e8a090);
+}
+
+/* ─── ⑫ CSS Native Carousel ─────────────────────────────────────── */
+.carousel {
+  display: flex;
+  overflow-x: scroll;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  gap: 1rem;
+  padding-bottom: .5rem;
+  /* native scroll marker styles */
+  scrollbar-width: none;
+}
+.carousel::-webkit-scrollbar { display: none; }
+
+.carousel-slide {
+  min-width: 260px;
+  scroll-snap-align: start;
+  border-radius: calc(var(--radius) * 2);
+  aspect-ratio: 16/9;
+  display: grid; place-items: center;
+  font-family: 'Instrument Serif', serif;
+  font-size: 1.6rem; letter-spacing: -.02em;
+  font-style: italic;
+  flex-shrink: 0;
+}
+
+.carousel-slide:nth-child(1) { background: oklch(55% .18  20); color: white; }
+.carousel-slide:nth-child(2) { background: oklch(55% .18  80); color: white; }
+.carousel-slide:nth-child(3) { background: oklch(55% .18 160); color: white; }
+.carousel-slide:nth-child(4) { background: oklch(55% .18 220); color: white; }
+.carousel-slide:nth-child(5) { background: oklch(55% .18 290); color: white; }
+
+/* ::scroll-marker-group polyfill via scroll-snap dots */
+.carousel-markers {
+  display: flex; gap: .4rem; justify-content: center;
+  margin-top: .75rem;
+}
+.carousel-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--mid);
+  transition: background .2s, width .2s;
+  cursor: pointer; border: none;
+}
+.carousel-dot.active { background: var(--accent); width: 18px; border-radius: 3px; }
+
+/* Native scroll markers for Chrome 135+ */
+@supports selector(::scroll-marker) {
+  .carousel { scroll-marker-group: after; }
+  .carousel::scroll-marker-group {
+    display: flex; gap: .4rem; justify-content: center;
+    padding-top: .75rem;
+  }
+  .carousel-slide::scroll-marker {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--mid);
+  }
+  .carousel-slide::scroll-marker:target-current {
+    background: var(--accent);
+    width: 18px; border-radius: 3px;
+  }
+  /* hide the JS-powered markers if native works */
+  .carousel-markers { display: none; }
+}
+
+/* ─── ⑬ text-wrap: balance / pretty ─────────────────────────────── */
+.text-wrap-demo { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+
+.tw-card {
+  padding: 1.25rem;
+  border: 1px solid var(--mid);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.tw-card .label {
+  font-size: .6rem; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: .5rem;
+  font-family: 'DM Mono', monospace;
+}
+
+.tw-card h3 {
+  font-family: 'Instrument Serif', serif;
+  font-size: 1.2rem; line-height: 1.2; margin-bottom: .4rem;
+}
+
+.balance-text { text-wrap: balance; }
+.pretty-text  { text-wrap: pretty; }
+
+/* ─── ⑭ JS: Iterator Helpers ─────────────────────────────────────── */
+.js-output {
+  background: var(--code-bg); color: var(--code-fg);
+  padding: 1.25rem 1.5rem;
+  border-radius: var(--radius);
+  font-family: 'DM Mono', monospace; font-size: .78rem; line-height: 1.7;
+  min-height: 80px;
+  border-left: 3px solid var(--accent2);
+  white-space: pre-wrap;
+}
+
+.run-btn {
+  display: inline-flex; align-items: center; gap: .5rem;
+  padding: .5rem 1.2rem;
+  background: var(--ink);
+  color: var(--white);
+  border: none; border-radius: var(--radius);
+  font-family: 'Syne', sans-serif; font-size: .8rem; font-weight: 700;
+  cursor: pointer; margin-bottom: .75rem;
+  transition: background .2s;
+}
+.run-btn:hover { background: var(--accent); }
+.run-btn::before { content: '▶'; font-size: .65rem; }
+
+/* ─── ⑮ JS: Set Methods ──────────────────────────────────────────── */
+.set-demo-grid {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: .75rem;
+}
+.set-op-btn {
+  padding: .5rem .6rem;
+  border: 1.5px solid var(--mid);
+  border-radius: var(--radius);
+  background: transparent;
+  font-family: 'DM Mono', monospace; font-size: .68rem;
+  cursor: pointer; text-align: left;
+  transition: all .2s; color: var(--ink);
+}
+.set-op-btn:hover { background: var(--accent2); color: white; border-color: var(--accent2); }
+
+/* ─── ⑯ JS: Promise.try() ───────────────────────────────────────── */
+.promise-demo { display: flex; flex-direction: column; gap: .75rem; }
+
+/* ─── ⑰ RegExp.escape() ──────────────────────────────────────────── */
+.regexp-demo input {
+  width: 100%;
+  padding: .65rem .9rem;
+  border: 2px solid var(--mid);
+  border-radius: var(--radius);
+  font-family: 'DM Mono', monospace; font-size: .85rem;
+  background: var(--white);
+  margin-bottom: .75rem;
+}
+.regexp-demo input:focus { outline: none; border-color: var(--accent); }
+
+/* ─── ⑱ using / await using ─────────────────────────────────────── */
+.resource-demo {
+  background: var(--code-bg);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  border-left: 3px solid var(--accent3);
+}
+
+/* ─── ⑲ Float16Array ─────────────────────────────────────────────── */
+.float16-visual {
+  display: flex; gap: .5rem; flex-wrap: wrap; margin-top: .75rem;
+}
+.float16-bar {
+  height: 32px;
+  border-radius: 3px;
+  background: var(--accent2);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'DM Mono', monospace; font-size: .55rem; color: white;
+  font-weight: 700; padding: 0 .3rem;
+}
+
+/* ─── ⑳ Temporal API ─────────────────────────────────────────────── */
+.temporal-demo {
+  background: var(--ink); color: var(--white);
+  border-radius: calc(var(--radius) * 2);
+  padding: 1.5rem;
+  font-family: 'DM Mono', monospace;
+}
+.temporal-demo .t-label {
+  font-size: .6rem; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: .2rem;
+}
+.temporal-demo .t-value {
+  font-size: 1.1rem; color: var(--accent4); margin-bottom: 1rem;
+}
+
+/* ─── Import Attributes ───────────────────────────────────────────── */
+.import-demo-box {
+  background: var(--code-bg);
+  color: var(--code-fg);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  font-family: 'DM Mono', monospace; font-size: .78rem; line-height: 1.7;
+  border-left: 3px solid var(--accent4);
+}
+
+/* ─── Navigation API ─────────────────────────────────────────────── */
+.nav-api-demo {
+  background: var(--ink);
+  border-radius: calc(var(--radius) * 2);
+  overflow: hidden;
+  display: grid; grid-template-columns: 140px 1fr;
+}
+
+.nav-api-sidebar {
+  background: var(--ink-faint);
+  padding: 1rem .75rem;
+  display: flex; flex-direction: column; gap: .25rem;
+}
+
+.nav-api-link {
+  padding: .4rem .75rem;
+  border-radius: 4px;
+  font-size: .75rem; color: var(--muted);
+  cursor: pointer; transition: all .2s;
+  background: transparent; border: none;
+  font-family: 'Syne', sans-serif; text-align: left;
+}
+.nav-api-link:hover { background: rgba(255,255,255,.05); color: var(--white); }
+.nav-api-link.active { background: var(--accent); color: white; }
+
+.nav-api-content {
+  padding: 1.25rem;
+  color: var(--white);
+  font-family: 'DM Mono', monospace; font-size: .8rem; line-height: 1.7;
+  color: var(--muted);
+  min-height: 120px;
+  view-transition-name: nav-content;
+}
+
+::view-transition-old(nav-content) {
+  animation: vt-out .25s ease forwards;
+}
+::view-transition-new(nav-content) {
+  animation: vt-in .25s ease .05s forwards;
+}
+
+/* ─── Scroll-driven Animations ────────────────────────────────────── */
+@keyframes reveal-up {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.scroll-reveal {
+  animation: reveal-up linear both;
+  animation-timeline: view();
+  animation-range: entry 0% entry 30%;
+}
+
+/* ─── if() / light-dark toggle ────────────────────────────────────── */
+.if-demo {
+  display: flex; flex-direction: column; gap: 1rem;
+}
+
+.if-card {
+  --state: normal;
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius);
+  border: 2px solid;
+  /* if() for Chrome 137+ */
+  background: if(
+    style(--state: danger): #3a1010;
+    style(--state: success): #0e3020;
+    else: var(--white)
+  );
+  border-color: if(
+    style(--state: danger): #e83a3a;
+    style(--state: success): #3ae880;
+    else: var(--mid)
+  );
+  color: if(
+    style(--state: danger): #f08080;
+    style(--state: success): #80f0b0;
+    else: var(--ink)
+  );
+  transition: all .3s;
+}
+
+/* Fallback */
+.if-card[data-state="danger"] {
+  background: #3a1010; border-color: #e83a3a; color: #f08080;
+}
+.if-card[data-state="success"] {
+  background: #0e3020; border-color: #3ae880; color: #80f0b0;
+}
+.if-card[data-state="normal"] {
+  background: var(--white); border-color: var(--mid); color: var(--ink);
+}
+
+.if-controls {
+  display: flex; gap: .5rem; flex-wrap: wrap;
+  margin-bottom: .5rem;
+}
+
+/* ─── attr() enhanced ────────────────────────────────────────────── */
+.attr-demo-list {
+  display: flex; flex-direction: column; gap: .5rem;
+}
+
+.attr-item {
+  display: flex; align-items: center; gap: 1rem;
+  padding: .6rem 1rem;
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--mid);
+  font-family: 'DM Mono', monospace; font-size: .8rem;
+}
+
+/* Enhanced attr(): use typed attribute value for color */
+@supports (color: attr(data-color type(<color>))) {
+  .attr-item::before {
+    content: '';
+    display: block;
+    width: 12px; height: 12px; border-radius: 50%;
+    background: attr(data-color type(<color>));
+    flex-shrink: 0;
+  }
+  .attr-item::after {
+    content: attr(data-label);
+    margin-left: auto;
+    font-size: .65rem; color: attr(data-color type(<color>));
+    letter-spacing: .05em; text-transform: uppercase;
+  }
+}
+
+/* Fallback */
+@supports not (color: attr(data-color type(<color>))) {
+  .attr-item::before {
+    content: '';
+    display: block;
+    width: 12px; height: 12px; border-radius: 50%;
+    background: var(--accent);
+    flex-shrink: 0;
+  }
+}
+
+/* ─── Footer ─────────────────────────────────────────────────────── */
+footer {
+  padding: 3rem var(--gap);
+  text-align: center;
+  border-top: 1px solid var(--mid);
+  background: var(--ink); color: var(--muted);
+  font-family: 'DM Mono', monospace; font-size: .75rem; line-height: 1.8;
+}
+footer strong { color: var(--accent); }
+
+/* ─── Utility ────────────────────────────────────────────────────── */
+.badge {
+  display: inline-block;
+  padding: .15rem .5rem;
+  border-radius: 3px;
+  font-size: .6rem; letter-spacing: .08em; text-transform: uppercase;
+  font-family: 'DM Mono', monospace;
+}
+.badge-new  { background: oklch(55% .18 140 / .15); color: oklch(45% .18 140); }
+.badge-exp  { background: oklch(55% .18  40 / .15); color: oklch(45% .18  40); }
+.badge-base { background: oklch(55% .18 220 / .15); color: oklch(45% .18 220); }
+
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+@media (max-width: 640px) { .two-col, .set-demo-grid, .light-dark-demo, .text-wrap-demo { grid-template-columns: 1fr; } }
+
+</style>
+</head>
+
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     NAV
+═══════════════════════════════════════════════════════════════════ -->
+<nav>
+  <a class="brand" href="#">CSS+JS 2025–26</a>
+  <a href="#css-functions">@function</a>
+  <a href="#corner-shape">corner-shape</a>
+  <a href="#select">select</a>
+  <a href="#popover">popover</a>
+  <a href="#invoker">invoker</a>
+  <a href="#view-transitions">VT</a>
+  <a href="#scroll-state">scroll-state</a>
+  <a href="#sibling">sibling()</a>
+  <a href="#field-sizing">field-sizing</a>
+  <a href="#animate-auto">animate:auto</a>
+  <a href="#light-dark">light-dark()</a>
+  <a href="#carousel">carousel</a>
+  <a href="#text-wrap">text-wrap</a>
+  <a href="#iterator">iterator</a>
+  <a href="#set-methods">Set</a>
+  <a href="#promise-try">Promise</a>
+  <a href="#regexp">RegExp</a>
+  <a href="#using">using</a>
+  <a href="#float16">Float16</a>
+  <a href="#temporal">Temporal</a>
+  <a href="#import-attr">import</a>
+  <a href="#nav-api">Navigation</a>
+  <a href="#if-fn">if()</a>
+  <a href="#attr-enhanced">attr()</a>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     HERO
+═══════════════════════════════════════════════════════════════════ -->
+<header class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content scroll-reveal">
+    <div class="hero-eyebrow">Living Feature Lab</div>
+    <h1>CSS &amp; JS<br><em>2025–2026</em><br>Feature Lab</h1>
+    <p class="hero-sub">
+      Every new native feature — demonstrated, annotated, and running live in your browser. No frameworks. No build tools.
+    </p>
+    <div class="hero-tags">
+      <span class="tag">@function</span>
+      <span class="tag">corner-shape</span>
+      <span class="tag">Customizable Select</span>
+      <span class="tag">Popover API</span>
+      <span class="tag">Invoker Commands</span>
+      <span class="tag">View Transitions</span>
+      <span class="tag">Iterator Helpers</span>
+      <span class="tag">ECMAScript 2025</span>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     ① CSS @function
+═══════════════════════════════════════════════════════════════════ -->
+<section class="section" id="css-functions">
+  <div class="section-label"><span class="num">01</span> CSS @function <span class="badge badge-new">Chrome 139+</span></div>
+  <h2>Custom CSS Functions</h2>
+  <p class="section-desc">Define reusable logic directly in CSS — typed parameters, default values, local variables, and conditional results.</p>
+
+  <div class="two-col">
+    <div>
+      <pre><span class="cmt">/* Define once */</span>
+<span class="kw">@function</span> <span class="fn">--tint</span>(<span class="val">--color &lt;color&gt;</span>, <span class="val">--amount &lt;number&gt;: 0.15</span>) {
+  <span class="kw">result:</span> <span class="fn">color-mix</span>(in oklch,
+    <span class="fn">var</span>(--color) <span class="fn">calc</span>(var(--amount) * 100%), white);
+}
+
+<span class="cmt">/* Use anywhere */</span>
+<span class="sel">.card</span> {
+  background: <span class="fn">--tint</span>(blue, 0.2);
+}</pre>
+    </div>
+    <div class="fn-demo-box">
+      <div class="demo-card-label">Live output ↓</div>
+      <div class="fn-box">Base color: <code>var(--accent)</code></div>
+      <div class="fn-box" data-variant="tint">--tint(accent, 0.3) → light tint</div>
+      <div class="fn-box" data-variant="shade">--shade(accent, 0.3) → dark shade</div>
+      <div class="fn-box" data-variant="fluid">--fluid-space() padding</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     ② corner-shape
+═══════════════════════════════════════════════════════════════════ -->
+<section class="section" id="corner-shape">
+  <div class="section-label"><span class="num">02</span> corner-shape <span class="badge badge-exp">Experimental</span></div>
+  <h2>Corner Shape Property</h2>
+  <p class="section-desc">Go beyond border-radius — notched, scooped, angled, and super-ellipse corners with optional animations.</p>
+
+  <div class="demo-grid">
+    <div class="demo-card">
+      <div class="demo-card-label">corner-shape variants</div>
+      <div class="corner-grid">
+        <div class="corner-box squircle">squircle</div>
+        <div class="corner-box notched">notch</div>
+        <div class="corner-box scoop">scoop</div>
+        <div class="corner-box pill">pill</div>
+      </div>
+    </div>
+    <div class="demo-card">
+      <div class="demo-card-label">Hover the shapes to animate</div>
+      <pre style="margin:0;font-size:.7rem"><span class="cmt">/* Chrome 129+ */</span>
+<span class="sel">.box</span> {
+  <span class="kw">border-radius:</span> <span class="val">40%</span>;
+  <span class="kw">corner-shape:</span> <span class="val">scoop</span>;
+}
+<span class="cmt">/* Animatable! */</span>
+<span class="sel">.box:hover</span> {
+  <span class="kw">corner-shape:</span> <span class="val">notch</span>;
+}</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     ③ Customizable Select
+═══════════════════════════════════════════════════════════════════ -->
+<section class="section" id="select">
+  <div class="section-label"><span class="num">03</span> Customizable &lt;select&gt; <span class="badge badge-new">Chrome 130+</span></div>
+  <h2>Fully Styleable Select</h2>
+  <p class="section-desc"><code>appearance: base-select</code> opts the element into a new, minimal rendering mode. Every part is now CSS-styleable.</p>
+
+  <div class="two-col">
+    <div class="custom-select-wrap">
+      <select class="styleable" id="custom-sel">
+        <option value="">Choose a CSS feature…</option>
+        <option value="fn">🔧 @function — Custom functions</option>
+        <option value="corner">⬟ corner-shape</option>
+        <option value="popover">💬 Popover API</option>
+        <option value="invoker">🎯 Invoker Commands</option>
+        <option value="vt">✨ View Transitions</option>
+        <option value="anchor">⚓ Anchor Positioning</option>
+        <option value="scroll">🎠 CSS Carousels</option>
+      </select>
+      <div id="sel-output" style="margin-top:.75rem;font-family:'DM Mono',monospace;font-size:.78rem;color:var(--muted)">Selected: none</div>
+    </div>
+    <pre><span class="cmt">/* Enable base-select mode */</span>
+<span class="sel">select</span> {
+  <span class="kw">appearance:</span> <span class="val">base-select</span>;
+}
+
+<span class="cmt">/* Style the dropdown */</span>
+<span class="sel">select::picker(select)</span> {
+  <span class="kw">appearance:</span> <span class="val">base-select</span>;
+  <span class="kw">background:</span> <span class="val">#14141e</span>;
+  <span class="kw">border-radius:</span> <span class="val">12px</span>;
+  <span class="kw">animation:</span> <span class="val">picker-in .2s ease</span>;
+}</pre>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     ④ Popover API
+═══════════════════════════════════════════════════════════════════ -->
+<section class="section" id="popover">
+  <div class="section-label"><span class="num">04</span> Popover API <span class="badge badge-base">Baseline 2024+</span></div>
+  <h2>Native Popover, Hint &amp; Tooltip</h2>
+  <p class="section-desc">Three popover types: <code>auto</code> closes others, <code>manual</code> is programmatic, and new <code>hint</code> overlays without closing anything.</p>
+
+  <div class="popover-demo">
+    <button class="pop-btn" popovertarget="pop-auto">Auto Popover</button>
+    <button class="pop-btn" popovertarget="pop-manual" popovertargetaction="show">Manual Show</button>
+    <button class="pop-btn" popovertarget="pop-manual" popovertargetaction="hide">Manual Hide</button>
+    <button class="pop-btn" popovertarget="pop-hint">Hint Popover</button>
+  </div>
+
+  <div id="pop-auto" popover="auto" style="margin-top:1rem">
+    <strong>Auto Popover</strong><br>
+    This closes when you click outside.<br>
+    <code>popover="auto"</code>
+  </div>
+
+  <div id="pop-manual" popover="manual" style="margin-top:1rem">
+    <strong>Manual Popover</strong><br>
+    Only closes via JS or target button.<br>
+    <code>popover="manual"</code>
+  </div>
+
+  <div id="pop-hint" popover="hint" style="margin-top:1rem">
+    ✦ Hint Popover — doesn't close other open popovers!
+  </div>
+
+  <pre style="margin-top:1.5rem"><span class="cmt">/* @starting-style: animates FROM nothing */</span>
+<span class="sel">[popover]</span> {
+  <span class="kw">opacity:</span> <span class="val">0</span>;
+  <span class="kw">transition:</span>
+    <span class="val">opacity .2s</span>,
+    <span class="val">display .2s allow-discrete</span>,
+    <span class="val">overlay .2s allow-discrete</span>;
+}
+<span class="sel">[popover]:popover-open</span> { <span class="kw">opacity:</span> <span class="val">1</span>; }
+
+<span class="kw">@starting-style</span> {
+  <span class="sel">[popover]:popover-open</span> { <span class="kw">opacity:</span> <span class="val">0</span>; }
+}</pre>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     ⑤ Invoker Commands
+═══════════════════════════════════════════════════════════════════ -->
+<section class="section" id="invoker">
+  <div class="section-label"><span class="num">05</span> Invoker Commands <span class="badge badge-new">Chrome 135+</span></div>
+  <h2>Zero-JS Dialog &amp; Popover Control</h2>
+  <p class="section-desc">Use <code>commandfor</code> + <code>command</code> HTML attributes to control dialogs and popovers declaratively — no onclick needed.</p>
+
+  <div class="invoker-demo">
+    <!-- Native invoker command — zero JS -->
+    <button class="pop-btn"
+            commandfor="invoke-dialog"
+            command="show-modal">
+      Open Dialog (Invoker)
+    </button>
+
+    <!-- light-dismiss dialog -->
+    <button class="pop-btn"
+            onclick="document.getElementById('light-dialog').showModal()">
+      Light-Dismiss Dialog
+    </button>
+  </div>
+
+  <dialog id="invoke-dialog" class="invoker-dialog">
+    <div class="dialog-inner">
+      <h3>Opened via Invoker!</h3>
+      <p>No onclick. No querySelector. Just HTML attributes:<br>
+      <code>commandfor="invoke-dialog" command="show-modal"</code></p>
+      <!-- This close button also uses invoker commands natively -->
+      <button class="close-btn"
+              commandfor="invoke-dialog"
+              command="close">
+        Close
+      </button>
+    </div>
+  </dialog>
+
+  <dialog id="light-dialog" closedby="any">
+    <h3 style="font-size:1.1rem;margin-bottom:.5rem">Light Dismiss Dialog</h3>
+    <p style="font-family:'DM Mono',monospace;font-size:.78rem;color:var(--muted)">
+      Click outside or press ESC to dismiss.<br>
+      <code>closedby="any"</code>
+    </p>
+  </dialog>
+
+  <pre style="margin-top:1.5rem"><span class="cmt">/* Purely declarative — zero JavaScript needed */</span>
+<span class="sel">&lt;button</span> <span class="kw">commandfor=</span><span class="val">"my-dialog"</span>
+         <span class="kw">command=</span><span class="val">"show-modal"</span><span class="sel">&gt;</span>Open<span class="sel">&lt;/button&gt;</span>
+
+<span class="sel">&lt;dialog</span> <span class="kw">id=</span><span class="val">"my-dialog"</span> <span class="kw">closedby=</span><span class="val">"any"</span><span class="sel">&gt;</span>…<span class="sel">&lt;/dialog&gt;</span></pre>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     ⑥ View Transitions
+═══════════════════════════════════════════════════════════════════ -->
+<section class="section" id="view-transitions">
+  <div class="section-label"><span class="num">06</span> View Transitions API <span class="badge badge-base">Baseline Oct 2025</span></div>
+  <h2>Animated DOM Updates</h2>
+  <p class="section-desc"><code>document.startViewTransition()</code> wraps any DOM change in a camera-smooth, cross-fade transition. Now Baseline across all browsers.</p>
+
+  <div class="vt-controls">
+    <button class="vt-btn" onclick="vtSwitch(0)">State Alpha</button>
+    <button class="vt-btn" onclick="vtSwitch(1)">State Beta</button>
+    <button class="vt-btn" onclick="vtSwitch(2)">State Gamma</button>
+    <button class="vt-btn" onclick="vtSwitch(3)">State Delta</button>
+  </div>
+  <div class="vt-demo" id="vt-content">
+    Click a button above to trigger a View Transition →
+  </div>
+
+  <pre style="margin-top:1.5rem"><span class="kw">document</span>.<span class="fn">startViewTransition</span>(() => {
+  <span class="cmt">// Any DOM mutation goes here</span>
+  el.textContent = <span class="val">'New content'</span>;
+});
+
+<span class="cmt">/* CSS: control the animation */</span>
+<span class="sel">::view-transition-old(root)</span> { <span class="kw">animation:</span> <span class="val">fade-out .3s</span>; }
+<span class="sel">::view-transition-new(root)</span> { <span class="kw">animation:</span> <span class="val">slide-in .3s</span>; }</pre>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     ⑦ Scroll State Queries
+═══════════════════════════════════════════════════════════════════ -->
+<section class="section" id="scroll-state">
+  <div class="section-label"><span class="num">07</span> Scroll State Queries <span class="badge badge-new">Chrome 137+</span></div>
+  <h2>Style When Stuck / Snapped</h2>
+  <p class="section-desc">Scroll down inside this container. The sticky header detects that it's stuck and changes its appearance — pure CSS.</p>
+
+  <div class="scroll-state-demo">
+    <div class="scroll-sticky-header">📌 Sticky Header (scroll me)</div>
+    <div class="scroll-content-items" style="counter-reset:item">
+      <div class="scroll-item">JavaScript iterator helpers</div>
+      <div class="scroll-item">Set.union() and Set.intersection()</div>
+      <div class="scroll-item">Promise.try() for mixed sync/async</div>
+      <div class="scroll-item">RegExp.escape() method</div>
+      <div class="scroll-item">Float16Array TypedArray</div>
+      <div class="scroll-item">Import attributes with JSON modules</div>
+      <div class="scroll-item">using / await using keywords</div>
+      <div class="scroll-item">Temporal API replaces Date</div>
+    </div>
+  </div>
+
+  <pre style="margin-top:1.5rem"><span class="kw">@container</span> <span class="fn">scroll-state</span>(stuck: top) {
+  <span class="sel">.sticky-header</span> {
+    <span class="kw">background:</span> <span class="val">var(--ink)</span>;
+    <span class="kw">border-bottom:</span> <span class="val">2px solid var(--accent)</span>;
+  }
+}</pre>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     ⑧ sibling-count / sibling-index
+═══════════════════════════════════════════════════════════════════ -->
+<section class="section" id="sibling">
+  <div class="section-label"><span class="num">08</span> sibling-index() &amp; sibling-count() <span class="badge badge-new">Chrome 131+</span></div>
+  <h2>Dynamic Sibling Styling</h2>
+  <p class="section-desc">Size, color, and delay elements based on their index and total count — no CSS custom property hacks, no JavaScript.</p>
+
+  <div class="sibling-demo" id="sibling-row">
+    <div class="sib-item"></div>
+    <div class="sib-item"></div>
+    <div class="sib-item"></div>
+    <div class="sib-item"></div>
+    <div class="sib-item"></div>
+    <div class="sib-item"></div>
+    <div class="sib-item"></div>
+    <div class="sib-item"></div>
+    <div class="sib-item"></div>
+    <div class="sib-item"></div>
+  </div>
+
+  <pre style="margin-top:1.5rem"><span class="sel">.item</span> {
+  <span class="cmt">/* Color shifts through the hue wheel by position */</span>
+  <span class="kw">background:</span> <span class="fn">oklch</span>(55% .18
+    <span class="fn">calc</span>(<span class="fn">sibling-index</span>() * (360 / <span class="fn">sibling-count</span>()))
+  );
+  <span class="kw">opacity:</span> <span class="fn">calc</span>(<span class="fn">sibling-index</span>() / <span class="fn">sibling-count</span>());
+  <span class="kw">scale:</span> <span class="fn">calc</span>(0.5 + <span class="fn">sibling-index</span>() / <span class="fn">sibling-count</span>() * 0.7);
+}</pre>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     ⑨ field-sizing: content
+═══════════════════════════════════════════════════════════════════ -->
+<section class="section" id="field-sizing">
+  <div class="section-label"><span class="num">09</span> field-sizing: content <span class="badge badge-new">Chrome 123+</span></div>
+  <h2>Auto-Growing Form Fields</h2>
+  <p class="section-desc">Both the textarea and inline input grow to fit their content — zero JavaScript required.</p>
+
+  <div class="field-sizing-demo">
+    <label style="font-size:.8rem;font-weight:700">Auto-grow textarea</label>
+    <textarea class="auto-grow" placeholder="Start typing — I'll grow to fit…"></textarea>
+    <label style="font-size:.8rem;font-weight:700">Auto-width input</label>
+    <div>
+      <input class="auto-input" type="text" placeholder="abc" size="3">
+    </div>
+  </div>
+
+  <pre style="margin-top:1.5rem"><span class="sel">textarea</span>, <span class="sel">input</span> {
+  <span class="kw">field-sizing:</span> <span class="val">content</span>;
+  <span class="cmt">/* That's it. Seriously. */</span>
+}</pre>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     ⑩ Animate to auto
+═══════════════════════════════════════════════════════════════════ -->
+<section class="section" id="animate-auto">
+  <div class="section-label"><span class="num">10</span> Animate to <code>auto</code> <span class="badge badge-new">Chrome 129+</span></div>
+  <h2>Intrinsic Height Animations</h2>
+  <p class="section-desc">Animating from <code>height: 0</code> to <code>height: auto</code> — finally native, no JS measurement required.</p>
+
+  <div class="accordion">
+    <details>
+      <summary>What is CSS @function?</summary>
+      <div class="accordion-body">
+        <code>@function</code> lets you define typed, reusable functions directly in CSS. Unlike custom properties, functions can take parameters, include conditional logic via <code>if()</code>, and compute a single return value via the <code>result</code> descriptor.
+      </div>
+    </details>
+    <details>
+      <summary>What is the Temporal API?</summary>
+      <div class="accordion-body">
+        Temporal is the long-awaited replacement for JavaScript's broken <code>Date</code> object. It provides immutable date/time objects, first-class timezone support, calendar-aware arithmetic, and clear separation of concepts like PlainDate, ZonedDateTime, and Instant.
+      </div>
+    </details>
+    <details>
+      <summary>When is Iterator.prototype available?</summary>
+      <div class="accordion-body">
+        Iterator helper methods — <code>.filter()</code>, <code>.map()</code>, <code>.take()</code>, <code>.drop()</code>, <code>.toArray()</code> and more — are part of ECMAScript 2025, officially approved June 25, 2025. They're already shipping in all major engines.
+      </div>
+    </details>
+  </div>
+
+  <pre style="margin-top:1.5rem"><span class="sel">details</span>[<span class="val">open</span>] <span class="sel">.body</span> {
+  height: <span class="val">auto</span>;           <span class="cmt">/* target: intrinsic */</span>
+}
+<span class="sel">.body</span> {
+  height: <span class="val">0</span>;
+  overflow: hidden;
+  <span class="cmt">/* Chrome 129+: interpolate-size enables this */</span>
+  transition: height .4s ease;
+}
+
+<span class="kw">@keyframes</span> open {
+  from { height: <span class="val">0</span>; }
+  to   { height: <span class="val">auto</span>; } <span class="cmt">/* ✓ works! */</span>
+}</pre>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     ⑪ light-dark()
+═══════════════════════════════════════════════════════════════════ -->
+<section class="section" id="light-dark">
+  <div class="section-label"><span class="num">11</span> light-dark() <span class="badge badge-base">Baseline 2024</span></div>
+  <h2>System Theme Aware Values</h2>
+  <p class="section-desc"><code>light-dark(light-val, dark-val)</code> automatically returns the right value based on the OS color scheme — no media query needed.</p>
+
+  <div class="light-dark-demo">
+    <div class="ld-card">
+      <h4>Auto-themed Card</h4>
+      This card uses <code>light-dark()</code> for background, text, and border — it matches your OS theme automatically.
+    </div>
+    <div class="ld-card">
+      <h4>Every Value</h4>
+      The heading color, body text, and borders are all driven by a single <code>color-scheme: light dark</code> declaration.
+    </div>
+  </div>
+
+  <pre style="margin-top:1.5rem"><span class="kw">:root</span> { <span class="kw">color-scheme:</span> <span class="val">light dark</span>; }
+
+<span class="sel">.card</span> {
+  <span class="kw">background:</span> <span class="fn">light-dark</span>(<span class="val">#f5f4ef</span>, <span class="val">#1a1a28</span>);
+  <span class="kw">color:</span>      <span class="fn">light-dark</span>(<span class="val">#111</span>, <span class="val">#eee</span>);
+  <span class="kw">border:</span> 1px solid <span class="fn">light-dark</span>(<span class="val">#ddd</span>, <span class="val">#333</span>);
+}</pre>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     ⑫ Native CSS Carousel
+═══════════════════════════════════════════════════════════════════ -->
+<section class="section" id="carousel">
+  <div class="section-label"><span class="num">12</span> CSS Native Carousel <span class="badge badge-new">Chrome 135+</span></div>
+  <h2>::scroll-marker &amp; ::scroll-button()</h2>
+  <p class="section-desc">Build carousels with navigation dots via <code>::scroll-marker</code> — no Swiper.js, no JavaScript event listeners, purely CSS.</p>
+
+  <div class="carousel" id="demo-carousel">
+    <div class="carousel-slide">Slide 01</div>
+    <div class="carousel-slide">Slide 02</div>
+    <div class="carousel-slide">Slide 03</div>
+    <div class="carousel-slide">Slide 04</div>
+    <div class="carousel-slide">Slide 05</div>
+  </div>
+  <!-- JS-powered dots as fallback -->
+  <div class="carousel-markers" id="carousel-dots"></div>
+
+  <pre style="margin-top:1.5rem"><span class="sel">.carousel</span> {
+  <span class="kw">overflow-x:</span> scroll;
+  <span class="kw">scroll-snap-type:</span> x mandatory;
+  <span class="kw">scroll-marker-group:</span> <span class="val">after</span>; <span class="cmt">/* Chrome 135+ */</span>
+}
+<span class="sel">.carousel::scroll-marker-group</span> {
+  display: flex; gap: .4rem;
+}
+<span class="sel">.slide::scroll-marker</span> {
+  content: <span class="val">''</span>;
+  width: 6px; height: 6px; border-radius: 50%;
+  background: <span class="val">var(--mid)</span>;
+}
+<span class="sel">.slide::scroll-marker:target-current</span> {
+  background: <span class="val">var(--accent)</span>;
+}</pre>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     ⑬ text-wrap: balance / pretty
+═══════════════════════════════════════════════════════════════════ -->
+<section class="section" id="text-wrap">
+  <div class="section-label"><span class="num">13</span> text-wrap: balance / pretty <span class="badge badge-base">Baseline 2024</span></div>
+  <h2>Typographic Line Balancing</h2>
+  <p class="section-desc">Ask the browser to distribute line lengths evenly or avoid orphans — without manual <code>&lt;wbr&gt;</code> or <code>&amp;shy;</code> hacks.</p>
+
+  <div class="text-wrap-demo">
+    <div class="tw-card">
+      <div class="label">text-wrap: balance</div>
+      <h3 class="balance-text">A CSS headline that wraps with beautiful visual balance across lines</h3>
+      <p style="font-size:.78rem;color:var(--muted);font-family:'DM Mono',monospace">Each line is roughly equal width — great for headings.</p>
+    </div>
+    <div class="tw-card">
+      <div class="label">text-wrap: pretty</div>
+      <h3 class="pretty-text">A long paragraph-style text that avoids leaving a single orphaned word on the last line</h3>
+      <p style="font-size:.78rem;color:var(--muted);font-family:'DM Mono',monospace">Avoids orphans — best for body copy.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     ⑭ JS: Iterator Helpers (ES2025)
+═══════════════════════════════════════════════════════════════════ -->
+<section class="section" id="iterator">
+  <div class="section-label"><span class="num">14</span> Iterator Helpers <span class="badge badge-new">ES2025</span></div>
+  <h2>Iterator.prototype Methods</h2>
+  <p class="section-desc">Lazy, chainable transformations on any iterable — no intermediate arrays, works directly on Set, Map, and custom iterators.</p>
+
+  <button class="run-btn" onclick="runIterator()">Run Demo</button>
+  <div class="js-output" id="iter-output">// Click Run to execute</div>
+
+  <pre style="margin-top:1.5rem"><span class="kw">const</span> result = [<span class="val">'a'</span>, <span class="val">''</span>, <span class="val">'b'</span>, <span class="val">''</span>, <span class="val">'c'</span>, <span class="val">'d'</span>, <span class="val">'e'</span>]
+  .<span class="fn">values</span>()           <span class="cmt">// → Iterator</span>
+  .<span class="fn">filter</span>(x => x)     <span class="cmt">// skip empty strings</span>
+  .<span class="fn">drop</span>(<span class="val">1</span>)            <span class="cmt">// skip first result</span>
+  .<span class="fn">take</span>(<span class="val">3</span>)            <span class="cmt">// take only 3</span>
+  .<span class="fn">map</span>(x => <span class="val">`[</span>${x}<span class="val">]`</span>)  <span class="cmt">// wrap each</span>
+  .<span class="fn">toArray</span>();         <span class="cmt">// → ['[b]','[c]','[d]']</span>
+
+<span class="cmt">// Also works on Set directly!</span>
+<span class="kw">const</span> set = <span class="kw">new</span> <span class="fn">Set</span>([<span class="val">1</span>,<span class="val">2</span>,<span class="val">3</span>,<span class="val">4</span>,<span class="val">5</span>]);
+set.<span class="fn">values</span>().<span class="fn">filter</span>(x => x % <span class="val">2</span>).<span class="fn">toArray</span>();
+<span class="cmt">// → [1, 3, 5]</span></pre>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     ⑮ JS: Set Methods
+═══════════════════════════════════════════════════════════════════ -->
+<section class="section" id="set-methods">
+  <div class="section-label"><span class="num">15</span> New Set Methods <span class="badge badge-new">ES2025</span></div>
+  <h2>Set Algebra — union, intersection, difference…</h2>
+  <p class="section-desc">Mathematical set operations are now native. Click an operation to see the result.</p>
+
+  <div class="set-demo-grid">
+    <button class="set-op-btn" onclick="runSet('union')"><strong>union()</strong><br>A ∪ B → all elements</button>
+    <button class="set-op-btn" onclick="runSet('intersection')"><strong>intersection()</strong><br>A ∩ B → common</button>
+    <button class="set-op-btn" onclick="runSet('difference')"><strong>difference()</strong><br>A − B → only in A</button>
+    <button class="set-op-btn" onclick="runSet('symmetricDifference')"><strong>symmetricDifference()</strong><br>A △ B → not in both</button>
+    <button class="set-op-btn" onclick="runSet('isSubsetOf')"><strong>isSubsetOf()</strong><br>A ⊆ B check</button>
+    <button class="set-op-btn" onclick="runSet('isDisjointFrom')"><strong>isDisjointFrom()</strong><br>A ∩ B = ∅ check</button>
+  </div>
+  <div class="js-output" id="set-output" style="margin-top:1rem">// Click an operation above</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     ⑯ JS: Promise.try()
+═══════════════════════════════════════════════════════════════════ -->
+<section class="section" id="promise-try">
+  <div class="section-label"><span class="num">16</span> Promise.try() <span class="badge badge-new">ES2025</span></div>
+  <h2>Clean Entry Into Promise Chains</h2>
+  <p class="section-desc">Safely wraps sync <em>and</em> async code, captures synchronous throws as rejections — bridging mixed-mode code cleanly.</p>
+
+  <button class="run-btn" onclick="runPromiseTry(false)">Run (success)</button>
+  <button class="run-btn" onclick="runPromiseTry(true)" style="background:var(--accent)">Run (throws)</button>
+  <div class="js-output" id="promise-output">// Click Run</div>
+
+  <pre style="margin-top:1.5rem"><span class="cmt">/* Before: try/catch hell */</span>
+<span class="kw">let</span> p;
+<span class="kw">try</span> { p = <span class="fn">Promise</span>.<span class="fn">resolve</span>(<span class="fn">mightThrowSync</span>()); }
+<span class="kw">catch</span>(e) { p = <span class="fn">Promise</span>.<span class="fn">reject</span>(e); }
+
+<span class="cmt">/* After: clean */</span>
+<span class="fn">Promise</span>.<span class="fn">try</span>(<span class="fn">mightThrowSync</span>)
+  .<span class="fn">then</span>(result => <span class="fn">console</span>.<span class="fn">log</span>(result))
+  .<span class="fn">catch</span>(err => <span class="fn">console</span>.<span class="fn">error</span>(err));</pre>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     ⑰ RegExp.escape()
+═══════════════════════════════════════════════════════════════════ -->
+<section class="section" id="regexp">
+  <div class="section-label"><span class="num">17</span> RegExp.escape() + Pattern Modifiers <span class="badge badge-new">ES2025</span></div>
+  <h2>Safer Regular Expressions</h2>
+  <p class="section-desc">Escape arbitrary strings for use in regex patterns. Plus inline flags via <code>(?i:...)</code> for scoped modifiers.</p>
+
+  <div class="regexp-demo">
+    <label style="font-size:.8rem;font-weight:700;display:block;margin-bottom:.5rem">Type a search term with special chars:</label>
+    <input type="text" id="re-input" value="$100.00 (discount)" placeholder="e.g. $100.00 (special)">
+    <div class="js-output" id="re-output">// Type above to test RegExp.escape()</div>
+  </div>
+
+  <pre style="margin-top:1.5rem"><span class="cmt">// Safe dynamic regex</span>
+<span class="kw">const</span> safe = <span class="fn">RegExp</span>.<span class="fn">escape</span>(userInput);
+<span class="kw">const</span> re = <span class="kw">new</span> <span class="fn">RegExp</span>(safe, <span class="val">'gi'</span>);
+
+<span class="cmt">// Pattern modifiers (inline flags)</span>
+<span class="val">/^prefix(?i:HELLO)suffix$/</span>.<span class="fn">test</span>(<span class="val">'prefixhelloSuffix'</span>)
+<span class="cmt">// true — case-insensitive only within (?i:...)</span>
+
+<span class="cmt">// Duplicate named groups in alternation</span>
+<span class="kw">const</span> re2 = <span class="val">/(?&lt;n&gt;\d+)px|(?&lt;n&gt;\d+)em/v</span>;
+re2.<span class="fn">exec</span>(<span class="val">'24px'</span>).groups.n; <span class="cmt">// "24"</span></pre>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     ⑱ using / await using
+═══════════════════════════════════════════════════════════════════ -->
+<section class="section" id="using">
+  <div class="section-label"><span class="num">18</span> using / await using <span class="badge badge-new">ES2026 Stage 4</span></div>
+  <h2>Explicit Resource Management</h2>
+  <p class="section-desc">Automatic cleanup via <code>Symbol.dispose</code> when variables go out of scope — replacing <code>try/finally</code> forever.</p>
+
+  <button class="run-btn" onclick="runUsing()">Simulate Resource Lifecycle</button>
+  <div class="resource-demo">
+    <div class="js-output" id="using-output" style="border:none;padding:0;background:transparent;color:var(--code-fg)">// Click Run to simulate</div>
+  </div>
+
+  <pre style="margin-top:1.5rem"><span class="cmt">// Sync disposal</span>
+<span class="kw">function</span> <span class="fn">withDB</span>() {
+  <span class="kw">using</span> conn = <span class="fn">openConnection</span>();
+  <span class="cmt">// conn[Symbol.dispose]() called automatically</span>
+  conn.<span class="fn">query</span>(<span class="val">'SELECT 1'</span>);
+} <span class="cmt">// ← conn closed here, even if error thrown</span>
+
+<span class="cmt">// Async disposal</span>
+<span class="kw">async function</span> <span class="fn">withFile</span>() {
+  <span class="kw">await using</span> file = <span class="kw">await</span> <span class="fn">openFile</span>(path);
+  <span class="kw">await</span> file.<span class="fn">write</span>(data);
+} <span class="cmt">// ← file.close() awaited automatically</span></pre>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     ⑲ Float16Array
+═══════════════════════════════════════════════════════════════════ -->
+<section class="section" id="float16">
+  <div class="section-label"><span class="num">19</span> Float16Array <span class="badge badge-new">ES2025</span></div>
+  <h2>Half-Precision Floating Point</h2>
+  <p class="section-desc">New typed array for 16-bit floats — critical for WebGPU workloads, ML inference, and memory-efficient numeric storage.</p>
+
+  <button class="run-btn" onclick="runFloat16()">Create Float16Array</button>
+  <div class="js-output" id="f16-output">// Click Run</div>
+  <div class="float16-visual" id="f16-visual"></div>
+
+  <pre style="margin-top:1.5rem"><span class="cmt">// Half the memory of Float32Array!</span>
+<span class="kw">const</span> arr = <span class="kw">new</span> <span class="fn">Float16Array</span>([<span class="val">1.5</span>, <span class="val">2.5</span>, <span class="val">0.001</span>, <span class="val">65504</span>]);
+arr.<span class="fn">BYTES_PER_ELEMENT</span>; <span class="cmt">// 2 (vs 4 for Float32)</span>
+
+<span class="cmt">// DataView support</span>
+<span class="kw">const</span> view = <span class="kw">new</span> <span class="fn">DataView</span>(buffer);
+view.<span class="fn">setFloat16</span>(<span class="val">0</span>, <span class="val">3.14</span>);
+view.<span class="fn">getFloat16</span>(<span class="val">0</span>); <span class="cmt">// ≈ 3.14</span></pre>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     ⑳ Temporal API
+═══════════════════════════════════════════════════════════════════ -->
+<section class="section" id="temporal">
+  <div class="section-label"><span class="num">20</span> Temporal API <span class="badge badge-new">ES2026 Stage 4</span></div>
+  <h2>The Date Replacement</h2>
+  <p class="section-desc">Immutable, timezone-aware, calendar-conscious date/time objects. No more <code>new Date()</code> footguns.</p>
+
+  <div class="temporal-demo" id="temporal-display">
+    <div class="t-label">Today (PlainDate)</div>
+    <div class="t-value" id="t-date">Loading…</div>
+    <div class="t-label">Now (ZonedDateTime)</div>
+    <div class="t-value" id="t-zdt">Loading…</div>
+    <div class="t-label">Days until 2027-01-01</div>
+    <div class="t-value" id="t-diff">Loading…</div>
+    <div class="t-label">Duration: 2y 3m 15d formatted</div>
+    <div class="t-value" id="t-dur">Loading…</div>
+  </div>
+
+  <pre style="margin-top:1.5rem"><span class="cmt">// PlainDate — no timezone</span>
+<span class="kw">const</span> today = <span class="fn">Temporal</span>.PlainDate.<span class="fn">from</span>(<span class="val">'2026-03-16'</span>);
+
+<span class="cmt">// ZonedDateTime — full timezone support</span>
+<span class="kw">const</span> now = <span class="fn">Temporal</span>.Now.<span class="fn">zonedDateTimeISO</span>();
+
+<span class="cmt">// Arithmetic is clean</span>
+<span class="kw">const</span> nextWeek = today.<span class="fn">add</span>({ weeks: <span class="val">1</span> });
+<span class="kw">const</span> diff = today.<span class="fn">until</span>(nextWeek);
+diff.days; <span class="cmt">// 7</span></pre>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     ㉑ Import Attributes
+═══════════════════════════════════════════════════════════════════ -->
+<section class="section" id="import-attr">
+  <div class="section-label"><span class="num">21</span> Import Attributes + JSON Modules <span class="badge badge-new">ES2025</span></div>
+  <h2>Native JSON &amp; Module Imports</h2>
+  <p class="section-desc">Import JSON files directly as ES modules with the <code>with { type: 'json' }</code> attribute — no <code>fetch()</code> + <code>.json()</code> dance.</p>
+
+  <div class="import-demo-box">
+<span class="cmt">// ✅ Static import — JSON as a module</span>
+<span class="kw">import</span> config <span class="kw">from</span> <span class="val">'./config.json'</span> <span class="kw">with</span> { type: <span class="val">'json'</span> };
+console.<span class="fn">log</span>(config.apiVersion); <span class="cmt">// "v3"</span>
+
+<span class="cmt">// ✅ Dynamic import — same syntax</span>
+<span class="kw">const</span> data = <span class="kw">await import</span>(
+  <span class="val">'./data.json'</span>,
+  { <span class="kw">with</span>: { type: <span class="val">'json'</span> } }
+);
+
+<span class="cmt">// ✅ CSS Modules (in Worklets)</span>
+<span class="kw">import</span> styles <span class="kw">from</span> <span class="val">'./theme.css'</span> <span class="kw">with</span> { type: <span class="val">'css'</span> };
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     ㉒ Navigation API
+═══════════════════════════════════════════════════════════════════ -->
+<section class="section" id="nav-api">
+  <div class="section-label"><span class="num">22</span> Navigation API <span class="badge badge-new">Chrome 102+, growing</span></div>
+  <h2>SPA Routing Without Libraries</h2>
+  <p class="section-desc">Intercept navigation events, manage history, and build SPA routing natively. Paired with View Transitions for animated page changes.</p>
+
+  <div class="nav-api-demo">
+    <div class="nav-api-sidebar">
+      <button class="nav-api-link active" onclick="navTo('home', this)">Home</button>
+      <button class="nav-api-link" onclick="navTo('about', this)">About</button>
+      <button class="nav-api-link" onclick="navTo('work', this)">Work</button>
+      <button class="nav-api-link" onclick="navTo('contact', this)">Contact</button>
+    </div>
+    <div class="nav-api-content" id="nav-content">
+      <strong style="color:var(--white)">Home Page</strong><br>
+      Navigating here uses <code>document.startViewTransition()</code> to animate the content swap — the same technique used by the Navigation API's <code>navigate</code> event handler.
+    </div>
+  </div>
+
+  <pre style="margin-top:1.5rem"><span class="kw">navigation</span>.<span class="fn">addEventListener</span>(<span class="val">'navigate'</span>, (e) => {
+  <span class="kw">if</span> (!<span class="fn">shouldIntercept</span>(e)) <span class="kw">return</span>;
+  e.<span class="fn">intercept</span>({
+    <span class="kw">async handler</span>() {
+      <span class="kw">await</span> <span class="kw">document</span>.<span class="fn">startViewTransition</span>(
+        () => <span class="fn">renderPage</span>(e.destination.url)
+      );
+    }
+  });
+});</pre>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     ㉓ CSS if() function
+═══════════════════════════════════════════════════════════════════ -->
+<section class="section" id="if-fn">
+  <div class="section-label"><span class="num">23</span> CSS if() function <span class="badge badge-new">Chrome 137+</span></div>
+  <h2>Inline Conditionals in CSS</h2>
+  <p class="section-desc">Switch values based on style queries — directly on the element, not just a container ancestor. The last missing piece of CSS logic.</p>
+
+  <div class="if-demo">
+    <div class="if-controls">
+      <button class="vt-btn" onclick="setIfState('normal')">Normal</button>
+      <button class="vt-btn" onclick="setIfState('danger')">Danger</button>
+      <button class="vt-btn" onclick="setIfState('success')">Success</button>
+    </div>
+    <div class="if-card" id="if-card" data-state="normal">
+      <strong>Conditional Card</strong><br>
+      <span style="font-family:'DM Mono',monospace;font-size:.78rem">
+        Background, border, and text color all driven by <code>if(style(--state: danger): …)</code>
+      </span>
+    </div>
+  </div>
+
+  <pre style="margin-top:1.5rem"><span class="sel">.card</span> {
+  <span class="kw">background:</span> <span class="fn">if</span>(
+    <span class="fn">style</span>(--state: danger):  <span class="val">#3a1010</span>;
+    <span class="fn">style</span>(--state: success): <span class="val">#0e3020</span>;
+    <span class="kw">else</span>: <span class="val">white</span>
+  );
+  <span class="kw">color:</span> <span class="fn">if</span>(
+    <span class="fn">style</span>(--state: danger):  <span class="val">#f08080</span>;
+    <span class="fn">style</span>(--state: success): <span class="val">#80f0b0</span>;
+    <span class="kw">else</span>: <span class="val">var(--ink)</span>
+  );
+}</pre>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     ㉔ Enhanced attr()
+═══════════════════════════════════════════════════════════════════ -->
+<section class="section" id="attr-enhanced">
+  <div class="section-label"><span class="num">24</span> Enhanced attr() <span class="badge badge-new">Chrome 133+</span></div>
+  <h2>Typed HTML Attribute Values in CSS</h2>
+  <p class="section-desc"><code>attr(data-x type(&lt;color&gt;))</code> reads HTML attributes as typed CSS values — colors, lengths, numbers. Not just strings anymore.</p>
+
+  <div class="attr-demo-list">
+    <div class="attr-item" data-color="#e85c2a" data-label="accent">Orange brand token</div>
+    <div class="attr-item" data-color="#2a8ce8" data-label="info">Blue info token</div>
+    <div class="attr-item" data-color="#2ae88c" data-label="success">Green success token</div>
+    <div class="attr-item" data-color="#e8c42a" data-label="warning">Yellow warning token</div>
+    <div class="attr-item" data-color="#e82a82" data-label="error">Pink error token</div>
+  </div>
+
+  <pre style="margin-top:1.5rem"><span class="cmt">/* HTML */</span>
+<span class="sel">&lt;div</span> <span class="kw">data-color=</span><span class="val">"#e85c2a"</span> <span class="kw">data-label=</span><span class="val">"accent"</span><span class="sel">&gt;&lt;/div&gt;</span>
+
+<span class="cmt">/* CSS — typed attr() */</span>
+<span class="sel">.item::before</span> {
+  content: <span class="val">''</span>;
+  background: <span class="fn">attr</span>(data-color <span class="fn">type</span>(&lt;color&gt;));
+}
+<span class="sel">.item::after</span> {
+  content: <span class="fn">attr</span>(data-label);
+  color: <span class="fn">attr</span>(data-color <span class="fn">type</span>(&lt;color&gt;));
+}</pre>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     FOOTER
+═══════════════════════════════════════════════════════════════════ -->
+<footer>
+  <strong>CSS &amp; JS 2025–2026 Feature Lab</strong><br>
+  24 live demos · Zero frameworks · Pure native web platform<br>
+  <br>
+  CSS: @function · corner-shape · base-select · Popover · Invoker Commands · View Transitions<br>
+  Scroll State · sibling-index · field-sizing · animate-to-auto · light-dark() · CSS Carousels<br>
+  text-wrap · if() · Enhanced attr() · Scroll-driven Animations<br>
+  <br>
+  JS: ES2025 Iterator Helpers · Set Algebra · Promise.try() · RegExp.escape() · Float16Array<br>
+  Import Attributes · Navigation API · using/await using · Temporal API (ES2026)<br>
+  <br>
+  <span style="color:var(--ink-faint)">Built to the spec as of March 2026. Features degrade gracefully in older engines.</span>
+</footer>
+
+
+<!-- =====================================================================
+     SCRIPTS
+     ===================================================================== -->
+<script>
+"use strict";
+
+/* ── Select demo ─────────────────────────────────────────────────────── */
+document.getElementById('custom-sel').addEventListener('change', function() {
+  document.getElementById('sel-output').textContent =
+    `Selected: ${this.value || 'none'} — "${this.options[this.selectedIndex].text}"`;
+});
+
+/* ── View Transitions demo ───────────────────────────────────────────── */
+const vtStates = [
+  { label: 'Alpha', code: `// State Alpha\nconst x = [1,2,3]\n  .values()\n  .map(n => n * 2)\n  .toArray();\n// → [2, 4, 6]` },
+  { label: 'Beta',  code: `// State Beta\nconst a = new Set([1,2,3]);\nconst b = new Set([2,3,4]);\na.intersection(b);\n// → Set {2, 3}` },
+  { label: 'Gamma', code: `// State Gamma\nawait Promise.try(() => {\n  return fetchUser(id); // async\n}).then(u => render(u));` },
+  { label: 'Delta', code: `// State Delta\nusing conn = openDB();\nconn.query('SELECT *');\n// conn auto-disposed ↑` },
+];
+
+function vtSwitch(idx) {
+  const el = document.getElementById('vt-content');
+  const run = () => { el.textContent = vtStates[idx].code; };
+
+  if (document.startViewTransition) {
+    document.startViewTransition(run);
+  } else {
+    run();
+  }
+
+  document.querySelectorAll('.vt-btn').forEach((b, i) =>
+    b.classList.toggle('active', i === idx)
+  );
+}
+
+/* ── Iterator demo ───────────────────────────────────────────────────── */
+function runIterator() {
+  const out = document.getElementById('iter-output');
+  try {
+    // Iterator helpers
+    const arr = ['a', '', 'b', '', 'c', 'd', 'e'];
+    const r1 = arr.values()
+      .filter(x => x.length > 0)
+      .drop(1)
+      .take(3)
+      .map(x => `[${x}]`)
+      .toArray();
+
+    // On Set
+    const set = new Set([1, 2, 3, 4, 5, 6, 7, 8]);
+    const r2 = set.values()
+      .filter(x => x % 2 === 0)
+      .map(x => x * x)
+      .toArray();
+
+    // reduce
+    const r3 = [10, 20, 30].values()
+      .reduce((acc, x) => acc + x, 0);
+
+    out.textContent =
+`Array filter→drop(1)→take(3)→map:
+  → ${JSON.stringify(r1)}
+
+Set even squares:
+  → ${JSON.stringify(r2)}
+
+Iterator.reduce sum:
+  → ${r3}`;
+  } catch(e) {
+    out.textContent = `⚠ Not yet supported in this browser\n${e}`;
+  }
+}
+
+/* ── Set methods demo ────────────────────────────────────────────────── */
+const A = new Set([1, 2, 3, 4, 5]);
+const B = new Set([3, 4, 5, 6, 7]);
+
+function runSet(op) {
+  const out = document.getElementById('set-output');
+  const aStr = `A = {${[...A]}}`;
+  const bStr = `B = {${[...B]}}`;
+  try {
+    let result;
+    switch(op) {
+      case 'union':              result = A.union(B); break;
+      case 'intersection':       result = A.intersection(B); break;
+      case 'difference':         result = A.difference(B); break;
+      case 'symmetricDifference':result = A.symmetricDifference(B); break;
+      case 'isSubsetOf':         result = A.isSubsetOf(B); break;
+      case 'isDisjointFrom':     result = A.isDisjointFrom(B); break;
+    }
+    const display = (result instanceof Set)
+      ? `Set {${[...result].join(', ')}}`
+      : String(result);
+
+    out.textContent = `${aStr}\n${bStr}\n\nA.${op}(B) → ${display}`;
+  } catch(e) {
+    out.textContent = `⚠ Not yet supported\n${e}`;
+  }
+}
+
+/* ── Promise.try() demo ──────────────────────────────────────────────── */
+function runPromiseTry(shouldThrow) {
+  const out = document.getElementById('promise-output');
+
+  function mightThrow() {
+    if (shouldThrow) throw new Error('Synchronous throw caught!');
+    return '✅ Sync value safely wrapped in Promise';
+  }
+
+  const fn = Promise.try
+    ? Promise.try(mightThrow)
+    : new Promise((res, rej) => { try { res(mightThrow()); } catch(e) { rej(e); } });
+
+  fn.then(v => {
+    out.textContent = `Promise.try() resolved:\n→ ${v}`;
+  }).catch(e => {
+    out.textContent = `Promise.try() caught sync throw:\n→ ${e.message}\n\n(No try/catch needed around the call site!)`;
+  });
+}
+
+/* ── RegExp.escape() demo ────────────────────────────────────────────── */
+function runRegExpEscape(val) {
+  const out = document.getElementById('re-output');
+  if (!val) { out.textContent = '// Type something above'; return; }
+
+  let escaped;
+  if (RegExp.escape) {
+    escaped = RegExp.escape(val);
+  } else {
+    // Polyfill
+    escaped = val.replace(/[\\^$.*+?()[\]{}|]/g, '\\$&');
+  }
+
+  const re = new RegExp(escaped, 'gi');
+  const src = `The price is ${val} and ${val.toUpperCase()} is the same`;
+  const matched = [...src.matchAll(re)].map(m => m[0]);
+
+  out.textContent =
+`Input:   "${val}"
+Escaped: "${escaped}"
+Regex:   /${escaped}/gi
+
+Test string:
+"${src}"
+
+Matches found: ${JSON.stringify(matched)}
+${RegExp.escape ? '✅ Using native RegExp.escape()' : '⚠ Polyfilled (RegExp.escape not yet in this browser)'}`;
+}
+
+document.getElementById('re-input').addEventListener('input', function() {
+  runRegExpEscape(this.value);
+});
+runRegExpEscape(document.getElementById('re-input').value);
+
+/* ── using / await using simulation ─────────────────────────────────── */
+function runUsing() {
+  const out = document.getElementById('using-output');
+  const log = [];
+
+  // Simulate Symbol.dispose resource
+  function makeResource(name) {
+    log.push(`📦 ${name}: acquired`);
+    return {
+      use() { log.push(`⚡ ${name}: in use`); return `data from ${name}`; },
+      [Symbol.dispose]() { log.push(`🗑 ${name}: disposed (auto)`); }
+    };
+  }
+
+  // Simulate `using` semantics
+  function simulateUsing() {
+    const res = makeResource('DatabaseConnection');
+    try {
+      const data = res.use();
+      log.push(`✅ Got: "${data}"`);
+      // Would normally throw here to demo error safety
+    } finally {
+      res[Symbol.dispose](); // auto-called by `using`
+    }
+    log.push(`\n✦ Even with errors, dispose() is guaranteed`);
+  }
+
+  simulateUsing();
+  out.textContent = log.join('\n');
+}
+
+/* ── Float16Array demo ───────────────────────────────────────────────── */
+function runFloat16() {
+  const out = document.getElementById('f16-output');
+  const vis = document.getElementById('f16-visual');
+
+  const values = [0.5, 1.0, 1.5, 2.0, 3.14, 100, 1000, 65504, 0.0001, -1.5];
+
+  let text = '';
+  let bars = '';
+
+  if (typeof Float16Array !== 'undefined') {
+    const arr = new Float16Array(values);
+    text += `✅ Float16Array supported!\n\n`;
+    text += `Input values:  ${values.join(', ')}\n`;
+    text += `Float16 stored: ${[...arr].map(v => v.toPrecision(4)).join(', ')}\n`;
+    text += `BYTES_PER_ELEMENT: ${arr.BYTES_PER_ELEMENT} (vs Float32: 4, Float64: 8)\n`;
+    text += `Memory: ${arr.byteLength} bytes for ${arr.length} values`;
+
+    values.forEach((v, i) => {
+      const w = Math.max(30, Math.min(120, Math.abs(arr[i]) * 0.5 + 30));
+      bars += `<div class="float16-bar" style="width:${w}px;opacity:${0.4+i*0.06}">${arr[i].toPrecision(3)}</div>`;
+    });
+  } else {
+    text = `⚠ Float16Array not yet in this browser\n\nPolyfill:\nvalues stored as Float32Array instead\n\n${values.join(', ')}`;
+    values.forEach((v, i) => {
+      const w = Math.max(30, Math.min(120, Math.abs(v) * 0.5 + 30));
+      bars += `<div class="float16-bar" style="width:${w}px;opacity:${0.4+i*0.06};background:var(--muted)">${v.toPrecision(3)}</div>`;
+    });
+  }
+
+  out.textContent = text;
+  vis.innerHTML = bars;
+}
+
+/* ── Temporal API demo ───────────────────────────────────────────────── */
+function runTemporal() {
+  const setVal = (id, v) => document.getElementById(id).textContent = v;
+
+  if (typeof Temporal !== 'undefined') {
+    try {
+      const today = Temporal.Now.plainDateISO();
+      setVal('t-date', today.toString());
+
+      const zdt = Temporal.Now.zonedDateTimeISO();
+      setVal('t-zdt', zdt.toString().substring(0, 35) + '…');
+
+      const future = Temporal.PlainDate.from('2027-01-01');
+      const diff = today.until(future, { largestUnit: 'days' });
+      setVal('t-diff', `${diff.days} days`);
+
+      const dur = new Temporal.Duration(2, 3, 0, 15, 4, 30);
+      setVal('t-dur', dur.toString());
+      return;
+    } catch(e) {}
+  }
+
+  // Polyfill display using Date
+  const now = new Date();
+  const pad = n => String(n).padStart(2,'0');
+  setVal('t-date', `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())} (polyfilled via Date)`);
+  setVal('t-zdt', `${now.toISOString()} (polyfilled)`);
+
+  const future = new Date('2027-01-01');
+  const days = Math.floor((future - now) / 86400000);
+  setVal('t-diff', `~${days} days (polyfilled)`);
+  setVal('t-dur', `P2Y3M15DT4H30M (Temporal not in this browser yet)`);
+}
+runTemporal();
+
+/* ── if() card state demo ────────────────────────────────────────────── */
+function setIfState(state) {
+  const card = document.getElementById('if-card');
+  // Update both data-state (for CSS fallback) and CSS custom prop (for if())
+  card.setAttribute('data-state', state);
+  card.style.setProperty('--state', state);
+}
+
+/* ── Navigation API SPA demo ─────────────────────────────────────────── */
+const navPages = {
+  home:    { title: 'Home Page', body: 'Navigating here uses <code>document.startViewTransition()</code> to animate the content swap — the same technique used by the Navigation API\'s <code>navigate</code> event handler.' },
+  about:   { title: 'About Page', body: 'The Navigation API provides <code>navigation.navigate(url)</code>, <code>navigation.back()</code>, <code>navigation.forward()</code> — a complete routing surface. State can be passed via <code>navigation.navigate(url, { state })</code>.' },
+  work:    { title: 'Work Page', body: 'Intercept navigations with <code>navigation.addEventListener(\'navigate\', e => e.intercept({ handler }))</code> — including back/forward, link clicks, and programmatic navigations.' },
+  contact: { title: 'Contact Page', body: 'The <code>navigate</code> event fires before the navigation commits. <code>e.canIntercept</code> tells you if it\'s safe to intercept. Cross-origin navigations cannot be intercepted.' },
+};
+
+function navTo(page, btn) {
+  const content = document.getElementById('nav-content');
+  const data = navPages[page];
+
+  const update = () => {
+    content.innerHTML = `<strong style="color:var(--white)">${data.title}</strong><br>${data.body}`;
+  };
+
+  if (document.startViewTransition) {
+    document.startViewTransition(update);
+  } else {
+    update();
+  }
+
+  document.querySelectorAll('.nav-api-link').forEach(l => l.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+/* ── Carousel dots polyfill ──────────────────────────────────────────── */
+(function() {
+  const carousel = document.getElementById('demo-carousel');
+  const dotsWrap = document.getElementById('carousel-dots');
+  const slides = carousel.querySelectorAll('.carousel-slide');
+
+  slides.forEach((_, i) => {
+    const dot = document.createElement('button');
+    dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+    dot.onclick = () => {
+      slides[i].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+    };
+    dotsWrap.appendChild(dot);
+  });
+
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const idx = [...slides].indexOf(e.target);
+        dotsWrap.querySelectorAll('.carousel-dot').forEach((d, i) =>
+          d.classList.toggle('active', i === idx)
+        );
+      }
+    });
+  }, { root: carousel, threshold: .6 });
+
+  slides.forEach(s => io.observe(s));
+})();
+
+/* ── Accordion height polyfill ───────────────────────────────────────── */
+document.querySelectorAll('.accordion details').forEach(det => {
+  const body = det.querySelector('.accordion-body');
+  det.addEventListener('toggle', () => {
+    if (det.open) {
+      // Support native animate-to-auto (Chrome 129+)
+      if (CSS.supports('height', 'calc-size(auto, size)')) return;
+      // Polyfill: measure then animate
+      body.style.height = body.scrollHeight + 'px';
+    } else {
+      body.style.height = '0';
+    }
+  });
+});
+</script>
+
+</body>
+</html>
