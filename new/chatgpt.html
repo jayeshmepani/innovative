@@ -1,0 +1,1674 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Modern CSS + HTML + JS Lab (2025 → 17 Mar 2026)</title>
+  <meta name="color-scheme" content="light dark" />
+  <style>
+    /* =========================================================
+       Modern CSS demo lab
+       Focus: fresh features surfaced/baselined/documented in late 2025 to Mar 17 2026,
+       with graceful fallbacks where possible.
+       ========================================================= */
+
+    @layer reset, tokens, base, components, demos, utilities;
+
+    @property --hero-angle {
+      syntax: "<angle>";
+      inherits: false;
+      initial-value: 0deg;
+    }
+
+    @property --accent-hue {
+      syntax: "<number>";
+      inherits: true;
+      initial-value: 285;
+    }
+
+    @view-transition {
+      navigation: auto;
+    }
+
+    @layer reset {
+      *, *::before, *::after { box-sizing: border-box; }
+      html:focus-within { scroll-behavior: smooth; }
+      body, h1, h2, h3, h4, p, ul, ol, dl, dd, figure, blockquote, pre { margin: 0; }
+      img, svg, video { display: block; max-inline-size: 100%; }
+      button, input, select, textarea { font: inherit; }
+      code, pre, kbd, samp { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    }
+
+    @layer tokens {
+      :root {
+        color-scheme: light dark;
+        interpolate-size: allow-keywords;
+        --accent-hue: 285;
+        --accent: oklch(0.67 0.23 var(--accent-hue));
+        --accent-2: oklch(0.74 0.16 calc(var(--accent-hue) + 65));
+        --bg: light-dark(oklch(0.985 0.01 275), oklch(0.17 0.02 275));
+        --surface: light-dark(rgb(255 255 255 / 0.78), rgb(19 22 28 / 0.72));
+        --surface-strong: light-dark(rgb(255 255 255 / 0.94), rgb(22 26 34 / 0.92));
+        --ink: light-dark(oklch(0.23 0.02 280), oklch(0.93 0.02 280));
+        --ink-soft: light-dark(oklch(0.42 0.02 280), oklch(0.78 0.02 280));
+        --line: light-dark(rgb(20 20 30 / 0.10), rgb(255 255 255 / 0.10));
+        --shadow: light-dark(0 10px 40px rgb(8 15 30 / 0.10), 0 16px 50px rgb(0 0 0 / 0.32));
+        --radius: 24px;
+        --radius-lg: 34px;
+        --gap: clamp(0.9rem, 1.5vw, 1.2rem);
+        --page-max: 1400px;
+      }
+
+      [data-theme="light"] {
+        color-scheme: light;
+        --bg: oklch(0.985 0.01 275);
+        --surface: rgb(255 255 255 / 0.82);
+        --surface-strong: rgb(255 255 255 / 0.96);
+        --ink: oklch(0.23 0.02 280);
+        --ink-soft: oklch(0.42 0.02 280);
+        --line: rgb(20 20 30 / 0.10);
+        --shadow: 0 10px 40px rgb(8 15 30 / 0.10);
+      }
+
+      [data-theme="dark"] {
+        color-scheme: dark;
+        --bg: oklch(0.17 0.02 275);
+        --surface: rgb(19 22 28 / 0.72);
+        --surface-strong: rgb(22 26 34 / 0.92);
+        --ink: oklch(0.93 0.02 280);
+        --ink-soft: oklch(0.78 0.02 280);
+        --line: rgb(255 255 255 / 0.10);
+        --shadow: 0 16px 50px rgb(0 0 0 / 0.32);
+      }
+    }
+
+    @layer base {
+      html {
+        background:
+          radial-gradient(circle at 20% 10%, color-mix(in oklab, var(--accent) 22%, transparent), transparent 34%),
+          radial-gradient(circle at 80% 0%, color-mix(in oklab, var(--accent-2) 24%, transparent), transparent 30%),
+          linear-gradient(180deg, color-mix(in oklab, var(--bg) 96%, black 4%), var(--bg));
+        min-block-size: 100%;
+      }
+
+      body {
+        min-block-size: 100vh;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        color: var(--ink);
+        background: transparent;
+        line-height: 1.5;
+        text-wrap: pretty;
+        padding: clamp(1rem, 2vw, 2rem);
+      }
+
+      ::selection {
+        background: color-mix(in oklab, var(--accent) 42%, white);
+        color: black;
+      }
+
+      a {
+        color: inherit;
+        text-decoration-color: color-mix(in oklab, var(--accent) 54%, currentColor);
+        text-underline-offset: 0.18em;
+      }
+
+      .page {
+        inline-size: min(100%, var(--page-max));
+        margin-inline: auto;
+        display: grid;
+        gap: clamp(1rem, 1.8vw, 1.5rem);
+      }
+
+      .shell {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        box-shadow: var(--shadow);
+        border-radius: var(--radius-lg);
+        backdrop-filter: blur(16px) saturate(1.2);
+        overflow: clip;
+      }
+
+      .section {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: clamp(1rem, 2vw, 1.5rem);
+      }
+
+      .section > header {
+        display: grid;
+        gap: 0.35rem;
+        margin-block-end: 1rem;
+      }
+
+      .section h2 {
+        font-size: clamp(1.2rem, 1.1rem + 1vw, 2rem);
+        letter-spacing: -0.03em;
+      }
+
+      .section p.lead {
+        color: var(--ink-soft);
+        max-inline-size: 70ch;
+      }
+
+      .grid {
+        display: grid;
+        gap: var(--gap);
+      }
+
+      .grid.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .grid.cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+      @media (width < 980px) {
+        .grid.cols-4,
+        .grid.cols-3,
+        .grid.cols-2 { grid-template-columns: 1fr; }
+      }
+
+      .card {
+        position: relative;
+        background: var(--surface-strong);
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        padding: 1rem;
+        display: grid;
+        gap: 0.85rem;
+        min-block-size: 100%;
+      }
+
+      .eyebrow,
+      .meta {
+        color: var(--ink-soft);
+        font-size: 0.82rem;
+        letter-spacing: 0.02em;
+      }
+
+      .eyebrow {
+        text-transform: uppercase;
+      }
+
+      .pill-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+
+      .pill,
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        padding: 0.35rem 0.7rem;
+        font-size: 0.82rem;
+        background: color-mix(in oklab, var(--surface-strong) 88%, transparent);
+      }
+
+      .pill strong { font-size: 0.78rem; }
+
+      .meta-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 0.75rem;
+      }
+
+      .meta-box {
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 0.9rem;
+        background: color-mix(in oklab, var(--surface-strong) 94%, transparent);
+      }
+
+      pre.code {
+        padding: 0.9rem 1rem;
+        border-radius: 18px;
+        background: light-dark(rgb(245 246 252 / 1), rgb(10 12 17 / 0.96));
+        border: 1px solid var(--line);
+        overflow: auto;
+        font-size: 0.88rem;
+        line-height: 1.55;
+      }
+
+      .fine-print {
+        color: var(--ink-soft);
+        font-size: 0.88rem;
+      }
+
+      .control-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        align-items: center;
+      }
+
+      .button,
+      button {
+        appearance: none;
+        border: 1px solid color-mix(in oklab, var(--accent) 30%, var(--line));
+        background:
+          linear-gradient(180deg,
+            color-mix(in oklab, var(--accent) 18%, white),
+            color-mix(in oklab, var(--accent) 12%, transparent));
+        color: var(--ink);
+        padding: 0.78rem 1rem;
+        border-radius: 16px;
+        cursor: pointer;
+        transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
+        box-shadow: 0 8px 24px color-mix(in oklab, var(--accent) 18%, transparent);
+      }
+
+      button:hover,
+      .button:hover { transform: translateY(-1px); }
+
+      button:active,
+      .button:active { transform: translateY(1px); }
+
+      .ghost {
+        background: transparent;
+        box-shadow: none;
+      }
+
+      label {
+        font-weight: 600;
+      }
+
+      input[type="range"] { inline-size: min(100%, 18rem); }
+      input[type="color"] {
+        inline-size: 3rem;
+        block-size: 3rem;
+        padding: 0.15rem;
+        border-radius: 12px;
+        border: 1px solid var(--line);
+        background: transparent;
+      }
+
+      input[type="text"],
+      textarea,
+      .field-demo select {
+        inline-size: 100%;
+        padding: 0.8rem 0.95rem;
+        border-radius: 16px;
+        border: 1px solid var(--line);
+        background: color-mix(in oklab, var(--surface-strong) 94%, transparent);
+        color: inherit;
+      }
+
+      textarea { min-block-size: 8rem; }
+    }
+
+    @layer components {
+      .hero {
+        position: relative;
+        padding: clamp(1.2rem, 2vw, 2rem);
+        overflow: clip;
+        background:
+          linear-gradient(135deg,
+            color-mix(in oklab, var(--accent) 20%, var(--surface-strong)),
+            color-mix(in oklab, var(--accent-2) 12%, var(--surface-strong)));
+      }
+
+      .hero::before {
+        content: "";
+        position: absolute;
+        inset: -15%;
+        background:
+          conic-gradient(from var(--hero-angle),
+            color-mix(in oklab, var(--accent) 42%, transparent),
+            transparent 22%,
+            color-mix(in oklab, var(--accent-2) 38%, transparent),
+            transparent 48%,
+            color-mix(in oklab, var(--accent) 42%, transparent));
+        filter: blur(60px);
+        opacity: 0.6;
+        pointer-events: none;
+        animation: hue-spin 18s linear infinite;
+      }
+
+      @keyframes hue-spin {
+        to { --hero-angle: 360deg; }
+      }
+
+      .hero-grid {
+        position: relative;
+        display: grid;
+        grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.9fr);
+        gap: 1rem;
+        align-items: start;
+      }
+
+      @media (width < 920px) {
+        .hero-grid { grid-template-columns: 1fr; }
+      }
+
+      .hero-copy {
+        display: grid;
+        gap: 1rem;
+      }
+
+      .hero h1 {
+        font-size: clamp(1.9rem, 1.15rem + 3vw, 4.1rem);
+        line-height: 0.98;
+        letter-spacing: -0.06em;
+        max-inline-size: 12ch;
+      }
+
+      .hero .lede {
+        max-inline-size: 66ch;
+        color: var(--ink-soft);
+        font-size: clamp(1rem, 0.95rem + 0.35vw, 1.15rem);
+      }
+
+      .hero .hero-panel {
+        display: grid;
+        gap: 0.9rem;
+        align-content: start;
+      }
+
+      .mini-stat {
+        display: grid;
+        gap: 0.2rem;
+        padding: 0.9rem;
+        border-radius: 18px;
+        border: 1px solid var(--line);
+        background: color-mix(in oklab, var(--surface-strong) 90%, transparent);
+      }
+
+      .mini-stat strong {
+        font-size: 1.5rem;
+        letter-spacing: -0.04em;
+      }
+
+      .dock {
+        position: sticky;
+        top: 1rem;
+        z-index: 10;
+        display: flex;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+        padding: 0.7rem;
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        background: color-mix(in oklab, var(--surface) 92%, transparent);
+        backdrop-filter: blur(18px);
+      }
+
+      .dock a {
+        padding: 0.52rem 0.82rem;
+        border-radius: 999px;
+        border: 1px solid transparent;
+        text-decoration: none;
+        background: transparent;
+      }
+
+      .dock a:hover {
+        border-color: var(--line);
+        background: color-mix(in oklab, var(--surface-strong) 90%, transparent);
+      }
+    }
+
+    @layer demos {
+      /* ---------------------------------
+         @scope demo
+         --------------------------------- */
+      @scope (.scope-playground) {
+        :scope {
+          border-radius: 26px;
+          border: 1px solid color-mix(in oklab, var(--accent) 26%, var(--line));
+          padding: 1rem;
+          background: color-mix(in oklab, var(--accent) 8%, var(--surface-strong));
+        }
+
+        .scope-only {
+          color: color-mix(in oklab, var(--accent) 78%, var(--ink));
+          font-weight: 750;
+        }
+
+        .scope-chip {
+          background: color-mix(in oklab, var(--accent) 16%, transparent);
+          border-color: color-mix(in oklab, var(--accent) 26%, var(--line));
+        }
+      }
+
+      .scope-outside .scope-only {
+        color: inherit;
+        font-weight: 500;
+      }
+
+      /* ---------------------------------
+         color functions and relative colors
+         --------------------------------- */
+      .swatch-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 0.9rem;
+      }
+
+      .swatch-card {
+        padding: 1rem;
+        border-radius: 24px;
+        border: 1px solid var(--line);
+        display: grid;
+        gap: 0.45rem;
+        min-block-size: 9rem;
+        align-content: end;
+        box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08);
+      }
+
+      .swatch-card small { opacity: 0.82; }
+
+      .mix-demo {
+        background: color-mix(in oklab, var(--accent) 55%, var(--accent-2));
+      }
+
+      .light-dark-demo {
+        background: light-dark(oklch(0.95 0.02 95), oklch(0.34 0.04 255));
+        color: light-dark(oklch(0.26 0.02 255), oklch(0.95 0.02 95));
+      }
+
+      .relative-demo {
+        background: var(--surface-strong);
+      }
+
+      @supports (color: oklch(from red l c h / 0.5)) {
+        .relative-demo {
+          background: oklch(from var(--accent) calc(l + 0.24) c h / 0.18);
+          box-shadow: inset 0 0 0 0.2rem oklch(from var(--accent) calc(l + 0.12) c h / 0.35);
+        }
+      }
+
+      .contrast-demo {
+        background: var(--accent);
+        color: white;
+      }
+
+      @supports (color: contrast-color(red)) {
+        .contrast-demo {
+          color: contrast-color(var(--accent));
+        }
+      }
+
+      /* ---------------------------------
+         container queries + if() examples
+         --------------------------------- */
+      .cq-shell {
+        container-type: inline-size;
+        container-name: cards;
+      }
+
+      .cq-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0.8rem;
+      }
+
+      @container cards (width > 700px) {
+        .cq-grid {
+          grid-template-columns: 1.1fr 0.9fr;
+        }
+      }
+
+      .responsive-card {
+        padding: 1rem;
+        border-radius: 20px;
+        border: 1px solid var(--line);
+        background: color-mix(in oklab, var(--surface-strong) 94%, transparent);
+      }
+
+      .if-card {
+        --scheme: ice;
+        background-image: linear-gradient(135deg, rgb(255 255 255 / 0.28), transparent);
+      }
+
+      @supports (color: if(media(width > 700px): red; else: blue)) {
+        .if-card {
+          color: if(media(width > 880px): color-mix(in oklab, var(--accent) 85%, black); else: var(--ink));
+          border: 2px solid if(supports(color: lch(75% 0 0)): lch(70% 40 320); else: currentColor);
+        }
+      }
+
+      /* ---------------------------------
+         text-box and corner-shape
+         --------------------------------- */
+      .text-box-lab {
+        display: grid;
+        gap: 0.8rem;
+      }
+
+      .type-compare {
+        padding: 1rem;
+        border-radius: 20px;
+        border: 1px solid var(--line);
+        background: color-mix(in oklab, var(--surface-strong) 94%, transparent);
+      }
+
+      .type-sample {
+        margin: 0;
+        font-size: clamp(2rem, 1rem + 3vw, 4.5rem);
+        font-weight: 800;
+        line-height: 1;
+        border-block: 4px solid color-mix(in oklab, var(--accent) 55%, transparent);
+      }
+
+      .type-sample.trimmed {
+        text-box: trim-both cap alphabetic;
+      }
+
+      .corner-demo {
+        inline-size: min(100%, 340px);
+        aspect-ratio: 1.3;
+        border-radius: 42px;
+        corner-shape: squircle;
+        border: 2px solid color-mix(in oklab, var(--accent) 44%, var(--line));
+        background:
+          linear-gradient(145deg,
+            color-mix(in oklab, var(--accent) 22%, var(--surface-strong)),
+            color-mix(in oklab, var(--accent-2) 16%, var(--surface-strong)));
+        display: grid;
+        place-items: center;
+        font-size: 1.15rem;
+        font-weight: 750;
+        transition: corner-shape 260ms ease, border-radius 260ms ease, transform 260ms ease;
+      }
+
+      .corner-demo:hover {
+        transform: translateY(-2px);
+      }
+
+      /* ---------------------------------
+         field-sizing
+         --------------------------------- */
+      .autosize-input,
+      .autosize-textarea {
+        field-sizing: content;
+        inline-size: auto;
+        min-inline-size: 14ch;
+        max-inline-size: 100%;
+      }
+
+      .autosize-textarea {
+        min-block-size: 4lh;
+      }
+
+      /* ---------------------------------
+         modern select / customizable select
+         --------------------------------- */
+      .palette-select-wrap {
+        display: grid;
+        gap: 0.75rem;
+      }
+
+      .palette-select {
+        inline-size: min(100%, 26rem);
+      }
+
+      .palette-select,
+      .palette-select::picker(select) {
+        appearance: base-select;
+      }
+
+      .palette-select {
+        border: 1px solid color-mix(in oklab, var(--accent) 25%, var(--line));
+        border-radius: 18px;
+        background: color-mix(in oklab, var(--surface-strong) 96%, transparent);
+        color: inherit;
+        padding: 0.2rem;
+      }
+
+      .palette-select button {
+        background: transparent;
+        box-shadow: none;
+        border: none;
+        padding: 0.8rem 0.9rem;
+        inline-size: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+      }
+
+      selectedcontent {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      selectedcontent .swatch-dot {
+        inline-size: 1rem;
+        block-size: 1rem;
+        border-radius: 999px;
+        display: inline-block;
+      }
+
+      .palette-select::picker-icon {
+        color: color-mix(in oklab, var(--accent) 60%, var(--ink));
+        transition: rotate 220ms ease;
+      }
+
+      .palette-select:open::picker-icon {
+        rotate: 180deg;
+      }
+
+      .palette-select::picker(select) {
+        border: 1px solid color-mix(in oklab, var(--accent) 26%, var(--line));
+        border-radius: 20px;
+        background: var(--surface-strong);
+        padding: 0.35rem;
+        box-shadow: 0 20px 60px rgb(0 0 0 / 0.24);
+        opacity: 0;
+        transition: opacity 220ms ease, transform 220ms ease, display 220ms ease;
+        transition-behavior: allow-discrete;
+        transform: translateY(0.35rem);
+        top: calc(anchor(bottom) + 0.45rem);
+        left: anchor(left);
+        inline-size: anchor-size(width, 22rem);
+      }
+
+      .palette-select:open::picker(select) {
+        opacity: 1;
+        transform: none;
+      }
+
+      @starting-style {
+        .palette-select:open::picker(select) {
+          opacity: 0;
+          transform: translateY(0.35rem);
+        }
+      }
+
+      .palette-select option {
+        border-radius: 14px;
+        padding: 0.8rem 0.95rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .palette-select option:hover {
+        background: color-mix(in oklab, var(--accent) 8%, transparent);
+      }
+
+      .palette-select option:checked {
+        background: color-mix(in oklab, var(--accent) 15%, transparent);
+        font-weight: 700;
+      }
+
+      .palette-select option:checked::checkmark {
+        content: "✓";
+        color: color-mix(in oklab, var(--accent) 80%, var(--ink));
+        margin-inline-end: 0.55rem;
+      }
+
+      .swatch-dot[data-c="grape"] { background: oklch(0.67 0.23 315); }
+      .swatch-dot[data-c="mint"] { background: oklch(0.82 0.14 160); }
+      .swatch-dot[data-c="sun"] { background: oklch(0.88 0.18 95); }
+      .swatch-dot[data-c="ocean"] { background: oklch(0.68 0.15 230); }
+      .swatch-dot[data-c="rose"] { background: oklch(0.77 0.16 12); }
+
+      /* ---------------------------------
+         details + ::details-content
+         --------------------------------- */
+      .disclosure {
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        background: color-mix(in oklab, var(--surface-strong) 96%, transparent);
+        overflow: clip;
+      }
+
+      .disclosure summary {
+        list-style: none;
+        cursor: pointer;
+        padding: 1rem;
+        font-weight: 700;
+      }
+
+      .disclosure summary::-webkit-details-marker { display: none; }
+
+      .disclosure::details-content {
+        opacity: 0;
+        block-size: 0;
+        overflow: clip;
+        padding-inline: 1rem;
+        transition:
+          opacity 260ms ease,
+          block-size 260ms ease,
+          content-visibility 260ms ease,
+          display 260ms ease;
+        transition-behavior: allow-discrete;
+      }
+
+      .disclosure[open]::details-content {
+        opacity: 1;
+        block-size: auto;
+        padding-block-end: 1rem;
+      }
+
+      @starting-style {
+        .disclosure[open]::details-content {
+          opacity: 0;
+          block-size: 0;
+        }
+      }
+
+      /* ---------------------------------
+         popover, dialog, modal selectors
+         --------------------------------- */
+      [popover], dialog {
+        border: 1px solid color-mix(in oklab, var(--accent) 22%, var(--line));
+        border-radius: 22px;
+        background: var(--surface-strong);
+        color: inherit;
+        padding: 1rem;
+        box-shadow: 0 24px 70px rgb(0 0 0 / 0.30);
+      }
+
+      [popover] {
+        max-inline-size: min(92vw, 28rem);
+        opacity: 0;
+        transform: translateY(0.5rem) scale(0.98);
+        transition:
+          opacity 220ms ease,
+          transform 220ms ease,
+          display 220ms ease,
+          overlay 220ms ease;
+        transition-behavior: allow-discrete;
+      }
+
+      [popover]:popover-open {
+        opacity: 1;
+        transform: none;
+      }
+
+      @starting-style {
+        [popover]:popover-open {
+          opacity: 0;
+          transform: translateY(0.5rem) scale(0.98);
+        }
+      }
+
+      dialog {
+        max-inline-size: min(92vw, 34rem);
+      }
+
+      dialog::backdrop {
+        backdrop-filter: blur(12px);
+        background: rgb(8 10 18 / 0.35);
+      }
+
+      dialog:modal {
+        border-color: color-mix(in oklab, var(--accent) 34%, var(--line));
+      }
+
+      /* ---------------------------------
+         anchor positioning
+         --------------------------------- */
+      .anchor-lab {
+        position: relative;
+        min-block-size: 14rem;
+        padding: 1rem;
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        background: color-mix(in oklab, var(--surface-strong) 95%, transparent);
+      }
+
+      .anchor-source {
+        anchor-name: --anchor-demo;
+      }
+
+      .anchor-note {
+        margin-block-start: 1rem;
+        border: 1px dashed color-mix(in oklab, var(--accent) 25%, var(--line));
+        border-radius: 16px;
+        padding: 0.9rem;
+        background: color-mix(in oklab, var(--accent) 10%, transparent);
+      }
+
+      @supports (position-anchor: --anchor-demo) and (top: anchor(bottom)) {
+        .anchor-note {
+          position: absolute;
+          position-anchor: --anchor-demo;
+          top: calc(anchor(bottom) + 0.75rem);
+          left: anchor(left);
+          inline-size: anchor-size(width, 18rem);
+          margin: 0;
+        }
+      }
+
+      /* ---------------------------------
+         custom states via :state()
+         --------------------------------- */
+      state-pill {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        min-inline-size: 10rem;
+        padding: 0.9rem 1rem;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: color-mix(in oklab, var(--surface-strong) 95%, transparent);
+        cursor: pointer;
+        user-select: none;
+      }
+
+      @supports selector(state-pill:state(on)) {
+        state-pill:state(on) {
+          background: color-mix(in oklab, var(--accent) 20%, var(--surface-strong));
+          border-color: color-mix(in oklab, var(--accent) 38%, var(--line));
+          box-shadow: 0 0 0 0.28rem color-mix(in oklab, var(--accent) 16%, transparent);
+        }
+      }
+
+      state-pill[data-fallback-state="on"] {
+        background: color-mix(in oklab, var(--accent) 20%, var(--surface-strong));
+        border-color: color-mix(in oklab, var(--accent) 38%, var(--line));
+      }
+
+      /* ---------------------------------
+         view transition playground
+         --------------------------------- */
+      .vt-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 0.8rem;
+      }
+
+      .vt-card {
+        view-transition-name: match-element;
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        padding: 1rem;
+        min-block-size: 8rem;
+        display: grid;
+        align-content: end;
+        background:
+          linear-gradient(180deg,
+            color-mix(in oklab, var(--surface-strong) 96%, transparent),
+            color-mix(in oklab, var(--accent) 10%, transparent));
+      }
+
+      html:active-view-transition {
+        overflow: clip;
+      }
+
+      ::view-transition-old(root),
+      ::view-transition-new(root) {
+        animation-duration: 420ms;
+      }
+
+      ::view-transition-group(*) {
+        animation-duration: 420ms;
+      }
+
+      /* ---------------------------------
+         experimental parking lot
+         --------------------------------- */
+      .parking-lot {
+        border: 1px dashed color-mix(in oklab, var(--accent) 25%, var(--line));
+        background: color-mix(in oklab, var(--accent) 8%, transparent);
+      }
+
+      .spec-grid {
+        display: grid;
+        gap: 0.75rem;
+      }
+    }
+
+    @layer utilities {
+      .row { display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; }
+      .spacer { block-size: 0.25rem; }
+      .stack { display: grid; gap: 0.75rem; }
+      .two-up { display: grid; gap: 0.8rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .muted { color: var(--ink-soft); }
+      .sr-only {
+        position: absolute;
+        inline-size: 1px;
+        block-size: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+      }
+      @media (width < 780px) {
+        .two-up { grid-template-columns: 1fr; }
+      }
+    }
+
+    /* user preference media queries */
+    @media (prefers-reduced-transparency: reduce) {
+      .shell,
+      .section,
+      .dock {
+        backdrop-filter: none;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="shell hero" id="top">
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <span class="eyebrow">native platform lab • html + css + js</span>
+          <h1>Modern web features, all in one giant page.</h1>
+          <p class="lede">
+            A self-contained playground focused on the most interesting native CSS, HTML,
+            and browser APIs that became newly relevant, newly documented, or newly baselined
+            from late 2025 to 17 March 2026 — with graceful fallbacks where support still varies.
+          </p>
+          <div class="pill-row">
+            <span class="pill"><strong>@scope</strong> local styling</span>
+            <span class="pill"><strong>base-select</strong> customizable native select</span>
+            <span class="pill"><strong>::details-content</strong> better disclosures</span>
+            <span class="pill"><strong>anchor()</strong> tethered UI</span>
+            <span class="pill"><strong>text-box</strong> cleaner type spacing</span>
+            <span class="pill"><strong>view transitions</strong> native motion</span>
+          </div>
+          <div class="control-row">
+            <button id="theme-toggle" type="button">Toggle theme with view transition</button>
+            <label class="row" for="accent-hue">
+              Accent hue
+              <input id="accent-hue" type="range" min="0" max="360" value="285" />
+            </label>
+            <label class="row" for="accent-picker">
+              Accent color
+              <input id="accent-picker" type="color" value="#A63DFF" />
+            </label>
+          </div>
+        </div>
+        <aside class="hero-panel">
+          <div class="mini-stat">
+            <span class="eyebrow">what this page favors</span>
+            <strong>Progressive enhancement</strong>
+            <span class="muted">New features are wired in; older browsers still keep the page usable.</span>
+          </div>
+          <div class="mini-stat">
+            <span class="eyebrow">what it intentionally mixes</span>
+            <strong>Baseline + limited availability</strong>
+            <span class="muted">Because the newest stuff is exciting precisely when support is still moving.</span>
+          </div>
+          <div class="mini-stat">
+            <span class="eyebrow">why it’s big</span>
+            <strong>One page, many islands</strong>
+            <span class="muted">Each section isolates a modern feature so you can inspect it faster.</span>
+          </div>
+        </aside>
+      </div>
+    </header>
+
+    <nav class="dock shell" aria-label="Section navigation">
+      <a href="#support">Support scan</a>
+      <a href="#cascade">At-rules</a>
+      <a href="#colors">Colors</a>
+      <a href="#layout">Layout</a>
+      <a href="#type">Typography</a>
+      <a href="#forms">Forms</a>
+      <a href="#overlays">Overlays</a>
+      <a href="#components">Custom states</a>
+      <a href="#motion">Transitions</a>
+      <a href="#parking-lot">Spec parking lot</a>
+    </nav>
+
+    <main class="grid">
+      <section class="section" id="support">
+        <header>
+          <span class="eyebrow">runtime feature scan</span>
+          <h2>Live support matrix from your browser</h2>
+          <p class="lead">This list is generated with <code>CSS.supports()</code> plus a few DOM/API checks, so you can see what is actually available in the browser opening this file.</p>
+        </header>
+        <div class="meta-list" id="support-grid"></div>
+      </section>
+
+      <section class="section" id="cascade">
+        <header>
+          <span class="eyebrow">newer at-rules + cascade</span>
+          <h2>At-rules: <code>@layer</code>, <code>@scope</code>, <code>@property</code>, <code>@starting-style</code>, <code>@view-transition</code></h2>
+          <p class="lead">These are the pieces that make modern CSS feel more component-oriented and less global, brittle, and hacky.</p>
+        </header>
+        <div class="grid cols-2">
+          <article class="card">
+            <div class="pill-row">
+              <span class="badge">@layer</span>
+              <span class="badge">@property</span>
+              <span class="badge">typed custom props</span>
+            </div>
+            <h3>Layered cascade + animatable custom properties</h3>
+            <p class="muted">This whole page is split into named cascade layers, and the hero glow is animated via a typed custom property called <code>--hero-angle</code>.</p>
+            <pre class="code">@layer reset, tokens, base, components, demos;
+
+@property --hero-angle {
+  syntax: "&lt;angle&gt;";
+  initial-value: 0deg;
+  inherits: false;
+}</pre>
+          </article>
+
+          <article class="card">
+            <div class="pill-row">
+              <span class="badge">@scope</span>
+              <span class="badge">local selectors</span>
+            </div>
+            <h3>Scoped styles without Shadow DOM</h3>
+            <div class="scope-playground stack">
+              <p class="scope-only">This text is purple only because it sits inside the scoped container.</p>
+              <div class="pill-row">
+                <span class="pill scope-chip">Scoped chip A</span>
+                <span class="pill scope-chip">Scoped chip B</span>
+              </div>
+            </div>
+            <div class="scope-outside stack" style="margin-top:0.8rem;">
+              <p class="scope-only">The same class outside the scope falls back to normal styling.</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="colors">
+        <header>
+          <span class="eyebrow">css color level 5 vibes</span>
+          <h2>Color functions: <code>light-dark()</code>, <code>color-mix()</code>, relative color syntax, <code>contrast-color()</code></h2>
+          <p class="lead">The point is not just prettier colors — it’s less theme boilerplate and more dynamic color logic directly in CSS.</p>
+        </header>
+        <div class="swatch-grid">
+          <article class="swatch-card mix-demo">
+            <strong>color-mix()</strong>
+            <small>Blends the live accent with a sibling hue.</small>
+          </article>
+          <article class="swatch-card light-dark-demo">
+            <strong>light-dark()</strong>
+            <small>Swaps colors using the active color scheme without an extra media query.</small>
+          </article>
+          <article class="swatch-card relative-demo">
+            <strong>relative colors</strong>
+            <small>Derives tints from the current accent using <code>oklch(from ...)</code> when supported.</small>
+          </article>
+          <article class="swatch-card contrast-demo">
+            <strong>contrast-color()</strong>
+            <small>Uses automatic black/white text where supported; otherwise falls back.</small>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="layout">
+        <header>
+          <span class="eyebrow">conditional styling + adaptive layout</span>
+          <h2>Container queries, <code>if()</code>, and anchor positioning</h2>
+          <p class="lead">This is the shift away from viewport-only thinking. Components can react to their own container, and values themselves can become conditional.</p>
+        </header>
+
+        <div class="grid cols-2">
+          <article class="card cq-shell">
+            <div class="pill-row">
+              <span class="badge">@container</span>
+              <span class="badge">component-driven responsiveness</span>
+            </div>
+            <h3>Resize the page and this card adapts to its own width</h3>
+            <div class="cq-grid">
+              <div class="responsive-card">
+                <strong>Main content</strong>
+                <p class="muted">Once the component’s inline size crosses the query threshold, the second block moves beside this one.</p>
+              </div>
+              <div class="responsive-card if-card">
+                <strong><code>if()</code> island</strong>
+                <p class="muted">A limited-availability property-value conditional is applied here only if the browser understands the function.</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="pill-row">
+              <span class="badge">anchor-name</span>
+              <span class="badge">position-anchor</span>
+              <span class="badge">anchor-size()</span>
+            </div>
+            <h3>Arbitrary anchored UI without JS positioning math</h3>
+            <div class="anchor-lab">
+              <button class="anchor-source" type="button">I am the anchor source</button>
+              <div class="anchor-note">
+                This note is statically placed as a fallback, but on supporting browsers it is tethered to the button using <code>anchor()</code> and <code>anchor-size()</code>.
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="type">
+        <header>
+          <span class="eyebrow">typography + geometry</span>
+          <h2><code>text-box</code> trims font spacing, and <code>corner-shape</code> unlocks squircles, notches, scoops</h2>
+          <p class="lead">These two feel surprisingly fresh: one improves typographic box control, the other gives boxes shapes that go beyond old-school rounded corners.</p>
+        </header>
+        <div class="grid cols-2">
+          <article class="card text-box-lab">
+            <div class="pill-row">
+              <span class="badge">text-box</span>
+              <span class="badge">cap alphabetic</span>
+            </div>
+            <div class="type-compare stack">
+              <div>
+                <div class="meta">Default line box</div>
+                <p class="type-sample">ALIGN</p>
+              </div>
+              <div>
+                <div class="meta">Trimmed with <code>text-box: trim-both cap alphabetic</code></div>
+                <p class="type-sample trimmed">ALIGN</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="pill-row">
+              <span class="badge">corner-shape</span>
+              <span class="badge">superellipse()</span>
+            </div>
+            <h3>Interactive corner morph</h3>
+            <div class="stack">
+              <label for="corner-style">Corner shape</label>
+              <select id="corner-style">
+                <option value="squircle">squircle</option>
+                <option value="round">round</option>
+                <option value="bevel">bevel</option>
+                <option value="scoop">scoop</option>
+                <option value="notch">notch</option>
+                <option value="superellipse(3)">superellipse(3)</option>
+                <option value="superellipse(-1.5)">superellipse(-1.5)</option>
+              </select>
+              <label for="corner-radius">Border radius</label>
+              <input id="corner-radius" type="range" min="0" max="90" value="42" />
+              <div class="corner-demo" id="corner-demo">shape me</div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section field-demo" id="forms">
+        <header>
+          <span class="eyebrow">native controls getting way better</span>
+          <h2><code>field-sizing: content</code> and fully customizable native <code>&lt;select&gt;</code></h2>
+          <p class="lead">This is one of the most exciting areas. Native controls keep their semantics and built-in behavior, but you can style them much more deeply now.</p>
+        </header>
+
+        <div class="grid cols-2">
+          <article class="card">
+            <div class="pill-row">
+              <span class="badge">field-sizing</span>
+              <span class="badge">content-driven controls</span>
+            </div>
+            <h3>Auto-sizing form controls</h3>
+            <div class="stack">
+              <label for="autosize-input">Input grows with content</label>
+              <input id="autosize-input" class="autosize-input" type="text" value="Type here…" />
+              <label for="autosize-textarea">Textarea grows naturally</label>
+              <textarea id="autosize-textarea" class="autosize-textarea">This textarea uses field-sizing: content so its preferred size can respond to content instead of a fixed browser default.</textarea>
+            </div>
+          </article>
+
+          <article class="card palette-select-wrap">
+            <div class="pill-row">
+              <span class="badge">appearance: base-select</span>
+              <span class="badge">::picker(select)</span>
+              <span class="badge">::picker-icon</span>
+              <span class="badge">::checkmark</span>
+            </div>
+            <h3>Customizable native select</h3>
+            <label for="palette-select">Choose a palette</label>
+            <select id="palette-select" class="palette-select">
+              <button>
+                <selectedcontent></selectedcontent>
+              </button>
+              <option value="grape"><span class="swatch-dot" data-c="grape"></span> Grape / violet</option>
+              <option value="mint"><span class="swatch-dot" data-c="mint"></span> Mint / green</option>
+              <option value="sun"><span class="swatch-dot" data-c="sun"></span> Sun / gold</option>
+              <option value="ocean"><span class="swatch-dot" data-c="ocean"></span> Ocean / blue</option>
+              <option value="rose"><span class="swatch-dot" data-c="rose"></span> Rose / coral</option>
+            </select>
+            <p class="fine-print">On browsers without customizable select support, this gracefully falls back to a classic select.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="overlays">
+        <header>
+          <span class="eyebrow">top layer, popovers, dialogs</span>
+          <h2>Popover API, <code>:popover-open</code>, <code>:modal</code>, <code>::backdrop</code>, and invoker commands</h2>
+          <p class="lead">A lot of UI you previously built with brittle JavaScript can now be expressed declaratively, including command buttons that control dialogs.</p>
+        </header>
+
+        <div class="grid cols-2">
+          <article class="card">
+            <div class="pill-row">
+              <span class="badge">popover</span>
+              <span class="badge">:popover-open</span>
+            </div>
+            <h3>Declarative popover</h3>
+            <div class="row">
+              <button popovertarget="feature-pop" popovertargetaction="toggle">Toggle popover</button>
+              <button class="ghost" type="button" id="js-popover-toggle">Toggle via JS</button>
+            </div>
+            <div id="feature-pop" popover>
+              <div class="stack">
+                <strong>This is a native popover</strong>
+                <p class="muted">It sits in the top layer, can be opened declaratively, and is styled with <code>:popover-open</code>.</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="pill-row">
+              <span class="badge">commandfor</span>
+              <span class="badge">command="show-modal"</span>
+              <span class="badge">:modal</span>
+            </div>
+            <h3>Dialog controlled by invoker commands</h3>
+            <div class="row">
+              <button commandfor="demo-dialog" command="show-modal">Open modal dialog</button>
+              <button class="ghost" type="button" id="open-dialog-fallback">JS fallback</button>
+            </div>
+            <dialog id="demo-dialog">
+              <form method="dialog" class="stack">
+                <h3>Invoker Commands API demo</h3>
+                <p class="muted">If your browser supports it, the open and close buttons work declaratively through <code>commandfor</code> and <code>command</code>.</p>
+                <div class="row">
+                  <button value="ok">Confirm</button>
+                  <button commandfor="demo-dialog" command="close" type="button">Close command</button>
+                </div>
+              </form>
+            </dialog>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="components">
+        <header>
+          <span class="eyebrow">web components + css states</span>
+          <h2>Custom state pseudo-class: <code>:state()</code></h2>
+          <p class="lead">This is a very elegant bridge between custom elements and CSS: internal element states can become styleable without leaking everything into attributes or classes.</p>
+        </header>
+        <div class="grid cols-2">
+          <article class="card">
+            <div class="pill-row">
+              <span class="badge">ElementInternals.states</span>
+              <span class="badge">CustomStateSet</span>
+              <span class="badge">:state(on)</span>
+            </div>
+            <h3>Tap the custom element</h3>
+            <div class="stack">
+              <state-pill id="state-pill">off</state-pill>
+              <p class="muted">When supported, the pill is styled by <code>state-pill:state(on)</code>. Otherwise it falls back to a data attribute.</p>
+            </div>
+          </article>
+
+          <article class="card">
+            <h3>Why this is nice</h3>
+            <ul class="stack" style="padding-inline-start: 1rem;">
+              <li>You keep behavior inside the custom element.</li>
+              <li>You still get CSS-driven styling for state.</li>
+              <li>You avoid a lot of class toggling boilerplate.</li>
+            </ul>
+            <pre class="code">class StatePill extends HTMLElement {
+  #internals = this.attachInternals?.();
+  toggle() {
+    this.#internals?.states.add("on");
+  }
+}
+
+state-pill:state(on) {
+  /* style internal state */
+}</pre>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="motion">
+        <header>
+          <span class="eyebrow">native transitions</span>
+          <h2><code>::details-content</code>, discrete transitions, <code>@starting-style</code>, and the View Transition API</h2>
+          <p class="lead">Instead of awkward JS animation bookkeeping, the platform now gives you much more natural ways to animate state changes.</p>
+        </header>
+
+        <div class="grid cols-2">
+          <article class="card">
+            <div class="pill-row">
+              <span class="badge">::details-content</span>
+              <span class="badge">@starting-style</span>
+              <span class="badge">allow-discrete</span>
+            </div>
+            <h3>Animated disclosure</h3>
+            <details class="disclosure">
+              <summary>Open the disclosure</summary>
+              <div class="stack">
+                <p>This content is styled through <code>::details-content</code>, with an opening animation that relies on <code>@starting-style</code> and discrete transition support.</p>
+                <p class="muted">This is much cleaner than the old “wrap inner content and animate max-height” pattern.</p>
+              </div>
+            </details>
+          </article>
+
+          <article class="card">
+            <div class="pill-row">
+              <span class="badge">startViewTransition()</span>
+              <span class="badge">view-transition-name: match-element</span>
+            </div>
+            <h3>Shuffle cards with native view transitions</h3>
+            <div class="row">
+              <button id="shuffle-cards">Shuffle cards</button>
+              <button class="ghost" id="reverse-cards">Reverse order</button>
+            </div>
+            <div class="vt-grid" id="vt-grid">
+              <article class="vt-card"><strong>Atlas</strong><span class="meta">Panel A</span></article>
+              <article class="vt-card"><strong>Nova</strong><span class="meta">Panel B</span></article>
+              <article class="vt-card"><strong>Echo</strong><span class="meta">Panel C</span></article>
+              <article class="vt-card"><strong>Flux</strong><span class="meta">Panel D</span></article>
+              <article class="vt-card"><strong>Mint</strong><span class="meta">Panel E</span></article>
+              <article class="vt-card"><strong>Rune</strong><span class="meta">Panel F</span></article>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section parking-lot" id="parking-lot">
+        <header>
+          <span class="eyebrow">spec parking lot</span>
+          <h2>Interesting but still uneven: experimental selectors and newer modules worth watching</h2>
+          <p class="lead">These are here because they matter conceptually, but they are not dependable enough yet for a broad live demo in every browser.</p>
+        </header>
+        <div class="spec-grid">
+          <article class="card">
+            <h3>Column combinator <code>||</code></h3>
+            <p class="muted">Useful for styling cells based on their table column relationship, but currently not a practical production selector.</p>
+            <pre class="code">/* Cells that belong to a selected column */
+col.selected || td {
+  background: color-mix(in oklab, var(--accent) 18%, canvas);
+}</pre>
+          </article>
+
+          <article class="card">
+            <h3><code>@position-try</code> and overflow fallbacks</h3>
+            <p class="muted">Part of the anchor-positioning family. The goal is to express fallback placements natively when tethered UI would overflow.</p>
+            <pre class="code">@position-try --flip-down {
+  position-area: bottom span-inline-end;
+}
+
+.tooltip {
+  position-try: --flip-down;
+}</pre>
+          </article>
+
+          <article class="card">
+            <h3><code>if()</code> as a full value-level control structure</h3>
+            <p class="muted">Already very interesting, but still a “use behind feature detection” tool for now.</p>
+            <pre class="code">.card {
+  color: if(
+    media(width &gt; 900px): oklch(25% 0.04 280);
+    else: currentColor;
+  );
+}</pre>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer class="section">
+      <div class="stack">
+        <h2>How to inspect this page</h2>
+        <p class="lead">Open DevTools, watch the support matrix, resize the viewport, toggle the theme, open the popover, inspect the <code>&lt;select&gt;</code>, and shuffle the cards. Most sections are isolated so you can copy pieces into smaller experiments.</p>
+        <p class="fine-print">Built as a teaching lab, not a production starter kit. The whole point is to show what modern native platform primitives can do now — and which ones still need careful progressive enhancement.</p>
+      </div>
+    </footer>
+  </div>
+
+  <script type="module">
+    const root = document.documentElement;
+    const supportGrid = document.getElementById('support-grid');
+    const themeToggle = document.getElementById('theme-toggle');
+    const hueSlider = document.getElementById('accent-hue');
+    const accentPicker = document.getElementById('accent-picker');
+    const paletteSelect = document.getElementById('palette-select');
+    const featurePopover = document.getElementById('feature-pop');
+    const jsPopoverToggle = document.getElementById('js-popover-toggle');
+    const demoDialog = document.getElementById('demo-dialog');
+    const openDialogFallback = document.getElementById('open-dialog-fallback');
+    const cornerDemo = document.getElementById('corner-demo');
+    const cornerStyle = document.getElementById('corner-style');
+    const cornerRadius = document.getElementById('corner-radius');
+    const vtGrid = document.getElementById('vt-grid');
+    const shuffleBtn = document.getElementById('shuffle-cards');
+    const reverseBtn = document.getElementById('reverse-cards');
+
+    const features = [
+      {
+        label: '@scope',
+        detail: 'Scoped styling at-rule',
+        ok: CSS.supports('selector(:scope)') && CSS.supports('color', 'light-dark(white, black)')
+      },
+      {
+        label: '::details-content',
+        detail: 'Disclosure content pseudo-element',
+        ok: CSS.supports('selector(::details-content)')
+      },
+      {
+        label: 'base-select',
+        detail: 'Customizable native select styling',
+        ok: CSS.supports('appearance: base-select')
+      },
+      {
+        label: '::picker(select)',
+        detail: 'Select picker pseudo-element',
+        ok: CSS.supports('selector(::picker(select))')
+      },
+      {
+        label: ':open',
+        detail: 'Open-state selector',
+        ok: CSS.supports('selector(:open)')
+      },
+      {
+        label: ':popover-open',
+        detail: 'Popover state selector',
+        ok: CSS.supports('selector(:popover-open)')
+      },
+      {
+        label: 'anchor positioning',
+        detail: 'anchor(), anchor-size(), position-anchor',
+        ok: CSS.supports('top: anchor(bottom)') && CSS.supports('position-anchor: --demo')
+      },
+      {
+        label: 'text-box',
+        detail: 'Trim type box edges',
+        ok: CSS.supports('text-box: trim-both cap alphabetic')
+      },
+      {
+        label: 'corner-shape',
+        detail: 'Beyond border-radius',
+        ok: CSS.supports('corner-shape: squircle')
+      },
+      {
+        label: 'field-sizing',
+        detail: 'Content-driven input sizing',
+        ok: CSS.supports('field-sizing: content')
+      },
+      {
+        label: 'light-dark()',
+        detail: 'Color scheme function',
+        ok: CSS.supports('color: light-dark(white, black)')
+      },
+      {
+        label: 'contrast-color()',
+        detail: 'Automatic contrast helper',
+        ok: CSS.supports('color: contrast-color(red)')
+      },
+      {
+        label: 'relative colors',
+        detail: 'oklch(from ...)',
+        ok: CSS.supports('color: oklch(from red l c h / 0.5)')
+      },
+      {
+        label: 'if()',
+        detail: 'Conditional property values',
+        ok: CSS.supports('color: if(media(width > 1px): red; else: blue)')
+      },
+      {
+        label: 'Invoker Commands API',
+        detail: 'commandfor / command buttons',
+        ok: 'commandForElement' in HTMLButtonElement.prototype
+      },
+      {
+        label: 'View Transition API',
+        detail: 'startViewTransition()',
+        ok: 'startViewTransition' in document
+      },
+      {
+        label: ':state()',
+        detail: 'Custom element states in CSS',
+        ok: CSS.supports('selector(state-pill:state(on))')
+      }
+    ];
+
+    supportGrid.innerHTML = features.map(({ label, detail, ok }) => `
+      <article class="meta-box">
+        <div class="row" style="justify-content:space-between; align-items:flex-start;">
+          <strong>${label}</strong>
+          <span class="pill" aria-label="${ok ? 'supported' : 'not supported'}">${ok ? '✓ supported' : '— not now'}</span>
+        </div>
+        <div class="meta" style="margin-top:0.35rem;">${detail}</div>
+      </article>
+    `).join('');
+
+    function withTransition(update) {
+      if ('startViewTransition' in document) {
+        document.startViewTransition(update);
+      } else {
+        update();
+      }
+    }
+
+    themeToggle.addEventListener('click', () => {
+      withTransition(() => {
+        const current = root.dataset.theme || 'auto';
+        if (current === 'auto') root.dataset.theme = 'dark';
+        else if (current === 'dark') root.dataset.theme = 'light';
+        else delete root.dataset.theme;
+      });
+    });
+
+    hueSlider.addEventListener('input', () => {
+      root.style.setProperty('--accent-hue', hueSlider.value);
+    });
+
+    accentPicker.addEventListener('input', () => {
+      root.style.setProperty('--accent', accentPicker.value);
+    });
+
+    paletteSelect?.addEventListener('change', () => {
+      const map = {
+        grape: '#A63DFF',
+        mint: '#39d98a',
+        sun: '#F7C948',
+        ocean: '#3E7BFA',
+        rose: '#FF6B6B'
+      };
+      const chosen = map[paletteSelect.value];
+      if (chosen) {
+        accentPicker.value = chosen;
+        root.style.setProperty('--accent', chosen);
+      }
+    });
+
+    jsPopoverToggle?.addEventListener('click', () => {
+      if (!featurePopover || typeof featurePopover.showPopover !== 'function') return;
+      let isOpen = false;
+      try {
+        isOpen = featurePopover.matches(':popover-open');
+      } catch {
+        isOpen = featurePopover.hasAttribute('open');
+      }
+      if (isOpen && typeof featurePopover.hidePopover === 'function') featurePopover.hidePopover();
+      else featurePopover.showPopover();
+    });
+
+    openDialogFallback?.addEventListener('click', () => {
+      if (typeof demoDialog?.showModal === 'function') demoDialog.showModal();
+    });
+
+    function updateCornerDemo() {
+      cornerDemo.style.setProperty('corner-shape', cornerStyle.value);
+      cornerDemo.style.borderRadius = `${cornerRadius.value}px`;
+      cornerDemo.textContent = `${cornerStyle.value} / ${cornerRadius.value}px`;
+    }
+
+    cornerStyle.addEventListener('change', updateCornerDemo);
+    cornerRadius.addEventListener('input', updateCornerDemo);
+    updateCornerDemo();
+
+    class StatePill extends HTMLElement {
+      #internals;
+      #on = false;
+
+      constructor() {
+        super();
+        this.#internals = this.attachInternals?.();
+        this.setAttribute('role', 'switch');
+        this.tabIndex = 0;
+      }
+
+      connectedCallback() {
+        this.setAttribute('aria-checked', 'false');
+        this.addEventListener('click', this.toggle);
+        this.addEventListener('keydown', (event) => {
+          if (event.key === ' ' || event.key === 'Enter') {
+            event.preventDefault();
+            this.toggle();
+          }
+        });
+        this.render();
+      }
+
+      toggle = () => {
+        this.#on = !this.#on;
+        if (this.#internals?.states) {
+          if (this.#on) this.#internals.states.add('on');
+          else this.#internals.states.delete('on');
+        }
+        this.dataset.fallbackState = this.#on ? 'on' : 'off';
+        this.setAttribute('aria-checked', String(this.#on));
+        this.render();
+      };
+
+      render() {
+        this.textContent = this.#on ? 'on' : 'off';
+      }
+    }
+
+    if (!customElements.get('state-pill')) {
+      customElements.define('state-pill', StatePill);
+    }
+
+    function shuffleChildren(container) {
+      const items = [...container.children];
+      for (let i = items.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [items[i], items[j]] = [items[j], items[i]];
+      }
+      container.replaceChildren(...items);
+    }
+
+    shuffleBtn.addEventListener('click', () => {
+      withTransition(() => shuffleChildren(vtGrid));
+    });
+
+    reverseBtn.addEventListener('click', () => {
+      withTransition(() => {
+        vtGrid.replaceChildren(...[...vtGrid.children].reverse());
+      });
+    });
+  </script>
+</body>
+</html>

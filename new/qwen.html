@@ -1,0 +1,1591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS 2025-2026 Complete Feature Showcase</title>
+    <style>
+        /* ============================================
+           CSS CASCADE & INHERITANCE LEVEL 6
+           @scope Rule - Scoped Styling [[19], [20], [27]]
+           ============================================ */
+        @scope (.card-component) {
+            .title {
+                color: #2563eb;
+                font-weight: 700;
+            }
+            .content {
+                background: #eff6ff;
+                border-radius: 8px;
+            }
+        }
+
+        @scope (.dashboard-widget) to (.widget-footer) {
+            .header {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+            }
+        }
+
+        /* ============================================
+           CSS COLOR MODULE LEVEL 5
+           color-mix(), light-dark(), Relative Color Syntax [[31], [33], [37]]
+           ============================================ */
+        :root {
+            --primary-color: #3b82f6;
+            --secondary-color: #8b5cf6;
+            --bg-color: #ffffff;
+            --text-color: #1f2937;
+            
+            /* light-dark() for automatic theme switching [[31]] */
+            --surface: light-dark(#ffffff, #1f2937);
+            --surface-hover: light-dark(#f3f4f6, #374151);
+            
+            /* color-mix() for color blending [[31], [37]] */
+            --primary-light: color-mix(in srgb, var(--primary-color) 20%, white);
+            --primary-dark: color-mix(in srgb, var(--primary-color) 80%, black);
+            
+            /* Relative Color Syntax [[33], [38]] */
+            --primary-hsl: oklch(from var(--primary-color) l c h);
+            --primary-transparent: oklch(from var(--primary-color) l c h / 0.5);
+        }
+
+        /* ============================================
+           MEDIA QUERIES LEVEL 5
+           Enhanced User Preference Detection [[48], [50], [57]]
+           ============================================ */
+        @media (prefers-reduced-transparency: reduce) {
+            .transparency-element {
+                background: var(--surface);
+                backdrop-filter: none;
+            }
+        }
+
+        @media (prefers-contrast: more) {
+            .high-contrast {
+                border: 3px solid currentColor;
+                font-weight: 700;
+            }
+        }
+
+        @media (prefers-contrast: less) {
+            .low-contrast {
+                border: 1px solid #e5e7eb;
+                font-weight: 400;
+            }
+        }
+
+        @media (dynamic-range: high) {
+            .hdr-content {
+                color: color(display-p3 1 1 1);
+            }
+        }
+
+        @media (video-dynamic-range: standard) {
+            .video-container {
+                background: #000;
+            }
+        }
+
+        @media (environmental-light-level: dim) {
+            body {
+                background: #1a1a2e;
+            }
+        }
+
+        @media (environmental-light-level: bright) {
+            body {
+                background: #ffffff;
+            }
+        }
+
+        /* ============================================
+           CSS VALUES & UNITS MODULE LEVEL 5
+           if() Conditional Function [[39], [41], [42]]
+           ============================================ */
+        .conditional-box {
+            /* if() function for conditional values [[41]] */
+            background: if(width > 500px: #3b82f6, #8b5cf6);
+            padding: if(prefers-reduced-motion: 1rem, 1.5rem);
+            border-radius: if(--rounded-corners: 12px, 0);
+        }
+
+        /* ============================================
+           CSS CONDITIONAL RULES MODULE LEVEL 5
+           @when, @else, @supports combinations [[69], [71], [76]]
+           ============================================ */
+        @when (width > 768px) {
+            .responsive-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        } @else if (width > 480px) {
+            .responsive-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        } @else {
+            .responsive-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @when (supports(--custom-prop)) and (supports(display: grid)) {
+            .modern-layout {
+                display: grid;
+            }
+        }
+
+        @when font-format(opentype) {
+            .custom-font {
+                font-family: 'CustomFont', sans-serif;
+            }
+        }
+
+        /* ============================================
+           CSS SELECTORS LEVEL 5
+           Advanced Selectors beyond :has() and :is() [[10], [12], [73]]
+           ============================================ */
+        /* :has() - Parent selector (Level 4, enhanced in Level 5) */
+        .parent:has(> .child:hover) {
+            background: var(--primary-light);
+        }
+
+        /* :is() - Matching list */
+        :is(h1, h2, h3, h4, h5, h6).title {
+            margin-bottom: 0.5em;
+        }
+
+        /* :where() - Zero specificity */
+        :where(.reset-all) * {
+            margin: 0;
+            padding: 0;
+        }
+
+        /* New Level 5 Selectors */
+        /* :nth-child() with formula */
+        .grid-item:nth-child(2n+1) {
+            background: var(--primary-light);
+        }
+
+        /* :nth-last-child() */
+        .list-item:nth-last-child(-n+3) {
+            border-bottom: none;
+        }
+
+        /* sibling-index() and sibling-count() [[16]] */
+        .sibling-item {
+            --index: sibling-index();
+            --total: sibling-count();
+        }
+
+        /* ============================================
+           CSS GRID LAYOUT LEVEL 3
+           Masonry Layout / Grid Lanes [[58], [63], [67]]
+           ============================================ */
+        .masonry-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            grid-template-rows: masonry; /* Masonry layout [[58]] */
+            gap: 1rem;
+        }
+
+        .masonry-item {
+            break-inside: avoid;
+        }
+
+        /* Grid Lanes */
+        .grid-lanes {
+            display: grid;
+            grid-lanes: 3;
+            grid-auto-flow: dense;
+        }
+
+        /* ============================================
+           SCROLL-DRIVEN ANIMATIONS [[4], [7]]
+           ============================================ */
+        @keyframes scroll-progress {
+            from { width: 0%; }
+            to { width: 100%; }
+        }
+
+        .scroll-progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: var(--primary-color);
+            animation: scroll-progress linear;
+            animation-timeline: scroll();
+        }
+
+        .scroll-reveal {
+            opacity: 0;
+            transform: translateY(50px);
+            animation: reveal linear;
+            animation-timeline: view();
+            animation-range: entry 10% cover 30%;
+        }
+
+        @keyframes reveal {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ============================================
+           ANCHOR POSITIONING [[4], [7]]
+           ============================================ */
+        .anchor-element {
+            anchor-name: --tooltip-anchor;
+        }
+
+        .tooltip {
+            position: absolute;
+            position-anchor: --tooltip-anchor;
+            top: anchor(bottom);
+            left: anchor(center);
+            transform: translateX(-50%);
+        }
+
+        /* ============================================
+           NEW PSEUDO-ELEMENTS [[7]]
+           ============================================ */
+        ::scroll-button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.5rem;
+        }
+
+        ::scroll-button:hover {
+            background: var(--primary-dark);
+        }
+
+        ::selection {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        ::view-transition-group(root) {
+            animation-duration: 0.5s;
+        }
+
+        ::view-transition-image-pair(root) {
+            isolation: isolate;
+        }
+
+        /* ============================================
+           NEW PROPERTIES & VALUES
+           ============================================ */
+        
+        /* Advanced Corner Shapes - Squircles [[5]] */
+        .squircle {
+            border-radius: 40% / 20%;
+            /* or using shape() function [[5]] */
+            border-radius: shape(outer, round, 20px);
+        }
+
+        /* Container Queries */
+        .container {
+            container-type: inline-size;
+            container-name: card;
+        }
+
+        @container card (min-width: 400px) {
+            .container-content {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        /* Subgrid */
+        .parent-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+        }
+
+        .child-grid {
+            display: grid;
+            grid-template-columns: subgrid;
+            grid-column: span 6;
+        }
+
+        /* Text Wrap */
+        .text-wrap {
+            text-wrap: pretty; /* Prevents widows */
+            text-wrap: balance; /* Balances lines */
+        }
+
+        /* Text Animation */
+        .animated-text {
+            text-animation: slide-in 0.5s ease-out;
+            text-animation-mode: forwards;
+        }
+
+        /* Color Scheme */
+        .dark-mode {
+            color-scheme: dark;
+        }
+
+        .light-mode {
+            color-scheme: light;
+        }
+
+        /* Print Color Adjust */
+        @media print {
+            .print-optimized {
+                print-color-adjust: exact;
+                -webkit-print-color-adjust: exact;
+            }
+        }
+
+        /* Accent Color */
+        .custom-accent {
+            accent-color: var(--primary-color);
+        }
+
+        /* Field Sizing */
+        .sized-input {
+            field-sizing: content;
+            max-block-size: 10rem;
+        }
+
+        /* Scrollbar Gutter */
+        .scroll-container {
+            scrollbar-gutter: stable;
+            overflow-y: auto;
+        }
+
+        /* Overflow Shorthand */
+        .overflow-box {
+            overflow: clip hidden;
+        }
+
+        /* Text Box Trim */
+        .trimmed-text {
+            text-box-trim: trim-start;
+        }
+
+        /* Initial Letter */
+        .drop-cap {
+            initial-letter: 3;
+            float: left;
+            margin-right: 0.1em;
+        }
+
+        /* First Letter Styling */
+        p::first-letter {
+            font-size: 3em;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        /* ============================================
+           VIEW TRANSITIONS API [[7]]
+           ============================================ */
+        ::view-transition-old(root) {
+            animation: fade-out 0.3s ease-out;
+        }
+
+        ::view-transition-new(root) {
+            animation: fade-in 0.3s ease-in;
+        }
+
+        @keyframes fade-in {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fade-out {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
+        /* ============================================
+           BASE STYLES
+           ============================================ */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--surface);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 2rem;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .demo-section {
+            background: var(--surface);
+            border: 1px solid var(--surface-hover);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+
+        .demo-section h2 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary-light);
+        }
+
+        .demo-section h3 {
+            color: var(--secondary-color);
+            margin: 1.5rem 0 1rem;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .feature-card {
+            background: var(--surface-hover);
+            border-radius: 8px;
+            padding: 1.5rem;
+            border: 1px solid var(--primary-light);
+        }
+
+        .feature-card code {
+            display: block;
+            background: #1f2937;
+            color: #10b981;
+            padding: 1rem;
+            border-radius: 6px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            margin-top: 0.5rem;
+        }
+
+        .color-demo {
+            padding: 2rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .color-mix-demo {
+            background: var(--primary-light);
+        }
+
+        .relative-color-demo {
+            background: var(--primary-transparent);
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            z-index: 1000;
+        }
+
+        .theme-toggle:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Scoped Component Example */
+        .card-component {
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .card-component .title {
+            /* Scoped by @scope */
+            font-size: 1.5rem;
+        }
+
+        .card-component .content {
+            /* Scoped by @scope */
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        /* Dashboard Widget */
+        .dashboard-widget {
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .dashboard-widget .header {
+            /* Scoped by @scope */
+            padding: 1rem;
+        }
+
+        .dashboard-widget .widget-footer {
+            padding: 1rem;
+            background: #f9fafb;
+        }
+
+        /* Masonry Demo */
+        .masonry-demo {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            grid-template-rows: masonry;
+            gap: 1rem;
+            max-height: 500px;
+            overflow: auto;
+        }
+
+        .masonry-demo .item {
+            background: var(--primary-light);
+            border-radius: 8px;
+            padding: 1rem;
+            break-inside: avoid;
+        }
+
+        .masonry-demo .item:nth-child(odd) {
+            height: 150px;
+        }
+
+        .masonry-demo .item:nth-child(even) {
+            height: 200px;
+        }
+
+        /* Scroll Progress */
+        .scroll-progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: #e5e7eb;
+            z-index: 999;
+        }
+
+        .scroll-progress-bar {
+            height: 100%;
+            background: var(--primary-color);
+            width: 0%;
+        }
+
+        /* Conditional Styling Demo */
+        .conditional-demo {
+            padding: 2rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .conditional-demo.small {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .conditional-demo.medium {
+            background: #8b5cf6;
+            color: white;
+        }
+
+        .conditional-demo.large {
+            background: #ec4899;
+            color: white;
+        }
+
+        /* Anchor Positioning Demo */
+        .anchor-demo {
+            position: relative;
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 8px;
+            anchor-name: --my-anchor;
+        }
+
+        .anchor-tooltip {
+            position: absolute;
+            position-anchor: --my-anchor;
+            top: anchor(bottom);
+            left: anchor(center);
+            transform: translateX(-50%);
+            background: #1f2937;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            white-space: nowrap;
+            margin-top: 0.5rem;
+        }
+
+        /* High Content for Scroll Demo */
+        .scroll-content {
+            height: 300vh;
+            background: linear-gradient(180deg, 
+                var(--primary-light) 0%, 
+                var(--secondary-color) 50%, 
+                var(--primary-dark) 100%);
+            margin: 2rem 0;
+            border-radius: 12px;
+        }
+
+        /* Responsive Grid with @when */
+        .responsive-grid-demo {
+            display: grid;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--surface-hover);
+            border-radius: 8px;
+        }
+
+        .responsive-grid-demo .grid-item {
+            background: var(--primary-color);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            border-radius: 8px;
+        }
+
+        /* Sibling Demo */
+        .sibling-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .sibling-item {
+            padding: 1rem;
+            background: var(--surface-hover);
+            border-radius: 6px;
+            counter-increment: sibling;
+        }
+
+        .sibling-item::before {
+            content: counter(sibling) '/' sibling-count();
+            margin-right: 0.5rem;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        /* View Transition Demo */
+        .view-transition-btn {
+            padding: 1rem 2rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin: 0.5rem;
+            view-transition-name: unique-id;
+        }
+
+        /* Print Styles */
+        @media print {
+            .no-print {
+                display: none;
+            }
+            
+            body {
+                background: white;
+                color: black;
+            }
+            
+            .demo-section {
+                break-inside: avoid;
+                border: 1px solid #000;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Scroll Progress Bar -->
+    <div class="scroll-progress-container no-print">
+        <div class="scroll-progress-bar" id="scrollProgress"></div>
+    </div>
+
+    <!-- Theme Toggle -->
+    <button class="theme-toggle no-print" onclick="toggleTheme()">
+        🌓 Toggle Theme
+    </button>
+
+    <header class="demo-section">
+        <h1>🎨 CSS 2025-2026 Complete Feature Showcase</h1>
+        <p>A comprehensive demonstration of all the latest CSS specifications from late 2025 to March 2026</p>
+        <p><small>Based on W3C CSS Snapshot 2026 [[1], [2], [14]]</small></p>
+    </header>
+
+    <!-- CSS Cascade Level 6 -->
+    <section class="demo-section">
+        <h2>📦 CSS Cascading & Inheritance Level 6</h2>
+        <h3>@scope Rule - Scoped Styling [[19], [20], [27]]</h3>
+        <p>Scope styles to specific DOM subtrees without global side effects</p>
+        
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h4>Basic @scope</h4>
+                <p>Styles only apply within .card-component</p>
+                <div class="card-component">
+                    <div class="title">Scoped Title</div>
+                    <div class="content">Scoped content with automatic styling</div>
+                </div>
+                <code>@scope (.card-component) {
+    .title { color: #2563eb; }
+    .content { background: #eff6ff; }
+}</code>
+            </div>
+
+            <div class="feature-card">
+                <h4>@scope with Range [[20]]</h4>
+                <p>Scope from start to end boundary</p>
+                <div class="dashboard-widget">
+                    <div class="header">Scoped Header (Gradient)</div>
+                    <div class="body">Content area</div>
+                    <div class="widget-footer">Footer (scope ends)</div>
+                </div>
+                <code>@scope (.widget) to (.footer) {
+    .header { 
+        background: gradient; 
+    }
+}</code>
+            </div>
+        </div>
+    </section>
+
+    <!-- CSS Color Module Level 5 -->
+    <section class="demo-section">
+        <h2>🌈 CSS Color Module Level 5</h2>
+        <h3>color-mix(), light-dark(), Relative Color Syntax [[31], [33], [37]]</h3>
+        
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h4>light-dark() [[31]]</h4>
+                <p>Automatic theme-aware colors</p>
+                <div class="color-demo" style="background: light-dark(#ffffff, #1f2937); border: 1px solid #e5e7eb;">
+                    <p>Click the theme toggle to see this change!</p>
+                    <p>Current: <code>light-dark(#fff, #1f2937)</code></p>
+                </div>
+                <code>--surface: light-dark(
+    #ffffff, 
+    #1f2937
+);</code>
+            </div>
+
+            <div class="feature-card">
+                <h4>color-mix() [[31], [37]]</h4>
+                <p>Blend colors in any color space</p>
+                <div class="color-demo color-mix-demo">
+                    <p>20% primary + 80% white</p>
+                    <p><code>color-mix(in srgb, primary 20%, white)</code></p>
+                </div>
+                <div class="color-demo" style="background: color-mix(in srgb, #3b82f6 80%, black);">
+                    <p>80% primary + 20% black</p>
+                </div>
+                <code>background: color-mix(
+    in srgb, 
+    var(--primary) 20%, 
+    white
+);</code>
+            </div>
+
+            <div class="feature-card">
+                <h4>Relative Color Syntax [[33], [38]]</h4>
+                <p>Modify colors from existing variables</p>
+                <div class="color-demo relative-color-demo">
+                    <p>50% transparent version of primary</p>
+                    <p><code>oklch(from var(--color) l c h / 0.5)</code></p>
+                </div>
+                <code>background: oklch(
+    from var(--primary-color) 
+    l c h / 0.5
+);</code>
+            </div>
+
+            <div class="feature-card">
+                <h4>contrast-color() [[31]]</h4>
+                <p>Automatic accessible text color</p>
+                <div class="color-demo" style="background: #3b82f6; color: contrast-color(#3b82f6);">
+                    <p>Text color automatically chosen for contrast</p>
+                    <code>color: contrast-color(#3b82f6);</code>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Media Queries Level 5 -->
+    <section class="demo-section">
+        <h2>📱 Media Queries Level 5</h2>
+        <h3>Enhanced User Preference Detection [[48], [50], [57]]</h3>
+        
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h4>prefers-reduced-transparency</h4>
+                <div class="transparency-element color-demo" style="backdrop-filter: blur(10px); background: rgba(59, 130, 246, 0.3);">
+                    <p>Reduces transparency when user prefers</p>
+                    <code>@media (prefers-reduced-transparency: reduce)</code>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <h4>prefers-contrast: more</h4>
+                <div class="high-contrast color-demo" style="border: 3px solid currentColor;">
+                    <p>Higher contrast borders and weights</p>
+                    <code>@media (prefers-contrast: more)</code>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <h4>prefers-contrast: less</h4>
+                <div class="low-contrast color-demo" style="border: 1px solid #e5e7eb;">
+                    <p>Subtler contrast for sensitive users</p>
+                    <code>@media (prefers-contrast: less)</code>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <h4>dynamic-range: high</h4>
+                <div class="hdr-content color-demo" style="background: #000;">
+                    <p>HDR display detection</p>
+                    <code>@media (dynamic-range: high)</code>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <h4>environmental-light-level</h4>
+                <div class="color-demo" style="background: var(--surface);">
+                    <p>Adapts to ambient light conditions</p>
+                    <code>@media (environmental-light-level: dim)</code>
+                    <code>@media (environmental-light-level: bright)</code>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <h4>video-dynamic-range</h4>
+                <div class="video-container color-demo" style="background: #000; color: white;">
+                    <p>Video HDR capability detection</p>
+                    <code>@media (video-dynamic-range: standard)</code>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CSS Values & Units Level 5 -->
+    <section class="demo-section">
+        <h2>🔧 CSS Values & Units Module Level 5</h2>
+        <h3>if() Conditional Function [[39], [41], [42]]</h3>
+        
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h4>if() with Width Condition</h4>
+                <div class="conditional-box conditional-demo small">
+                    <p>Background changes based on width</p>
+                    <code>background: if(
+    width > 500px: #3b82f6, 
+    #8b5cf6
+);</code>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <h4>if() with Motion Preference</h4>
+                <div class="conditional-demo medium">
+                    <p>Padding adjusts for reduced motion</p>
+                    <code>padding: if(
+    prefers-reduced-motion: 1rem, 
+    1.5rem
+);</code>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <h4>if() with Custom Property</h4>
+                <div class="conditional-demo large">
+                    <p>Border radius based on CSS variable</p>
+                    <code>border-radius: if(
+    --rounded-corners: 12px, 
+    0
+);</code>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CSS Conditional Rules Level 5 -->
+    <section class="demo-section">
+        <h2>⚡ CSS Conditional Rules Module Level 5</h2>
+        <h3>@when, @else, Feature Detection [[69], [71], [76]]</h3>
+        
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h4>@when / @else Chain</h4>
+                <div class="responsive-grid-demo responsive-grid" id="responsiveGrid">
+                    <div class="grid-item">Item 1</div>
+                    <div class="grid-item">Item 2</div>
+                    <div class="grid-item">Item 3</div>
+                    <div class="grid-item">Item 4</div>
+                </div>
+                <code>@when (width > 768px) {
+    grid-template-columns: repeat(3, 1fr);
+} @else if (width > 480px) {
+    grid-template-columns: repeat(2, 1fr);
+} @else {
+    grid-template-columns: 1fr;
+}</code>
+            </div>
+
+            <div class="feature-card">
+                <h4>@when with supports()</h4>
+                <div class="color-demo" style="background: var(--primary-light);">
+                    <p>Combines multiple conditions</p>
+                    <code>@when (supports(--custom-prop)) 
+    and (supports(display: grid)) {
+    .modern { display: grid; }
+}</code>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <h4>@when font-format()</h4>
+                <div class="color-demo" style="background: var(--surface-hover);">
+                    <p>Font technology detection</p>
+                    <code>@when font-format(opentype) {
+    .custom { 
+        font-family: 'CustomFont'; 
+    }
+}</code>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CSS Selectors Level 5 -->
+    <section class="demo-section">
+        <h2>🎯 CSS Selectors Level 5</h2>
+        <h3>Advanced Element Selection [[10], [12], [73]]</h3>
+        
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h4>:has() Parent Selector</h4>
+                <div class="parent color-demo" style="border: 2px solid #e5e7eb;">
+                    <p>Parent styles when child hovered</p>
+                    <div class="child" style="padding: 1rem; background: var(--primary-light); border-radius: 4px;">
+                        Hover me to style parent
+                    </div>
+                </div>
+                <code>.parent:has(> .child:hover) {
+    background: var(--primary-light);
+}</code>
+            </div>
+
+            <div class="feature-card">
+                <h4>:is() Matching List</h4>
+                <div class="color-demo" style="background: var(--surface-hover);">
+                    <h1 class="title">Heading 1</h1>
+                    <h2 class="title">Heading 2</h2>
+                    <h3 class="title">Heading 3</h3>
+                </div>
+                <code>:is(h1, h2, h3, h4, h5, h6).title {
+    margin-bottom: 0.5em;
+}</code>
+            </div>
+
+            <div class="feature-card">
+                <h4>sibling-index() / sibling-count() [[16]]</h4>
+                <div class="sibling-container">
+                    <div class="sibling-item">Item 1</div>
+                    <div class="sibling-item">Item 2</div>
+                    <div class="sibling-item">Item 3</div>
+                    <div class="sibling-item">Item 4</div>
+                    <div class="sibling-item">Item 5</div>
+                </div>
+                <code>.item {
+    --index: sibling-index();
+    --total: sibling-count();
+}</code>
+            </div>
+
+            <div class="feature-card">
+                <h4>:nth-child() Formulas</h4>
+                <div class="feature-grid" style="grid-template-columns: repeat(5, 1fr); gap: 0.5rem;">
+                    <div class="color-demo" style="padding: 0.5rem; text-align: center;">1</div>
+                    <div class="color-demo" style="padding: 0.5rem; text-align: center; background: var(--primary-light);">2</div>
+                    <div class="color-demo" style="padding: 0.5rem; text-align: center;">3</div>
+                    <div class="color-demo" style="padding: 0.5rem; text-align: center; background: var(--primary-light);">4</div>
+                    <div class="color-demo" style="padding: 0.5rem; text-align: center;">5</div>
+                </div>
+                <code>:nth-child(2n) {
+    background: var(--primary-light);
+}</code>
+            </div>
+        </div>
+    </section>
+
+    <!-- CSS Grid Level 3 - Masonry -->
+    <section class="demo-section">
+        <h2>📐 CSS Grid Layout Module Level 3</h2>
+        <h3>Masonry Layout / Grid Lanes [[58], [63], [67]]</h3>
+        
+        <div class="feature-grid">
+            <div class="feature-card" style="grid-column: span 2;">
+                <h4>Native Masonry Layout</h4>
+                <p>No JavaScript needed! True masonry with CSS Grid</p>
+                <div class="masonry-demo">
+                    <div class="item">Short item</div>
+                    <div class="item">Medium item with more content</div>
+                    <div class="item">Tall item</div>
+                    <div class="item">Another short</div>
+                    <div class="item">Medium content here</div>
+                    <div class="item">Tall content block</div>
+                </div>
+                <code>display: grid;
+grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+grid-template-rows: masonry;
+gap: 1rem;</code>
+            </div>
+
+            <div class="feature-card">
+                <h4>Grid Lanes</h4>
+                <div class="color-demo" style="background: var(--surface-hover);">
+                    <p>Dense packing algorithm</p>
+                    <code>display: grid;
+grid-lanes: 3;
+grid-auto-flow: dense;</code>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Scroll-Driven Animations -->
+    <section class="demo-section">
+        <h2>📜 Scroll-Driven Animations</h2>
+        <h3>Animation Timeline & View Progress [[4], [7]]</h3>
+        
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h4>Scroll Progress Bar</h4>
+                <p>Look at the top of the page!</p>
+                <div class="color-demo" style="background: var(--primary-light);">
+                    <p>The bar at top shows scroll progress</p>
+                    <code>animation-timeline: scroll();</code>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <h4>View-Triggered Animations</h4>
+                <div class="scroll-reveal color-demo" style="background: var(--secondary-color); color: white;">
+                    <p>This reveals when scrolled into view</p>
+                    <code>animation-timeline: view();
+animation-range: entry 10% cover 30%;</code>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <h4>Scroll Content Area</h4>
+                <div class="scroll-content" style="position: relative;">
+                    <div style="position: sticky; top: 1rem; margin: 1rem; padding: 1rem; background: white; border-radius: 8px;">
+                        <p>👆 Scroll to see animations!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Anchor Positioning -->
+    <section class="demo-section">
+        <h2>📍 Anchor Positioning</h2>
+        <h3>Position Elements Relative to Anchors [[4], [7]]</h3>
+        
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h4>Basic Anchor Positioning</h4>
+                <div style="position: relative; padding: 3rem; background: var(--surface-hover); border-radius: 8px;">
+                    <div class="anchor-demo">
+                        Anchor Element
+                        <div class="anchor-tooltip">Tooltip positioned to anchor</div>
+                    </div>
+                </div>
+                <code>.anchor {
+    anchor-name: --my-anchor;
+}
+.tooltip {
+    position-anchor: --my-anchor;
+    top: anchor(bottom);
+    left: anchor(center);
+}</code>
+            </div>
+
+            <div class="feature-card">
+                <h4>Anchor Functions</h4>
+                <div class="color-demo" style="background: var(--primary-light);">
+                    <p>Available anchor() functions:</p>
+                    <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                        <li><code>anchor(top)</code></li>
+                        <li><code>anchor(bottom)</code></li>
+                        <li><code>anchor(left)</code></li>
+                        <li><code>anchor(right)</code></li>
+                        <li><code>anchor(center)</code></li>
+                        <li><code>anchor(start)</code></li>
+                        <li><code>anchor(end)</code></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- New Pseudo-Elements -->
+    <section class="demo-section">
+        <h2>🎭 New Pseudo-Elements</h2>
+        <h3>Generated Content & UI Parts [[7]]</h3>
+        
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h4>::scroll-button [[7]]</h4>
+                <div class="scroll-container" style="max-height: 150px; overflow-y: auto; background: var(--surface-hover); padding: 1rem; border-radius: 8px;">
+                    <p>Line 1 - Scroll to see custom buttons</p>
+                    <p>Line 2</p>
+                    <p>Line 3</p>
+                    <p>Line 4</p>
+                    <p>Line 5</p>
+                    <p>Line 6</p>
+                    <p>Line 7</p>
+                    <p>Line 8</p>
+                </div>
+                <code>::scroll-button {
+    background: var(--primary);
+    color: white;
+}</code>
+            </div>
+
+            <div class="feature-card">
+                <h4>::selection</h4>
+                <div class="color-demo" style="background: var(--surface-hover);">
+                    <p>Select this text to see custom selection styling!</p>
+                    <code>::selection {
+    background: var(--primary);
+    color: white;
+}</code>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <h4>::view-transition-* [[7]]</h4>
+                <div class="color-demo" style="background: var(--primary-light);">
+                    <button class="view-transition-btn" onclick="triggerTransition()">
+                        Trigger View Transition
+                    </button>
+                    <p style="margin-top: 1rem;">Click to see page transition effect</p>
+                    <code>::view-transition-old(root) {
+    animation: fade-out 0.3s;
+}
+::view-transition-new(root) {
+    animation: fade-in 0.3s;
+}</code>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <h4>::first-letter</h4>
+                <div class="color-demo" style="background: var(--surface-hover);">
+                    <p><span class="drop-cap">L</span>orem ipsum dolor sit amet, consectetur adipiscing elit. This demonstrates the initial-letter property for drop caps.</p>
+                    <code>::first-letter {
+    font-size: 3em;
+    color: var(--primary);
+}</code>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- New Properties & Values -->
+    <section class="demo-section">
+        <h2>✨ New Properties & Values</h2>
+        <h3>Latest CSS Property Additions</h3>
+        
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h4>Container Queries</h4>
+                <div class="container" style="width: 500px; border: 2px solid var(--primary-color); border-radius: 8px; padding: 1rem;">
+                    <div class="container-content" style="display: grid; gap: 1rem;">
+                        <div style="background: var(--primary-light); padding: 1rem; border-radius: 4px;">Container aware content</div>
+                        <div style="background: var(--secondary-color); color: white; padding: 1rem; border-radius: 4px;">Responsive to container</div>
+                    </div>
+                </div>
+                <code>container-type: inline-size;
+container-name: card;
+
+@container card (min-width: 400px) {
+    .content { display: grid; }
+}</code>
+            </div>
+
+            <div class="feature-card">
+                <h4>Subgrid</h4>
+                <div class="parent-grid" style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 0.5rem; background: var(--surface-hover); padding: 1rem; border-radius: 8px;">
+                    <div class="child-grid" style="grid-column: span 6; display: grid; grid-template-columns: subgrid; gap: 0.5rem;">
+                        <div style="background: var(--primary-color); color: white; padding: 0.5rem; text-align: center;">Subgrid aligned</div>
+                        <div style="background: var(--primary-color); color: white; padding: 0.5rem; text-align: center;">to parent</div>
+                        <div style="background: var(--primary-color); color: white; padding: 0.5rem; text-align: center;">columns</div>
+                    </div>
+                </div>
+                <code>grid-template-columns: subgrid;</code>
+            </div>
+
+            <div class="feature-card">
+                <h4>text-wrap: pretty / balance [[5]]</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="color-demo" style="background: var(--primary-light);">
+                        <p style="text-wrap: pretty;">This text uses pretty wrapping to avoid widows at the end of paragraphs.</p>
+                        <code>text-wrap: pretty;</code>
+                    </div>
+                    <div class="color-demo" style="background: var(--secondary-color); color: white;">
+                        <p style="text-wrap: balance;">This heading text is balanced across lines for better appearance.</p>
+                        <code>text-wrap: balance;</code>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <h4>Advanced Border Radius [[5]]</h4>
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <div class="squircle" style="width: 100px; height: 100px; background: var(--primary-color);"></div>
+                    <div style="width: 100px; height: 100px; background: var(--secondary-color); border-radius: shape(outer, round, 20px);"></div>
+                    <div style="width: 100px; height: 100px; background: #ec4899; border-radius: 40% / 20%;"></div>
+                </div>
+                <code>border-radius: 40% / 20%;
+border-radius: shape(outer, round, 20px);</code>
+            </div>
+
+            <div class="feature-card">
+                <h4>accent-color</h4>
+                <div class="custom-accent color-demo" style="background: var(--surface-hover);">
+                    <input type="checkbox" checked style="margin-right: 1rem;">
+                    <input type="radio" name="test" checked style="margin-right: 1rem;">
+                    <input type="range" style="width: 100px;">
+                    <code>accent-color: var(--primary);</code>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <h4>field-sizing: content</h4>
+                <div class="color-demo" style="background: var(--surface-hover);">
+                    <textarea class="sized-input" style="width: 100%; border: 2px solid var(--primary-color); border-radius: 8px; padding: 0.5rem; resize: none;" placeholder="Type here - textarea grows with content!"></textarea>
+                    <code>field-sizing: content;
+max-block-size: 10rem;</code>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <h4>scrollbar-gutter</h4>
+                <div class="color-demo" style="background: var(--surface-hover);">
+                    <p>Reserves space for scrollbar even when not scrolling</p>
+                    <code>scrollbar-gutter: stable;</code>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <h4>color-scheme</h4>
+                <div style="display: flex; gap: 1rem;">
+                    <div class="light-mode" style="flex: 1; padding: 1rem; background: white; border: 1px solid #e5e7eb; border-radius: 8px;">
+                        <p>Light Scheme</p>
+                        <code>color-scheme: light;</code>
+                    </div>
+                    <div class="dark-mode" style="flex: 1; padding: 1rem; background: #1f2937; color: white; border-radius: 8px;">
+                        <p>Dark Scheme</p>
+                        <code>color-scheme: dark;</code>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <h4>print-color-adjust</h4>
+                <div class="print-optimized color-demo" style="background: var(--primary-color); color: white;">
+                    <p>Preserves colors when printing</p>
+                    <code>@media print {
+    print-color-adjust: exact;
+}</code>
+                    <button onclick="window.print()" class="no-print" style="margin-top: 1rem; padding: 0.5rem 1rem; background: white; color: var(--primary-color); border: none; border-radius: 4px; cursor: pointer;">Print This</button>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <h4>initial-letter</h4>
+                <div class="color-demo" style="background: var(--surface-hover);">
+                    <p><span style="initial-letter: 3; float: left; margin-right: 0.1em; font-size: 3em; color: var(--primary-color); font-weight: bold;">T</span>his demonstrates the initial-letter property for creating drop caps in paragraphs.</p>
+                    <code>initial-letter: 3;</code>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- JavaScript Enhancement -->
+    <section class="demo-section">
+        <h2>⚙️ JavaScript CSS Integration</h2>
+        <h3>Modern JS APIs for CSS Manipulation</h3>
+        
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h4>CSS Custom Properties via JS</h4>
+                <div id="jsColorDemo" class="color-demo" style="background: var(--primary-color); color: white;">
+                    <p>Click button to change CSS variable</p>
+                    <button onclick="changeCSSVariable()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: white; color: var(--primary-color); border: none; border-radius: 4px; cursor: pointer;">Change Color</button>
+                </div>
+                <code>document.documentElement.style.setProperty(
+    '--primary-color', 
+    newColor
+);</code>
+            </div>
+
+            <div class="feature-card">
+                <h4>View Transitions API</h4>
+                <div class="color-demo" style="background: var(--surface-hover);">
+                    <button onclick="navigateWithTransition()" style="padding: 0.5rem 1rem; background: var(--primary-color); color: white; border: none; border-radius: 4px; cursor: pointer;">
+                        Navigate with Transition
+                    </button>
+                    <code>document.startViewTransition(() => {
+    // Update DOM
+});</code>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <h4>CSS Animation Events</h4>
+                <div id="animationDemo" class="color-demo" style="background: var(--primary-light);">
+                    <p>Animation state: <span id="animationState">idle</span></p>
+                    <button onclick="playAnimation()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: var(--primary-color); color: white; border: none; border-radius: 4px; cursor: pointer;">
+                        Play Animation
+                    </button>
+                </div>
+                <code>element.addEventListener(
+    'animationend', 
+    handleEnd
+);</code>
+            </div>
+
+            <div class="feature-card">
+                <h4>Scroll Timeline JS API</h4>
+                <div class="color-demo" style="background: var(--surface-hover);">
+                    <p>Scroll progress: <span id="scrollProgressText">0%</span></p>
+                    <code>new ScrollTimeline({
+    source: document.scrollingElement
+});</code>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Browser Support Info -->
+    <section class="demo-section">
+        <h2>🌐 Browser Support & Resources</h2>
+        <h3>Current Implementation Status (2026)</h3>
+        
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h4>CSS Snapshot 2026 [[1], [2], [14]]</h4>
+                <p>Official W3C summary of all CSS specifications as of 2026</p>
+                <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                    <li>Cascade & Inheritance: Level 6 ✅</li>
+                    <li>Color: Level 5 ✅</li>
+                    <li>Selectors: Level 5 (Draft) 📝</li>
+                    <li>Values & Units: Level 5 ✅</li>
+                    <li>Media Queries: Level 5 ✅</li>
+                    <li>Grid Layout: Level 3 (Draft) 📝</li>
+                    <li>Conditional Rules: Level 5 ✅</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <h4>Key Resources</h4>
+                <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                    <li>W3C CSS Snapshot 2026 [[1], [2]]</li>
+                    <li>MDN Web Docs [[28], [33], [41]]</li>
+                    <li>CSS WG Drafts [[14], [44]]</li>
+                    <li>Can I Use (compatibility)</li>
+                    <li>Chrome Status (implementation)</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <h4>Feature Detection</h4>
+                <div class="color-demo" style="background: var(--surface-hover);">
+                    <p>Always check for feature support:</p>
+                    <code>@supports (display: grid) {
+    /* Use grid */
+}
+
+if ('startViewTransition' in document) {
+    /* Use View Transitions */
+}</code>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="demo-section">
+        <h2>📚 References</h2>
+        <div style="font-size: 0.85rem; line-height: 1.8;">
+            <p>[1] W3C CSS Snapshot 2026 [[1], [2], [9]]</p>
+            <p>[2] CSS Cascading and Inheritance Level 6 [[19], [20]]</p>
+            <p>[3] CSS Color Module Level 5 [[31], [35]]</p>
+            <p>[4] CSS Selectors Level 5 [[10], [12], [73]]</p>
+            <p>[5] CSS Values and Units Module Level 5 [[39], [42]]</p>
+            <p>[6] Media Queries Level 5 [[48], [57]]</p>
+            <p>[7] CSS Grid Layout Module Level 3 [[58], [63]]</p>
+            <p>[8] CSS Conditional Rules Module Level 5 [[69], [76]]</p>
+            <p>[9] Scroll-Driven Animations [[4], [7]]</p>
+            <p>[10] Anchor Positioning [[4], [7]]</p>
+            <p style="margin-top: 1rem; color: var(--primary-color);">Last Updated: March 2026</p>
+        </div>
+    </footer>
+
+    <script>
+        // ============================================
+        // Theme Toggle
+        // ============================================
+        let isDarkMode = false;
+        
+        function toggleTheme() {
+            isDarkMode = !isDarkMode;
+            document.documentElement.style.setProperty(
+                '--primary-color', 
+                isDarkMode ? '#60a5fa' : '#3b82f6'
+            );
+            document.body.style.background = isDarkMode ? '#1f2937' : '#ffffff';
+            document.body.style.color = isDarkMode ? '#f3f4f6' : '#1f2937';
+        }
+
+        // ============================================
+        // Scroll Progress
+        // ============================================
+        window.addEventListener('scroll', () => {
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const scrollPercent = (scrollTop / docHeight) * 100;
+            
+            document.getElementById('scrollProgress').style.width = scrollPercent + '%';
+            document.getElementById('scrollProgressText').textContent = Math.round(scrollPercent) + '%';
+        });
+
+        // ============================================
+        // CSS Variable Change
+        // ============================================
+        function changeCSSVariable() {
+            const colors = ['#3b82f6', '#8b5cf6', '#ec4899', '#10b981', '#f59e0b'];
+            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+            document.documentElement.style.setProperty('--primary-color', randomColor);
+            document.getElementById('jsColorDemo').style.background = randomColor;
+        }
+
+        // ============================================
+        // View Transitions
+        // ============================================
+        function navigateWithTransition() {
+            if (document.startViewTransition) {
+                document.startViewTransition(() => {
+                    document.body.style.transform = 'scale(0.98)';
+                    setTimeout(() => {
+                        document.body.style.transform = 'scale(1)';
+                    }, 300);
+                });
+            } else {
+                alert('View Transitions not supported in this browser');
+            }
+        }
+
+        function triggerTransition() {
+            if (document.startViewTransition) {
+                document.startViewTransition(() => {
+                    document.documentElement.style.setProperty('--primary-color', 
+                        isDarkMode ? '#60a5fa' : '#3b82f6');
+                });
+            }
+        }
+
+        // ============================================
+        // Animation Events
+        // ============================================
+        function playAnimation() {
+            const demo = document.getElementById('animationDemo');
+            const state = document.getElementById('animationState');
+            
+            state.textContent = 'playing';
+            demo.style.animation = 'pulse 0.5s ease-in-out 3';
+            
+            demo.addEventListener('animationend', () => {
+                state.textContent = 'completed';
+                demo.style.animation = '';
+            }, { once: true });
+        }
+
+        // Add pulse animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes pulse {
+                0%, 100% { transform: scale(1); }
+                50% { transform: scale(1.05); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // ============================================
+        // Responsive Grid Update
+        // ============================================
+        function updateResponsiveGrid() {
+            const grid = document.getElementById('responsiveGrid');
+            const width = window.innerWidth;
+            
+            if (width > 768) {
+                grid.style.gridTemplateColumns = 'repeat(3, 1fr)';
+            } else if (width > 480) {
+                grid.style.gridTemplateColumns = 'repeat(2, 1fr)';
+            } else {
+                grid.style.gridTemplateColumns = '1fr';
+            }
+        }
+
+        window.addEventListener('resize', updateResponsiveGrid);
+        updateResponsiveGrid();
+
+        // ============================================
+        // Feature Detection Display
+        // ============================================
+        function checkFeatureSupport() {
+            const features = {
+                '@scope': CSS.supports('scope', 'all'),
+                'color-mix': CSS.supports('color-mix(in srgb, red, blue)'),
+                'light-dark': CSS.supports('color', 'light-dark(white, black)'),
+                'if()': CSS.supports('width', 'if(width > 100px: 100px, 50px)'),
+                'masonry': CSS.supports('grid-template-rows', 'masonry'),
+                'anchor': CSS.supports('anchor-name', '--test'),
+                'view-transitions': 'startViewTransition' in document
+            };
+
+            console.log('CSS Feature Support:', features);
+        }
+
+        checkFeatureSupport();
+
+        // ============================================
+        // Intersection Observer for Scroll Reveal
+        // ============================================
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.scroll-reveal').forEach(el => {
+            observer.observe(el);
+        });
+
+        console.log('🎨 CSS 2025-2026 Feature Showcase Loaded');
+        console.log('📚 Based on W3C CSS Snapshot 2026');
+    </script>
+</body>
+</html>

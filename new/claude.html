@@ -1,0 +1,3339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSS 2025–2026 · Living Reference Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,600;12..96,800&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Instrument+Sans:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+
+<style>
+/* ═══════════════════════════════════════════════
+   0. @PROPERTY — Typed Custom Properties (2024+)
+   Registered types allow transitions on custom props
+═══════════════════════════════════════════════ */
+@property --hue {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 260;
+}
+@property --saturation {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 80%;
+}
+@property --progress {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 0;
+}
+@property --glow-opacity {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 0;
+}
+@property --card-lift {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+/* ═══════════════════════════════════════════════
+   1. @LAYER — Cascade Layers (Baseline 2022, widely used 2024+)
+═══════════════════════════════════════════════ */
+@layer reset, base, components, utilities, demos;
+
+@layer reset {
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+}
+
+@layer base {
+  :root {
+    --bg:       #06060c;
+    --surface:  #0d0d16;
+    --surface2: #12121f;
+    --border:   #1e1e32;
+    --text:     #e0e0f0;
+    --dim:      #6060a0;
+    --dimmer:   #383864;
+    /* Category accent colors */
+    --green:    oklch(75% 0.18 158);
+    --blue:     oklch(72% 0.17 240);
+    --orange:   oklch(75% 0.18 50);
+    --purple:   oklch(72% 0.2 300);
+    --amber:    oklch(80% 0.18 90);
+    --rose:     oklch(72% 0.2 350);
+    --teal:     oklch(78% 0.16 190);
+    --lime:     oklch(80% 0.2 130);
+    --red:      oklch(68% 0.2 25);
+    --cyan:     oklch(78% 0.14 210);
+    font-size: 16px;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Instrument Sans', system-ui, sans-serif;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+    line-height: 1.1;
+  }
+
+  code, pre, .mono {
+    font-family: 'DM Mono', 'Fira Code', monospace;
+  }
+}
+
+@layer components {
+  /* ── Scroll Progress Bar (Scroll-Driven Animation) ── */
+  #progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--teal), var(--purple), var(--rose));
+    width: 100%;
+    transform-origin: left;
+    transform: scaleX(0);
+    z-index: 1000;
+    animation: grow-bar linear both;
+    animation-timeline: scroll(root block);
+  }
+  @keyframes grow-bar {
+    from { transform: scaleX(0); }
+    to   { transform: scaleX(1); }
+  }
+
+  /* ── Navigation Sidebar ── */
+  nav#toc {
+    position: fixed;
+    inset-block: 0;
+    inset-inline-start: 0;
+    width: 220px;
+    background: var(--surface);
+    border-inline-end: 1px solid var(--border);
+    overflow-y: auto;
+    padding: 1.5rem 0;
+    z-index: 100;
+    scrollbar-width: thin;
+    scrollbar-color: var(--dimmer) transparent;
+
+    @media (max-width: 900px) {
+      display: none;
+    }
+  }
+
+  nav#toc .logo {
+    padding: 0 1.2rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 1rem;
+
+    span.title {
+      display: block;
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 800;
+      font-size: 0.85rem;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+    span.year {
+      font-size: 0.7rem;
+      color: var(--dim);
+      font-family: 'DM Mono', monospace;
+    }
+  }
+
+  nav#toc a {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 1.2rem;
+    font-size: 0.75rem;
+    color: var(--dim);
+    text-decoration: none;
+    transition: color 0.15s, background 0.15s;
+    border-left: 2px solid transparent;
+
+    &:hover {
+      color: var(--text);
+      background: var(--surface2);
+    }
+
+    &.active {
+      color: var(--text);
+      border-left-color: var(--teal);
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+  }
+
+  /* ── Main Layout ── */
+  main {
+    margin-inline-start: 220px;
+    padding: 0 0 6rem;
+
+    @media (max-width: 900px) {
+      margin-inline-start: 0;
+    }
+  }
+
+  /* ── Hero ── */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    position: relative;
+    overflow: hidden;
+    padding: 4rem 3rem;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 50%, oklch(30% 0.2 280 / 0.3), transparent),
+        radial-gradient(ellipse 60% 80% at 80% 20%, oklch(30% 0.15 200 / 0.25), transparent),
+        radial-gradient(ellipse 50% 50% at 60% 80%, oklch(28% 0.18 350 / 0.2), transparent);
+      pointer-events: none;
+    }
+
+    .hero-content {
+      position: relative;
+      max-width: 780px;
+      z-index: 1;
+    }
+
+    .hero-eyebrow {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--teal);
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+
+      &::before {
+        content: '';
+        display: block;
+        width: 32px;
+        height: 1px;
+        background: var(--teal);
+      }
+    }
+
+    h1 {
+      font-size: clamp(2.8rem, 7vw, 5.5rem);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 0.95;
+      margin-bottom: 1.5rem;
+      color: var(--text);
+
+      em {
+        font-style: normal;
+        background: linear-gradient(135deg, var(--teal), var(--purple), var(--rose));
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+    }
+
+    .hero-desc {
+      font-size: 1.1rem;
+      color: var(--dim);
+      max-width: 560px;
+      margin-bottom: 2.5rem;
+      line-height: 1.7;
+    }
+
+    .hero-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+
+      span {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.68rem;
+        padding: 0.25rem 0.7rem;
+        border-radius: 100px;
+        border: 1px solid var(--border);
+        color: var(--dim);
+        background: var(--surface);
+      }
+    }
+
+    /* Animated background grid */
+    .bg-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 40px 40px;
+      opacity: 0.3;
+      pointer-events: none;
+    }
+  }
+
+  /* ── Section Layout ── */
+  .section {
+    border-top: 1px solid var(--border);
+    padding: 4rem 3rem;
+
+    &:target > .section-header .section-title {
+      color: var(--teal);
+    }
+  }
+
+  .section-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+
+    .section-number {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--dimmer);
+      padding-top: 0.5rem;
+      min-width: 2.5rem;
+    }
+
+    .section-content { flex: 1; }
+
+    .section-title {
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: var(--text);
+      margin-bottom: 0.75rem;
+    }
+
+    .section-desc {
+      color: var(--dim);
+      font-size: 0.9rem;
+      max-width: 680px;
+      line-height: 1.6;
+    }
+
+    .section-badge {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-left: auto;
+      white-space: nowrap;
+      align-self: flex-start;
+    }
+  }
+
+  /* ── Demo Grid ── */
+  .demo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .demo-grid.cols-1 { grid-template-columns: 1fr; }
+  .demo-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+  .demo-grid.wide   { grid-template-columns: repeat(auto-fill, minmax(480px, 1fr)); }
+
+  /* ── Demo Card ── */
+  .demo-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    --card-lift: 0px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+
+    &:hover {
+      border-color: var(--dimmer);
+    }
+
+    .card-header {
+      padding: 1rem 1.25rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .card-title {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .card-support {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 3px;
+      white-space: nowrap;
+    }
+
+    .card-demo {
+      padding: 1.5rem 1.25rem;
+      min-height: 120px;
+    }
+
+    .card-code {
+      padding: 1rem 1.25rem;
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+      font-size: 0.7rem;
+      line-height: 1.7;
+      overflow-x: auto;
+
+      .css-at    { color: #c084fc; }
+      .css-prop  { color: #60a5fa; }
+      .css-val   { color: #34d399; }
+      .css-sel   { color: #fb923c; }
+      .css-fn    { color: #f472b6; }
+      .css-num   { color: #fbbf24; }
+      .css-str   { color: #a78bfa; }
+      .css-cmt   { color: #4b5563; font-style: italic; }
+    }
+  }
+
+  /* ── Support Badges ── */
+  .sup-good     { background: oklch(25% 0.08 158); color: oklch(75% 0.18 158); }
+  .sup-partial  { background: oklch(25% 0.1 90);   color: oklch(80% 0.18 90); }
+  .sup-exp      { background: oklch(25% 0.1 300);  color: oklch(75% 0.18 300); }
+  .sup-chrome   { background: oklch(25% 0.08 50);  color: oklch(75% 0.18 50); }
+
+  /* ── Category badge colors ── */
+  .badge-at       { background: oklch(22% 0.12 280); color: var(--purple); }
+  .badge-selector { background: oklch(22% 0.1 50);   color: var(--orange); }
+  .badge-pseudo   { background: oklch(22% 0.1 158);  color: var(--green); }
+  .badge-color    { background: oklch(22% 0.12 300);  color: var(--rose); }
+  .badge-layout   { background: oklch(22% 0.1 90);   color: var(--amber); }
+  .badge-props    { background: oklch(22% 0.08 240);  color: var(--blue); }
+  .badge-anim     { background: oklch(22% 0.12 350);  color: var(--rose); }
+  .badge-values   { background: oklch(22% 0.1 190);   color: var(--teal); }
+
+  /* ── Code inline ── */
+  code {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.82em;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 0.1em 0.35em;
+    border-radius: 4px;
+    color: var(--teal);
+  }
+
+  /* ── Feature note ── */
+  .feature-note {
+    background: oklch(20% 0.08 240 / 0.6);
+    border: 1px solid oklch(35% 0.12 240 / 0.4);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    font-size: 0.8rem;
+    color: var(--dim);
+    margin-bottom: 1.5rem;
+    display: flex;
+    gap: 0.5rem;
+
+    &::before { content: 'ℹ'; color: var(--blue); font-style: normal; }
+  }
+
+  .experimental-note {
+    background: oklch(20% 0.1 300 / 0.5);
+    border: 1px solid oklch(35% 0.15 300 / 0.4);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    font-size: 0.8rem;
+    color: oklch(75% 0.18 300);
+    margin-bottom: 1.5rem;
+    display: flex;
+    gap: 0.5rem;
+
+    &::before { content: '⚗'; font-style: normal; }
+  }
+}
+
+/* ════════════════════════════════════════════════════════
+   SECTION-SPECIFIC DEMO STYLES
+════════════════════════════════════════════════════════ */
+
+/* ── @scope demos ── */
+@scope (.scope-demo) {
+  h4 { color: var(--teal); font-size: 0.9rem; }
+  p  { color: oklch(75% 0.08 200); font-size: 0.82rem; }
+  .highlight { background: oklch(30% 0.12 200 / 0.5); padding: 0.1em 0.3em; border-radius: 3px; }
+}
+
+/* Donut scope: styles .card h4 but NOT inside .no-scope */
+@scope (.donut-outer) to (.donut-hole) {
+  h4 { color: var(--amber); }
+  p  { border-left: 2px solid var(--amber); padding-left: 0.5rem; }
+}
+
+/* ── @starting-style demos ── */
+.starting-style-demo {
+  position: relative;
+
+  .ssbox {
+    background: oklch(30% 0.15 240);
+    border: 1px solid oklch(50% 0.2 240);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    font-size: 0.8rem;
+    color: var(--text);
+    transition: opacity 0.5s, transform 0.5s, background 0.5s;
+
+    @starting-style {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+  }
+
+  .ssbox.variant { background: oklch(30% 0.15 300); border-color: oklch(50% 0.2 300); }
+  .ssbox.variant3 { background: oklch(30% 0.12 130); border-color: oklch(50% 0.18 130); }
+}
+
+/* ── @container scroll-state demos ── */
+.sticky-demo-wrapper {
+  height: 200px;
+  overflow-y: scroll;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  container-type: scroll-state;
+  scroll-snap-type: y mandatory;
+}
+
+.sticky-header {
+  position: sticky;
+  top: 0;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  padding: 0.6rem 1rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--dim);
+  transition: box-shadow 0.3s, color 0.3s, background 0.3s;
+  z-index: 1;
+}
+
+@container scroll-state(stuck: top) {
+  .sticky-header {
+    box-shadow: 0 2px 16px oklch(0% 0 0 / 0.5);
+    color: var(--teal);
+    background: oklch(15% 0.08 240);
+  }
+}
+
+.scroll-snap-item {
+  scroll-snap-align: center;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  padding: 0 1rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.8rem;
+  color: var(--dim);
+  transition: color 0.3s, transform 0.3s;
+}
+
+/* ── Selectors :has() demo ── */
+.has-demo-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+
+    label { font-size: 0.78rem; color: var(--dim); }
+
+    input {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.5rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      transition: border-color 0.2s;
+      outline: none;
+      font-family: inherit;
+    }
+
+    &:has(input:focus) label { color: var(--teal); }
+    &:has(input:not(:placeholder-shown):valid) { 
+      label { color: var(--green); }
+      input { border-color: var(--green); }
+    }
+    &:has(input:user-invalid) {
+      label { color: var(--red); }
+      input { border-color: var(--red); }
+    }
+  }
+}
+
+/* :has() parent styling */
+.card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  .item-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.6rem 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.8rem;
+    color: var(--dim);
+    transition: background 0.2s, border-color 0.2s;
+
+    input[type="checkbox"] {
+      accent-color: var(--teal);
+      width: 14px;
+      height: 14px;
+      cursor: pointer;
+    }
+
+    /* :has() — card reacts when checkbox inside is checked */
+    &:has(input:checked) {
+      background: oklch(22% 0.1 158 / 0.5);
+      border-color: oklch(40% 0.15 158);
+      color: var(--teal);
+      text-decoration: line-through;
+    }
+  }
+}
+
+/* ── :nth-child(n of S) demo ── */
+.nth-typed-demo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+
+  .item {
+    padding: 0.35rem 0.65rem;
+    border-radius: 6px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--dim);
+  }
+
+  .item.featured { border-color: oklch(45% 0.2 50); color: var(--orange); }
+  .item.new-item { border-color: oklch(45% 0.2 158); color: var(--green); }
+
+  /* Target every 2nd .featured item */
+  .item.featured:nth-child(2n of .featured) {
+    background: oklch(22% 0.12 50 / 0.5);
+    font-weight: 500;
+  }
+}
+
+/* ── sibling-index() / sibling-count() ── */
+.sibling-demo {
+  display: flex;
+  gap: 0.4rem;
+  align-items: flex-end;
+
+  .sib {
+    width: 28px;
+    background: oklch(from var(--teal) l c calc(h + sibling-index() * 18));
+    border-radius: 4px 4px 0 0;
+    height: calc(20px + sibling-index() * 14px);
+    opacity: calc(0.4 + sibling-index() * 0.08);
+    transition: height 0.4s calc(sibling-index() * 50ms),
+                opacity 0.3s calc(sibling-index() * 50ms);
+  }
+}
+
+/* sibling-index stagger animation */
+.stagger-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+
+  li {
+    list-style: none;
+    padding: 0.4rem 0.8rem;
+    background: var(--surface2);
+    border-radius: 6px;
+    font-size: 0.8rem;
+    border-left: 2px solid oklch(from var(--teal) l c calc(h + sibling-index() * 20));
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    transition-delay: calc(sibling-index() * 60ms);
+
+    @starting-style {
+      opacity: 0;
+      transform: translateX(-8px);
+    }
+  }
+}
+
+/* ── color-mix() ── */
+.colormix-demo {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 4px;
+  border-radius: 8px;
+  overflow: hidden;
+
+  .swatch {
+    height: 60px;
+    display: flex;
+    align-items: flex-end;
+    padding: 4px;
+
+    span {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.58rem;
+      color: white;
+      text-shadow: 0 1px 2px black;
+    }
+  }
+}
+
+/* ── oklch relative color syntax ── */
+.relative-color-demo {
+  --base: oklch(65% 0.22 260);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+
+  .rc-swatch {
+    height: 56px;
+    border-radius: 6px;
+    display: flex;
+    align-items: flex-end;
+    padding: 4px 5px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.58rem;
+    color: white;
+    text-shadow: 0 1px 3px black;
+  }
+
+  .rc1 { background: var(--base); }
+  .rc2 { background: oklch(from var(--base) calc(l + 0.15) c h); }
+  .rc3 { background: oklch(from var(--base) calc(l - 0.15) c h); }
+  .rc4 { background: oklch(from var(--base) l calc(c - 0.1) h); }
+  .rc5 { background: oklch(from var(--base) l c calc(h + 30)); }
+  .rc6 { background: oklch(from var(--base) l c calc(h + 60)); }
+  .rc7 { background: oklch(from var(--base) l c calc(h + 120)); }
+  .rc8 { background: oklch(from var(--base) l c calc(h + 180)); }
+}
+
+/* ── light-dark() ── */
+.light-dark-demo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+
+  .ld-box {
+    padding: 1rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
+  }
+
+  .ld-light {
+    color-scheme: light;
+    background: light-dark(#f8f9fa, #1a1a2e);
+    color: light-dark(#1a1a2e, #f8f9fa);
+    border: 1px solid light-dark(#dee2e6, #2d2d4a);
+  }
+
+  .ld-dark {
+    color-scheme: dark;
+    background: light-dark(#f8f9fa, #1a1a2e);
+    color: light-dark(#1a1a2e, #f8f9fa);
+    border: 1px solid light-dark(#dee2e6, #2d2d4a);
+  }
+}
+
+/* ── @property animated gradient ── */
+.animated-hue {
+  --hue: 260;
+  background: oklch(60% 0.22 var(--hue));
+  height: 80px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.78rem;
+  color: white;
+  cursor: pointer;
+  transition: --hue 0.8s ease, background 0.8s;
+
+  &:hover { --hue: 360; }
+}
+
+/* ── Anchor Positioning demo ── */
+.anchor-wrapper {
+  position: relative;
+  height: 220px;
+  background: var(--surface2);
+  border-radius: 8px;
+  border: 1px dashed var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.anchor-btn {
+  anchor-name: --btn-anchor;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 0.5rem 1.2rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color 0.2s;
+
+  &:hover { border-color: var(--teal); }
+}
+
+.anchor-tooltip {
+  position: absolute;
+  position-anchor: --btn-anchor;
+  position-area: top center;
+  position-try-fallbacks: flip-block;
+  background: var(--surface);
+  border: 1px solid var(--teal);
+  border-radius: 6px;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.72rem;
+  font-family: 'DM Mono', monospace;
+  color: var(--teal);
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+  z-index: 10;
+}
+
+.anchor-btn:hover + .anchor-tooltip,
+.anchor-btn:focus + .anchor-tooltip {
+  opacity: 1;
+}
+
+/* ── interpolate-size demo ── */
+:root { interpolate-size: allow-keywords; }
+
+.interp-btn {
+  padding: 0.5rem 1rem;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 0.78rem;
+  cursor: pointer;
+  font-family: inherit;
+  margin-bottom: 0.75rem;
+  transition: border-color 0.2s;
+
+  &:hover { border-color: var(--teal); }
+}
+
+.expandable-box {
+  background: oklch(20% 0.1 240);
+  border: 1px solid oklch(35% 0.15 240);
+  border-radius: 8px;
+  overflow: hidden;
+  height: 0;
+  transition: height 0.5s ease;
+  font-size: 0.8rem;
+  color: var(--dim);
+
+  &.open { height: auto; }
+
+  .inner-content { padding: 1rem; }
+}
+
+/* ── field-sizing demo ── */
+.field-sizing-demo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+
+  textarea, input {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.5rem 0.75rem;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.82rem;
+    resize: none;
+    outline: none;
+    width: 100%;
+    transition: border-color 0.2s;
+
+    &:focus { border-color: var(--teal); }
+  }
+
+  .auto-grow {
+    field-sizing: content;
+    min-height: 40px;
+    max-height: 200px;
+  }
+
+  .auto-width-input {
+    field-sizing: content;
+    min-width: 80px;
+    max-width: 100%;
+    width: auto;
+  }
+}
+
+/* ── text-box / text-box-trim ── */
+.textbox-demo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+
+  .tb-box {
+    background: oklch(20% 0.06 260);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0;
+    overflow: hidden;
+
+    .label {
+      background: var(--border);
+      padding: 0.3rem 0.75rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      color: var(--dim);
+    }
+
+    .content {
+      padding: 0.75rem;
+      background: oklch(22% 0.1 260 / 0.3);
+    }
+  }
+
+  h3.tb-before {
+    font-size: 1.4rem;
+    line-height: 1.3;
+    color: var(--text);
+  }
+
+  h3.tb-after {
+    font-size: 1.4rem;
+    line-height: 1.3;
+    color: var(--text);
+    text-box: trim-both cap alphabetic;
+  }
+}
+
+/* ── line-clamp (standard) ── */
+.lineclamp-demo {
+  .clamped-text {
+    line-clamp: 3;
+    overflow: hidden;
+    font-size: 0.85rem;
+    color: var(--dim);
+    line-height: 1.6;
+  }
+
+  /* Fallback with -webkit- */
+  .clamped-text-compat {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-size: 0.85rem;
+    color: var(--dim);
+    line-height: 1.6;
+  }
+}
+
+/* ── reading-flow demo ── */
+.reading-flow-demo {
+  reading-flow: flex-visual;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+
+  .rf-item {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.78rem;
+    color: var(--dim);
+
+    &:focus {
+      outline: 2px solid var(--teal);
+      outline-offset: 2px;
+      color: var(--teal);
+    }
+  }
+}
+
+/* ── shape() for clip-path ── */
+.shape-demo {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+
+  .shaped {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--teal), var(--purple));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.6rem;
+    font-family: 'DM Mono', monospace;
+    color: white;
+    text-align: center;
+  }
+
+  .shape-arrow {
+    clip-path: shape(
+      from top left,
+      hline to 70%,
+      vline to 30%,
+      hline to 100%,
+      vline to 50%,
+      hline to 100%,
+      vline to 70%,
+      hline to 70%,
+      vline to 100%,
+      hline to 0%,
+      close
+    );
+  }
+
+  .shape-badge {
+    clip-path: shape(
+      from 50% 0%,
+      curve to 100% 50% with 100% 15%,
+      curve to 50% 100% with 100% 85%,
+      curve to 0% 50% with 0% 85%,
+      curve to 50% 0% with 0% 15%,
+      close
+    );
+  }
+
+  .shape-tab {
+    clip-path: shape(
+      from top left,
+      curve to 10% 0% with 0% 0%,
+      hline to 90%,
+      curve to 100% 10% with 100% 0%,
+      vline to 100%,
+      hline to 0%,
+      close
+    );
+  }
+}
+
+/* ── CSS math functions ── */
+.math-demo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+
+  .math-bar {
+    height: 28px;
+    border-radius: 4px;
+    background: oklch(50% 0.2 240);
+    display: flex;
+    align-items: center;
+    padding-inline: 0.5rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: white;
+  }
+
+  .bar-round  { width: round(73%, 10%); }
+  .bar-mod    { width: mod(90%, 40%); background: oklch(50% 0.2 160); }
+  .bar-rem    { width: rem(95%, 40%); background: oklch(50% 0.2 300); }
+  .bar-abs    { width: abs(-60% + 100%); background: oklch(50% 0.2 50); }
+  .bar-sign   { 
+    width: calc(50% * sign(3 - 1)); 
+    background: oklch(50% 0.2 20);
+  }
+}
+
+/* ── attr() with type conversion ── */
+.typed-attr-demo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+
+  [data-size] {
+    background: oklch(35% 0.15 240);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    color: white;
+    width: attr(data-size type(<length>), 40px);
+    height: attr(data-size type(<length>), 40px);
+    transition: transform 0.2s;
+
+    &:hover { transform: scale(1.1); }
+  }
+
+  [data-hue] {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    background: oklch(60% 0.22 attr(data-hue type(<number>), 0));
+  }
+}
+
+/* ── Scroll-Driven Animations ── */
+.scroll-demo-wrapper {
+  height: 240px;
+  overflow-y: scroll;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  position: relative;
+
+  &::-webkit-scrollbar { width: 4px; }
+  &::-webkit-scrollbar-track { background: var(--surface2); }
+  &::-webkit-scrollbar-thumb { background: var(--dimmer); border-radius: 2px; }
+}
+
+.scroll-content {
+  padding: 1rem;
+}
+
+.scroll-anim-item {
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.5rem;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.8rem;
+  color: var(--dim);
+  
+  /* View timeline animation */
+  animation: slide-in linear both;
+  animation-timeline: view(block);
+  animation-range: entry 0% entry 30%;
+}
+
+@keyframes slide-in {
+  from { opacity: 0; transform: translateX(-20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ── View Transitions ── */
+.vt-demo {
+  .vt-btn {
+    padding: 0.5rem 1.2rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-family: inherit;
+    margin-right: 0.5rem;
+    transition: border-color 0.2s;
+
+    &:hover { border-color: var(--rose); }
+  }
+
+  .vt-panel {
+    margin-top: 1rem;
+    padding: 1.25rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 0.85rem;
+    view-transition-name: panel-swap;
+    min-height: 80px;
+
+    h4 { color: var(--text); margin-bottom: 0.5rem; font-size: 0.9rem; }
+    p  { color: var(--dim); font-size: 0.78rem; }
+  }
+}
+
+@keyframes vt-fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+}
+@keyframes vt-fade-out {
+  to { opacity: 0; transform: translateY(-6px); }
+}
+::view-transition-new(panel-swap) { animation: vt-fade-in 0.3s ease forwards; }
+::view-transition-old(panel-swap) { animation: vt-fade-out 0.3s ease forwards; }
+
+/* ── @starting-style with discrete transitions ── */
+.popover-demo-wrapper {
+  position: relative;
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+
+  .pop-btn {
+    padding: 0.5rem 1rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-size: 0.78rem;
+    cursor: pointer;
+    font-family: inherit;
+    transition: border-color 0.2s;
+
+    &:hover { border-color: var(--purple); }
+  }
+
+  [popover] {
+    position: fixed;
+    inset: auto;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--surface);
+    border: 1px solid var(--purple);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    color: var(--text);
+    font-size: 0.85rem;
+    width: 280px;
+    box-shadow: 0 20px 60px oklch(0% 0 0 / 0.5);
+    margin: 0;
+    
+    /* Entry / exit animation with @starting-style */
+    transition: opacity 0.3s, transform 0.3s, overlay 0.3s allow-discrete, display 0.3s allow-discrete;
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+
+    @starting-style {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.92);
+    }
+
+    &:not(:popover-open) {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.92);
+    }
+
+    h4 { font-size: 0.95rem; margin-bottom: 0.5rem; }
+    p { color: var(--dim); font-size: 0.78rem; margin-bottom: 1rem; }
+
+    button.close {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--dim);
+      padding: 0.3rem 0.75rem;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 0.75rem;
+      font-family: inherit;
+    }
+  }
+
+  [popover]::backdrop {
+    background: oklch(0% 0 0 / 0.6);
+    backdrop-filter: blur(4px);
+    transition: background 0.3s, backdrop-filter 0.3s, overlay 0.3s allow-discrete, display 0.3s allow-discrete;
+
+    @starting-style { background: oklch(0% 0 0 / 0); backdrop-filter: blur(0px); }
+  }
+}
+
+/* ── :has() complex demo ── */
+.gallery-has-demo {
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+
+    .gallery-item {
+      aspect-ratio: 1;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      cursor: pointer;
+      background: var(--surface2);
+      border: 2px solid transparent;
+      transition: border-color 0.2s, transform 0.2s;
+      user-select: none;
+
+      input[type="radio"] { display: none; }
+
+      &:has(input:checked) {
+        border-color: var(--teal);
+        transform: scale(1.05);
+        background: oklch(22% 0.12 190);
+      }
+    }
+  }
+
+  /* Parent container changes based on what's selected */
+  .gallery-status {
+    font-size: 0.78rem;
+    color: var(--dim);
+    font-family: 'DM Mono', monospace;
+    padding: 0.5rem 0.75rem;
+    background: var(--surface2);
+    border-radius: 6px;
+  }
+}
+
+/* ── details + ::details-content ── */
+.details-demo {
+  details {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+    
+    summary {
+      padding: 0.75rem 1rem;
+      cursor: pointer;
+      font-size: 0.85rem;
+      color: var(--text);
+      user-select: none;
+      background: var(--surface2);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      list-style: none;
+      transition: background 0.2s;
+
+      &:hover { background: oklch(18% 0.06 260); }
+      &::after { content: '▾'; transition: transform 0.3s; }
+    }
+
+    &[open] summary::after { transform: rotate(-180deg); }
+
+    &::details-content {
+      padding: 0;
+      height: 0;
+      overflow: hidden;
+      transition: height 0.4s ease, content-visibility 0.4s allow-discrete;
+    }
+
+    &[open]::details-content { height: auto; }
+
+    .details-inner {
+      padding: 1rem;
+      font-size: 0.82rem;
+      color: var(--dim);
+    }
+  }
+}
+
+/* ── ::highlight() custom highlight API ── */
+::highlight(search-result) {
+  background-color: oklch(75% 0.22 90 / 0.25);
+  color: var(--amber);
+}
+
+::highlight(css-keyword) {
+  background-color: oklch(30% 0.15 280 / 0.4);
+  color: var(--purple);
+}
+
+.highlight-demo {
+  p {
+    font-size: 0.85rem;
+    line-height: 1.7;
+    color: var(--dim);
+    padding: 0.75rem;
+    background: var(--surface2);
+    border-radius: 6px;
+  }
+
+  .hl-controls {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+
+    button {
+      padding: 0.3rem 0.75rem;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      color: var(--dim);
+      font-size: 0.72rem;
+      cursor: pointer;
+      font-family: 'DM Mono', monospace;
+      transition: border-color 0.2s, color 0.2s;
+
+      &:hover { border-color: var(--teal); color: var(--teal); }
+      &.active { border-color: var(--teal); color: var(--teal); background: oklch(20% 0.1 190); }
+    }
+  }
+}
+
+/* ── container style queries ── */
+.style-query-demo {
+  container-name: card-container;
+  container-type: style;
+  padding: 1rem;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+@container card-container style(--variant: danger) {
+  .sq-inner { background: oklch(22% 0.1 25); border-color: var(--red); color: var(--red); }
+}
+@container card-container style(--variant: success) {
+  .sq-inner { background: oklch(22% 0.1 158); border-color: var(--green); color: var(--green); }
+}
+@container card-container style(--variant: warning) {
+  .sq-inner { background: oklch(22% 0.1 90); border-color: var(--amber); color: var(--amber); }
+}
+
+.sq-inner {
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.8rem;
+  color: var(--dim);
+  transition: all 0.3s;
+}
+
+/* ── @layer cascade demo ── */
+@layer demos {
+  .layer-demo-box { background: oklch(25% 0.1 240); border-color: oklch(40% 0.15 240); }
+}
+/* This is in a higher layer, but would normally lose to unlayered styles */
+.layer-demo-override { background: oklch(25% 0.12 130) !important; border-color: oklch(40% 0.18 130) !important; }
+
+/* ── font-palette ── */
+.palette-demo {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+
+  .pal-text {
+    font-size: 2.5rem;
+    font-family: 'Noto Color Emoji', sans-serif;
+  }
+
+  .palette-normal { font-palette: normal; }
+  .palette-light  { font-palette: light; }
+  .palette-dark   { font-palette: dark; }
+}
+
+/* ── zoom (now standard) ── */
+.zoom-demo {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+
+  .zoom-box {
+    width: 60px;
+    height: 60px;
+    background: oklch(40% 0.2 260);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: white;
+    text-align: center;
+  }
+
+  .z-0-5 { zoom: 0.5; }
+  .z-1   { zoom: 1; }
+  .z-1-5 { zoom: 1.5; }
+  .z-2   { zoom: 2; }
+}
+
+/* ── text-wrap ── */
+.textwrap-demo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+
+  .tw-box {
+    padding: 0.75rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+
+    .label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      color: var(--dim);
+      margin-bottom: 0.5rem;
+    }
+
+    h4 {
+      font-size: 0.95rem;
+      color: var(--text);
+      line-height: 1.3;
+    }
+
+    .tw-balance h4 { text-wrap: balance; }
+    .tw-pretty p   { text-wrap: pretty; font-size: 0.8rem; color: var(--dim); }
+  }
+}
+
+/* ── content-visibility ── */
+.cv-demo {
+  .cv-section {
+    content-visibility: auto;
+    contain-intrinsic-height: auto 120px;
+    padding: 1rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--dim);
+
+    h4 { color: var(--text); font-size: 0.9rem; margin-bottom: 0.3rem; }
+  }
+}
+
+/* ── subgrid ── */
+.subgrid-demo {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1rem;
+
+  .sg-card {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    grid-row: span 3;
+
+    /* Subgrid alignment magic */
+    .sg-parent {
+      display: grid;
+      grid-row: span 3;
+      grid-template-rows: subgrid;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+
+      .sg-header {
+        padding: 0.75rem;
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text);
+      }
+
+      .sg-body {
+        padding: 0.75rem;
+        font-size: 0.78rem;
+        color: var(--dim);
+        line-height: 1.5;
+      }
+
+      .sg-footer {
+        padding: 0.6rem 0.75rem;
+        border-top: 1px solid var(--border);
+        font-family: 'DM Mono', monospace;
+        font-size: 0.68rem;
+        color: var(--dimmer);
+      }
+    }
+  }
+}
+
+/* ── Combinators: nesting demo ── */
+.nesting-demo {
+  background: var(--surface2);
+  border-radius: 8px;
+  padding: 1rem;
+
+  /* Native CSS Nesting */
+  .parent-element {
+    font-size: 0.85rem;
+    color: var(--dim);
+    padding: 0.5rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+
+    & > .child {
+      margin-top: 0.5rem;
+      padding: 0.4rem 0.6rem;
+      background: oklch(22% 0.06 260);
+      border-radius: 4px;
+      font-size: 0.78rem;
+      color: var(--teal);
+    }
+
+    &:has(.child.active) {
+      border-color: var(--teal);
+      background: oklch(18% 0.08 200);
+    }
+
+    @media (min-width: 600px) {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+  }
+}
+
+/* ── ::scroll-button / ::scroll-marker (Chrome Experimental) ── */
+.scroll-marker-demo {
+  .carousel {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.5rem;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar { display: none; }
+
+    .slide {
+      flex-shrink: 0;
+      width: 200px;
+      height: 120px;
+      border-radius: 8px;
+      scroll-snap-align: start;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+  }
+
+  /* ::scroll-marker-group + ::scroll-marker (Experimental, Chrome only) */
+  .carousel::scroll-marker-group {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+  }
+
+  .slide::scroll-marker {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background: var(--dimmer);
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
+  .slide::scroll-marker:target-current {
+    background: var(--teal);
+    width: 24px;
+    border-radius: 4px;
+  }
+}
+
+/* ── Column combinator || (Experimental, no browser support yet) ── */
+.col-combinator-demo {
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 0.8rem;
+
+    th, td {
+      padding: 0.5rem 0.75rem;
+      border: 1px solid var(--border);
+      color: var(--dim);
+    }
+
+    th { background: var(--surface2); color: var(--text); }
+  }
+
+  /* col.highlighted || td  — selects td in highlighted column
+     Currently unsupported in all browsers, shown as reference */
+  col.highlighted + col + col { /* fallback */ }
+}
+
+/* ── Interop 2026 focus area badges ── */
+.interop-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: oklch(22% 0.1 50 / 0.6);
+  border: 1px solid oklch(40% 0.15 50 / 0.5);
+  border-radius: 100px;
+  padding: 0.2rem 0.6rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.62rem;
+  color: var(--orange);
+
+  &::before { content: '⚡'; }
+}
+
+/* ── if() CSS conditional (Experimental, no browser support) ── */
+.if-demo-note {
+  background: oklch(22% 0.12 300 / 0.5);
+  border: 1px solid oklch(40% 0.18 300 / 0.4);
+  border-radius: 8px;
+  padding: 1rem;
+  font-size: 0.8rem;
+  color: var(--dim);
+
+  pre {
+    margin-top: 0.75rem;
+    overflow-x: auto;
+  }
+}
+
+/* ── dynamic-range-limit ── */
+.hdr-demo {
+  .hdr-box {
+    height: 80px;
+    border-radius: 8px;
+    background: linear-gradient(135deg,
+      oklch(90% 0.3 90),
+      oklch(85% 0.28 350),
+      oklch(80% 0.32 270)
+    );
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-family: 'DM Mono', monospace;
+    color: white;
+    text-shadow: 0 1px 3px black;
+    margin-bottom: 0.5rem;
+  }
+  .hdr-standard { dynamic-range-limit: standard; }
+  .hdr-high     { dynamic-range-limit: high; }
+  .hdr-constr   { dynamic-range-limit: constrained-high; }
+}
+
+/* ── @font-face color-palette override ── */
+@font-palette-values --custom-palette {
+  font-family: 'Noto Color Emoji';
+  base-palette: 0;
+  override-colors: 0 var(--teal), 1 var(--purple);
+}
+
+/* ── Global utility for sections ── */
+@layer utilities {
+  .mt-0 { margin-top: 0; }
+  .flex { display: flex; }
+  .flex-col { flex-direction: column; }
+  .gap-sm { gap: 0.5rem; }
+  .gap-md { gap: 1rem; }
+  .items-center { align-items: center; }
+  .text-dim { color: var(--dim); }
+  .text-sm { font-size: 0.8rem; }
+  .mono { font-family: 'DM Mono', monospace; }
+  .full-width { width: 100%; }
+  .rounded { border-radius: 8px; }
+
+  /* Scroll-driven reveal for section headers */
+  .section-header {
+    animation: reveal-header linear both;
+    animation-timeline: view(block);
+    animation-range: entry 0% entry 40%;
+  }
+  @keyframes reveal-header {
+    from { opacity: 0; translate: 0 20px; }
+    to   { opacity: 1; translate: 0 0; }
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ══════════════════════════════════════════════════
+     SCROLL PROGRESS BAR (Scroll-Driven Animation)
+══════════════════════════════════════════════════ -->
+<div id="progress-bar" role="progressbar" aria-hidden="true"></div>
+
+<!-- ══════════════════════════════════════════════════
+     SIDEBAR NAVIGATION
+══════════════════════════════════════════════════ -->
+<nav id="toc" aria-label="Table of contents">
+  <div class="logo">
+    <span class="title">CSS 2025–2026</span>
+    <span class="year">// Living Reference</span>
+  </div>
+
+  <a href="#hero"><span class="dot" style="background:var(--teal)"></span> Overview</a>
+  <a href="#sec-at-rules"><span class="dot" style="background:var(--purple)"></span> At-Rules</a>
+  <a href="#sec-selectors"><span class="dot" style="background:var(--orange)"></span> Selectors</a>
+  <a href="#sec-pseudo-elements"><span class="dot" style="background:var(--green)"></span> Pseudo-Elements</a>
+  <a href="#sec-colors"><span class="dot" style="background:var(--rose)"></span> Colors</a>
+  <a href="#sec-layout"><span class="dot" style="background:var(--amber)"></span> Layout</a>
+  <a href="#sec-properties"><span class="dot" style="background:var(--blue)"></span> Properties</a>
+  <a href="#sec-animations"><span class="dot" style="background:var(--rose)"></span> Animations</a>
+  <a href="#sec-values"><span class="dot" style="background:var(--teal)"></span> Values &amp; Functions</a>
+  <a href="#sec-nesting"><span class="dot" style="background:var(--lime)"></span> Nesting &amp; Layers</a>
+  <a href="#sec-experimental"><span class="dot" style="background:var(--purple)"></span> Experimental</a>
+</nav>
+
+<!-- ══════════════════════════════════════════════════
+     MAIN CONTENT
+══════════════════════════════════════════════════ -->
+<main>
+
+<!-- ════════════════════ HERO ════════════════════ -->
+<section id="hero" class="hero">
+  <div class="bg-grid" aria-hidden="true"></div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">CSS Living Reference Demo</p>
+    <h1>
+      Modern <em>CSS</em><br>
+      2025 — 2026
+    </h1>
+    <p class="hero-desc">
+      A comprehensive interactive demo of every significant CSS feature, property, selector,
+      at-rule, and pseudo-element that shipped or reached Baseline from 2025 through
+      March 17, 2026. All native, all vanilla.
+    </p>
+    <div class="hero-tags">
+      <span>@scope</span>
+      <span>@starting-style</span>
+      <span>anchor-positioning</span>
+      <span>scroll-driven-animations</span>
+      <span>color-mix()</span>
+      <span>oklch()</span>
+      <span>:has()</span>
+      <span>interpolate-size</span>
+      <span>field-sizing</span>
+      <span>sibling-index()</span>
+      <span>container-scroll-state</span>
+      <span>view-transitions</span>
+      <span>@property</span>
+      <span>@layer</span>
+      <span>subgrid</span>
+      <span>text-box</span>
+      <span>shape()</span>
+      <span>round()</span>
+      <span>attr()-typed</span>
+      <span>::details-content</span>
+      <span>::highlight()</span>
+      <span>reading-flow</span>
+      <span>line-clamp</span>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════
+     §1  AT-RULES
+════════════════════════════════════════════ -->
+<section id="sec-at-rules" class="section">
+  <div class="section-header">
+    <span class="section-number">§01</span>
+    <div class="section-content">
+      <h2 class="section-title">At-Rules</h2>
+      <p class="section-desc">New and enhanced at-rules now shipping in stable browsers — enabling scope isolation, typed variables, cascade layers, entry animations, and scroll-state detection.</p>
+    </div>
+    <span class="section-badge badge-at">@rules</span>
+  </div>
+
+  <!-- @scope -->
+  <div class="demo-grid">
+    <div class="demo-card">
+      <div class="card-header">
+        <span class="card-title">@scope — Local styling without global side effects</span>
+        <span class="card-support sup-good">Baseline 2025</span>
+      </div>
+      <div class="card-demo">
+        <div class="scope-demo">
+          <h4>Scoped Heading</h4>
+          <p>This paragraph is styled <span class="highlight">inside @scope</span> only.</p>
+        </div>
+        <p style="font-size:0.8rem; color:var(--dim); margin-top:0.75rem;">↑ Styled by @scope rules above</p>
+      </div>
+      <div class="card-code">
+        <code><span class="css-at">@scope</span> (<span class="css-sel">.scope-demo</span>) {<br>
+&nbsp;&nbsp;<span class="css-sel">h4</span> { <span class="css-prop">color</span>: <span class="css-val">var(--teal)</span>; }<br>
+&nbsp;&nbsp;<span class="css-sel">p</span>  { <span class="css-prop">color</span>: <span class="css-val">oklch(75% 0.08 200)</span>; }<br>
+}</code>
+      </div>
+    </div>
+
+    <div class="demo-card">
+      <div class="card-header">
+        <span class="card-title">@scope — "Donut scope" with exclusion</span>
+        <span class="card-support sup-good">Chrome 118+ · FF 128+</span>
+      </div>
+      <div class="card-demo">
+        <div class="donut-outer">
+          <h4>Styled by @scope</h4>
+          <p>This text has amber border-left from the outer scope.</p>
+          <div class="donut-hole">
+            <h4 style="color:var(--dim);">Not styled (in hole)</h4>
+            <p style="border:none; color:var(--dim);">Scope is excluded here — the "donut hole".</p>
+          </div>
+        </div>
+      </div>
+      <div class="card-code">
+        <code><span class="css-at">@scope</span> (<span class="css-sel">.donut-outer</span>) <span class="css-at">to</span> (<span class="css-sel">.donut-hole</span>) {<br>
+&nbsp;&nbsp;<span class="css-sel">p</span> { <span class="css-prop">border-left</span>: <span class="css-val">2px solid var(--amber)</span>; }<br>
+}</code>
+      </div>
+    </div>
+
+    <div class="demo-card">
+      <div class="card-header">
+        <span class="card-title">@property — Typed custom properties with transitions</span>
+        <span class="card-support sup-good">Baseline 2024</span>
+      </div>
+      <div class="card-demo">
+        <div class="animated-hue" id="hue-demo">
+          Hover me — --hue transitions! oklch(60% 0.22 var(--hue))
+        </div>
+        <p style="font-size:0.72rem; color:var(--dim); margin-top:0.5rem;">
+          Without @property, custom props can't transition. With it, they can.
+        </p>
+      </div>
+      <div class="card-code">
+        <code><span class="css-at">@property</span> <span class="css-sel">--hue</span> {<br>
+&nbsp;&nbsp;<span class="css-prop">syntax</span>: <span class="css-str">'&lt;number&gt;'</span>;<br>
+&nbsp;&nbsp;<span class="css-prop">inherits</span>: <span class="css-val">false</span>;<br>
+&nbsp;&nbsp;<span class="css-prop">initial-value</span>: <span class="css-num">260</span>;<br>
+}<br>
+<span class="css-sel">.el</span> {<br>
+&nbsp;&nbsp;<span class="css-prop">--hue</span>: <span class="css-num">260</span>;<br>
+&nbsp;&nbsp;<span class="css-prop">background</span>: <span class="css-fn">oklch</span>(<span class="css-num">60%</span> <span class="css-num">0.22</span> <span class="css-val">var(--hue)</span>);<br>
+&nbsp;&nbsp;<span class="css-prop">transition</span>: <span class="css-val">--hue 0.8s ease</span>;<br>
+&nbsp;&nbsp;<span class="css-sel">&:hover</span> { <span class="css-prop">--hue</span>: <span class="css-num">360</span>; }<br>
+}</code>
+      </div>
+    </div>
+
+    <div class="demo-card">
+      <div class="card-header">
+        <span class="card-title">@starting-style — Entry animations on mount</span>
+        <span class="card-support sup-good">Chrome 117+ · FF 129+</span>
+      </div>
+      <div class="card-demo starting-style-demo">
+        <div class="ssbox" id="ss1">Appears with fade-up on page load</div>
+        <div class="ssbox variant" id="ss2" style="margin-top:0.5rem">Another variant — same rule</div>
+        <div class="ssbox variant3" id="ss3" style="margin-top:0.5rem">Green — fades in with delay</div>
+        <button onclick="replayStartingStyle()" style="margin-top:0.75rem; padding:0.3rem 0.8rem; background:var(--surface); border:1px solid var(--border); border-radius:5px; color:var(--dim); font-size:0.72rem; cursor:pointer; font-family:inherit;">
+          ↺ Replay
+        </button>
+      </div>
+      <div class="card-code">
+        <code><span class="css-sel">.ssbox</span> {<br>
+&nbsp;&nbsp;<span class="css-prop">transition</span>: <span class="css-val">opacity 0.5s, transform 0.5s</span>;<br>
+&nbsp;&nbsp;<span class="css-at">@starting-style</span> {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="css-prop">opacity</span>: <span class="css-num">0</span>;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="css-prop">transform</span>: <span class="css-fn">translateY</span>(<span class="css-num">12px</span>);<br>
+&nbsp;&nbsp;}<br>
+}</code>
+      </div>
+    </div>
+
+    <div class="demo-card">
+      <div class="card-header">
+        <span class="card-title">@container scroll-state() — Detect sticky stuck</span>
+        <span class="card-support sup-good">Chrome 129+</span>
+      </div>
+      <div class="card-demo">
+        <div class="sticky-demo-wrapper" id="scroll-state-demo">
+          <div class="sticky-header">📌 Sticky Header — scroll down to see it activate</div>
+          <div class="scroll-snap-item">Item 1</div>
+          <div class="scroll-snap-item">Item 2</div>
+          <div class="scroll-snap-item">Item 3 — keep scrolling</div>
+          <div class="scroll-snap-item">Item 4</div>
+          <div class="scroll-snap-item">Item 5</div>
+          <div class="scroll-snap-item">Item 6 — header changed when stuck!</div>
+        </div>
+      </div>
+      <div class="card-code">
+        <code><span class="css-sel">.wrapper</span> {<br>
+&nbsp;&nbsp;<span class="css-prop">container-type</span>: <span class="css-val">scroll-state</span>;<br>
+}<br>
+<span class="css-at">@container</span> <span class="css-fn">scroll-state</span>(<span class="css-prop">stuck</span>: <span class="css-val">top</span>) {<br>
+&nbsp;&nbsp;<span class="css-sel">.sticky-header</span> {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="css-prop">color</span>: <span class="css-val">var(--teal)</span>;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="css-prop">box-shadow</span>: <span class="css-val">0 2px 16px black</span>;<br>
+&nbsp;&nbsp;}<br>
+}</code>
+      </div>
+    </div>
+
+    <div class="demo-card">
+      <div class="card-header">
+        <span class="card-title">@container scroll-state(snapped) — Snap detection</span>
+        <span class="card-support sup-good">Chrome 129+</span>
+      </div>
+      <div class="card-demo">
+        <div id="snap-demo" style="height:160px; overflow-x:scroll; display:flex; gap:0.5rem; padding:0.5rem; scroll-snap-type:x mandatory; container-type:scroll-state;">
+          <style>
+            #snap-demo > .snap-item {
+              flex-shrink:0; width:180px; height:140px;
+              border-radius:8px; scroll-snap-align:start;
+              display:flex; flex-direction:column;
+              align-items:center; justify-content:center;
+              background:var(--surface2); border:2px solid var(--border);
+              font-size:0.85rem; color:var(--dim);
+              transition:border-color 0.3s, color 0.3s, scale 0.3s;
+            }
+            @container scroll-state(snapped: inline) {
+              .snap-item {
+                border-color: var(--teal);
+                color: var(--teal);
+                scale: 1.03;
+              }
+            }
+          </style>
+          <div class="snap-item">📦<br>Slide 1</div>
+          <div class="snap-item">🎨<br>Slide 2</div>
+          <div class="snap-item">⚡<br>Slide 3</div>
+          <div class="snap-item">🌈<br>Slide 4</div>
+          <div class="snap-item">🔮<br>Slide 5</div>
+        </div>
+        <p style="font-size:0.72rem; color:var(--dim); margin-top:0.5rem;">Snapped card gets border-color + scale</p>
+      </div>
+      <div class="card-code">
+        <code><span class="css-at">@container</span> <span class="css-fn">scroll-state</span>(<span class="css-prop">snapped</span>: <span class="css-val">inline</span>) {<br>
+&nbsp;&nbsp;<span class="css-sel">.snap-item</span> { <span class="css-prop">border-color</span>: <span class="css-val">var(--teal)</span>; <span class="css-prop">scale</span>: <span class="css-num">1.03</span>; }<br>
+}</code>
+      </div>
+    </div>
+
+    <!-- @view-transition -->
+    <div class="demo-card">
+      <div class="card-header">
+        <span class="card-title">@view-transition + view-transition-name</span>
+        <span class="card-support sup-good">Baseline 2025</span>
+      </div>
+      <div class="card-demo vt-demo">
+        <div>
+          <button class="vt-btn" onclick="swapPanel('a')">Panel A</button>
+          <button class="vt-btn" onclick="swapPanel('b')">Panel B</button>
+          <button class="vt-btn" onclick="swapPanel('c')">Panel C</button>
+        </div>
+        <div class="vt-panel" id="vt-panel">
+          <h4>Panel A — View Transitions</h4>
+          <p>Uses document.startViewTransition() + CSS ::view-transition-* pseudo-elements for smooth panel swaps.</p>
+        </div>
+      </div>
+      <div class="card-code">
+        <code><span class="css-sel">.panel</span> { <span class="css-prop">view-transition-name</span>: <span class="css-val">panel-swap</span>; }<br>
+<span class="css-sel">::view-transition-new(panel-swap)</span> {<br>
+&nbsp;&nbsp;<span class="css-prop">animation</span>: <span class="css-val">vt-fade-in 0.3s ease</span>;<br>
+}<br>
+<span class="css-sel">::view-transition-old(panel-swap)</span> {<br>
+&nbsp;&nbsp;<span class="css-prop">animation</span>: <span class="css-val">vt-fade-out 0.3s ease</span>;<br>
+}</code>
+      </div>
+    </div>
+
+    <!-- @layer -->
+    <div class="demo-card">
+      <div class="card-header">
+        <span class="card-title">@layer — Cascade layers for architecture</span>
+        <span class="card-support sup-good">Baseline 2023</span>
+      </div>
+      <div class="card-demo">
+        <div style="display:flex; flex-direction:column; gap:0.5rem;">
+          <div id="layer-demo1" style="padding:0.75rem; border-radius:6px; border:1px solid var(--border); font-size:0.8rem;">
+            <code>@layer demos</code> — lower priority
+          </div>
+          <div id="layer-demo2" style="padding:0.75rem; border-radius:6px; border:1px solid var(--border); font-size:0.8rem; background:oklch(22% 0.1 280); border-color:oklch(40% 0.15 280); color:var(--purple);">
+            Unlayered style — always wins over layers
+          </div>
+          <div style="padding:0.75rem; border-radius:6px; border:1px solid var(--border); font-size:0.78rem; color:var(--dim);">
+            Layer order: <code>reset &lt; base &lt; components &lt; utilities &lt; demos</code>
+          </div>
+        </div>
+      </div>
+      <div class="card-code">
+        <code><span class="css-at">@layer</span> <span class="css-val">reset, base, components, utilities, demos</span>;<br><br>
+<span class="css-at">@layer</span> <span class="css-val">demos</span> {<br>
+&nbsp;&nbsp;<span class="css-sel">.box</span> { <span class="css-prop">background</span>: <span class="css-val">oklch(25% 0.1 240)</span>; }<br>
+}<br>
+<span class="css-cmt">/* Unlayered — wins regardless of order */</span><br>
+<span class="css-sel">.box-override</span> { <span class="css-prop">background</span>: <span class="css-val">oklch(25% 0.12 130)</span>; }</code>
+      </div>
+    </div>
+  </div><!-- /demo-grid -->
+</section>
+
+
+<!-- ════════════════════════════════════════════
+     §2  SELECTORS
+════════════════════════════════════════════ -->
+<section id="sec-selectors" class="section">
+  <div class="section-header">
+    <span class="section-number">§02</span>
+    <div class="section-content">
+      <h2 class="section-title">Selectors</h2>
+      <p class="section-desc">Advanced CSS selectors now available cross-browser — relational parent selection, typed nth-child, user-interaction states, sibling functions, and popover states.</p>
+    </div>
+    <span class="section-badge badge-selector">selectors</span>
+  </div>
+
+  <div class="demo-grid">
+    <!-- :has() -->
+    <div class="demo-card">
+      <div class="card-header">
+        <span class="card-title">:has() — Relational / parent selector</span>
+        <span class="card-support sup-good">Baseline 2024</span>
+      </div>
+      <div class="card-demo">
+        <div class="card-list">
+          <label class="item-card">
+            <input type="checkbox"> CSS :has() — check me to strike through
+          </label>
+          <label class="item-card">
+            <input type="checkbox"> :has(input:checked) styles the parent
+          </label>
+          <label class="item-card">
+            <input type="checkbox"> No JS required!
+          </label>
+        </div>
+      </div>
+      <div class="card-code">
+        <code><span class="css-sel">.item-card</span><span class="css-sel">:has</span>(<span class="css-sel">input:checked</span>) {<br>
+&nbsp;&nbsp;<span class="css-prop">background</span>: <span class="css-val">oklch(22% 0.1 158 / 0.5)</span>;<br>
+&nbsp;&nbsp;<span class="css-prop">color</span>: <span class="css-val">var(--teal)</span>;<br>
+&nbsp;&nbsp;<span class="css-prop">text-decoration</span>: <span class="css-val">line-through</span>;<br>
+}</code>
+      </div>
+    </div>
+
+    <!-- :has() + form -->
+    <div class="demo-card">
+      <div class="card-header">
+        <span class="card-title">:has() + :user-valid / :user-invalid</span>
+        <span class="card-support sup-good">Chrome 119+ · FF 88+</span>
+      </div>
+      <div class="card-demo">
+        <div class="has-demo-form">
+          <div class="field">
+            <label for="f-email">Email address</label>
+            <input id="f-email" type="email" placeholder="you@example.com" required>
+          </div>
+          <div class="field">
+            <label for="f-name">Full name (required)</label>
+            <input id="f-name" type="text" placeholder="Your name" required>
+          </div>
+          <div class="field">
+            <label for="f-url">Website URL</label>
+            <input id="f-url" type="url" placeholder="https://..." required>
+          </div>
+        </div>
+      </div>
+      <div class="card-code">
+        <code><span class="css-cmt">/* Only after user interaction */</span><br>
+<span class="css-sel">.field:has(input:user-invalid)</span> {<br>
+&nbsp;&nbsp;<span class="css-prop">label</span> { <span class="css-prop">color</span>: <span class="css-val">var(--red)</span>; }<br>
+&nbsp;&nbsp;<span class="css-prop">input</span> { <span class="css-prop">border-color</span>: <span class="css-val">var(--red)</span>; }<br>
+}</code>
+      </div>
+    </div>
+
+    <!-- :nth-child(n of S) -->
+    <div class="demo-card">
+      <div class="card-header">
+        <span class="card-title">:nth-child(An+B of S) — Typed nth-child</span>
+        <span class="card-support sup-good">Baseline 2024</span>
+      </div>
+      <div class="card-demo">
+        <div class="nth-typed-demo">
+          <div class="item">Normal 1</div>
+          <div class="item featured">⭐ Featured 1</div>
+          <div class="item new-item">🆕 New 1</div>
+          <div class="item">Normal 2</div>
+          <div class="item featured">⭐ Featured 2 ← 2nd featured = highlighted</div>
+          <div class="item">Normal 3</div>
+          <div class="item featured">⭐ Featured 3</div>
+          <div class="item new-item">🆕 New 2</div>
+          <div class="item featured">⭐ Featured 4 ← 4th featured = highlighted</div>
+        </div>
+      </div>
+      <div class="card-code">
+        <code><span class="css-cmt">/* Every 2nd .featured item, counting only .featured */</span><br>
+<span class="css-sel">.item.featured:nth-child(2n of .featured)</span> {<br>
+&nbsp;&nbsp;<span class="css-prop">background</span>: <span class="css-val">oklch(22% 0.12 50 / 0.5)</span>;<br>
+}</code>
+      </div>
+    </div>
+
+    <!-- sibling-index() / sibling-count() -->
+    <div class="demo-card">
+      <div class="card-header">
+        <span class="card-title">sibling-index() · sibling-count() — New in 2025</span>
+        <span class="card-support sup-good">Chrome 127+ · Safari 18+</span>
+      </div>
+      <div class="card-demo">
+        <p style="font-size:0.75rem; color:var(--dim); margin-bottom:0.75rem;">Bars height + hue from sibling-index():</p>
+        <div class="sibling-demo">
+          <div class="sib">1</div>
+          <div class="sib">2</div>
+          <div class="sib">3</div>
+          <div class="sib">4</div>
+          <div class="sib">5</div>
+          <div class="sib">6</div>
+          <div class="sib">7</div>
+          <div class="sib">8</div>
+        </div>
+        <p style="font-size:0.75rem; color:var(--dim); margin-top:0.75rem;">Stagger enter with sibling-index() delay:</p>
+        <ul class="stagger-list" id="stagger-demo">
+          <li>Item one — stagger enters on load</li>
+          <li>Item two — delay = index × 60ms</li>
+          <li>Item three — uses @starting-style</li>
+          <li>Item four — pure CSS, no JS</li>
+          <li>Item five — oklch hue shifts too</li>
+        </ul>
+        <button onclick="replayStagger()" style="margin-top:0.5rem; padding:0.3rem 0.75rem; background:var(--surface); border:1px solid var(--border); border-radius:5px; color:var(--dim); font-size:0.72rem; cursor:pointer; font-family:inherit;">↺ Replay stagger</button>
+      </div>
+      <div class="card-code">
+        <code><span class="css-sel">li</span> {<br>
+&nbsp;&nbsp;<span class="css-prop">transition-delay</span>: <span class="css-fn">calc</span>(<span class="css-fn">sibling-index</span>() * <span class="css-num">60ms</span>);<br>
+&nbsp;&nbsp;<span class="css-prop">border-left</span>: <span class="css-num">2px solid</span> <span class="css-fn">oklch</span>(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="css-val">from var(--teal) l c</span> <span class="css-fn">calc</span>(<span class="css-val">h</span> + <span class="css-fn">sibling-index</span>() * <span class="css-num">20</span>)<br>
+&nbsp;&nbsp;);<br>
+&nbsp;&nbsp;<span class="css-at">@starting-style</span> { <span class="css-prop">opacity</span>: <span class="css-num">0</span>; }<br>
+}</code>
+      </div>
+    </div>
+
+    <!-- :popover-open -->
+    <div class="demo-card">
+      <div class="card-header">
+        <span class="card-title">:popover-open + @starting-style + overlay</span>
+        <span class="card-support sup-good">Chrome 122+ · Firefox 125+</span>
+      </div>
+      <div class="card-demo popover-demo-wrapper">
+        <button class="pop-btn" popovertarget="demo-popover">
+          Open Popover
+        </button>
+        <button class="pop-btn" popovertarget="demo-popover2">
+          Open Popover 2
+        </button>
+
+        <div id="demo-popover" popover>
+          <h4>Native Popover</h4>
+          <p>Animated in via <code>@starting-style</code>. Uses <code>overlay</code> property for exit animation. Top-layer rendering — no z-index hacks.</p>
+          <button class="close" popovertarget="demo-popover" popovertargetaction="hide">Close</button>
+        </div>
+
+        <div id="demo-popover2" popover>
+          <h4>Another Popover</h4>
+          <p>Each popover is independent. <code>:popover-open</code> is the pseudo-class that styles open state.</p>
+          <button class="close" popovertarget="demo-popover2" popovertargetaction="hide">Close</button>
+        </div>
+      </div>
+      <div class="card-code">
+        <code><span class="css-sel">[popover]</span> {<br>
+&nbsp;&nbsp;<span class="css-prop">transition</span>: <span class="css-val">opacity 0.3s,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;overlay 0.3s allow-discrete,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;display 0.3s allow-discrete</span>;<br>
+&nbsp;&nbsp;<span class="css-at">@starting-style</span> { <span class="css-prop">opacity</span>: <span class="css-num">0</span>; }<br>
+}<br>
+<span class="css-sel">[popover]:not(:popover-open)</span> { <span class="css-prop">opacity</span>: <span class="css-num">0</span>; }</code>
+      </div>
+    </div>
+
+    <!-- :is() :where() -->
+    <div class="demo-card">
+      <div class="card-header">
+        <span class="card-title">:is() · :where() — Forgiving selectors</span>
+        <span class="card-support sup-good">Baseline 2022</span>
+      </div>
+      <div class="card-demo">
+        <div id="is-where-demo">
+          <style>
+            /* :is() carries max specificity of its arguments */
+            #is-where-demo :is(h4, h5, .heading) {
+              color: var(--teal);
+              font-size: 0.9rem;
+              margin-bottom: 0.3rem;
+            }
+            /* :where() has ZERO specificity — easier to override */
+            #is-where-demo :where(p, .body-text) {
+              color: var(--dim);
+              font-size: 0.78rem;
+            }
+          </style>
+          <h4>Styled by :is(h4, h5, .heading)</h4>
+          <p>Styled by :where(p, .body-text) — zero specificity</p>
+          <div class="heading">div.heading also matched by :is()</div>
+          <p class="body-text">Another :where() match</p>
+        </div>
+      </div>
+      <div class="card-code">
+        <code><span class="css-cmt">/* :is() = max specificity of args */</span><br>
+<span class="css-sel">:is(h4, h5, .heading)</span> { <span class="css-prop">color</span>: <span class="css-val">var(--teal)</span>; }<br><br>
+<span class="css-cmt">/* :where() = always 0 specificity */</span><br>
+<span class="css-sel">:where(p, .body)</span> { <span class="css-prop">color</span>: <span class="css-val">var(--dim)</span>; }</code>
+      </div>
+    </div>
+
+    <!-- column combinator || -->
+    <div class="demo-card">
+      <div class="card-header">
+        <span class="card-title">Column combinator <code>||</code> — Selectors Level 4</span>
+        <span class="card-support sup-exp">No browser support yet</span>
+      </div>
+      <div class="card-demo col-combinator-demo">
+        <p style="font-size:0.75rem;color:var(--dim);margin-bottom:0.75rem;">
+          The <code>||</code> combinator selects cells in a &lt;col&gt; column. Currently unimplemented in all browsers — shown as future reference.
+        </p>
+        <table>
+          <colgroup>
+            <col><col><col class="highlighted" style="background:oklch(22% 0.1 50 / 0.4);">
+          </colgroup>
+          <thead><tr><th>Name</th><th>Role</th><th>Status ← "col.highlighted"</th></tr></thead>
+          <tbody>
+            <tr><td>Alice</td><td>Designer</td><td>Active</td></tr>
+            <tr><td>Bob</td><td>Engineer</td><td>Away</td></tr>
+            <tr><td>Carol</td><td>PM</td><td>Active</td></tr>
+          </tbody>
+        </table>
+        <p style="font-size:0.68rem;color:var(--dimmer);margin-top:0.5rem;">Column manually highlighted via inline style as fallback</p>
+      </div>
+      <div class="card-code">
+        <code><span class="css-cmt">/* Future syntax — not yet in browsers */</span><br>
+<span class="css-sel">col.highlighted || td</span> {<br>
+&nbsp;&nbsp;<span class="css-prop">background</span>: <span class="css-val">oklch(22% 0.1 50 / 0.4)</span>;<br>
+}</code>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════
+     §3  PSEUDO-ELEMENTS
+════════════════════════════════════════════ -->
+<section id="sec-pseudo-elements" class="section">
+  <div class="section-header">
+    <span class="section-number">§03</span>
+    <div class="section-content">
+      <h2 class="section-title">Pseudo-Elements</h2>
+      <p class="section-desc">New pseudo-elements for styling details content, custom highlights, scroll navigation, backdrops, and text fragments — all native browser features.</p>
+    </div>
+    <span class="section-badge badge-pseudo">::pseudo</span>
+  </div>
+
+  <div class="demo-grid">
+    <!-- ::details-content -->
+    <div class="demo-card">
+      <div class="card-header">
+        <span class="card-title">::details-content — Animate details expand</span>
+        <span class="card-support sup-good">Chrome 131+ · FF 130+</span>
+      </div>
+      <div class="card-demo details-demo">
+        <details>
+          <summary>What is CSS Cascade Layers?</summary>
+          <div class="details-inner">
+            @layer lets you define explicit cascade layers. Lower layers always lose to higher layers, regardless of specificity. Unlayered styles always win.
+          </div>
+        </details>
+        <details>
+          <summary>What is @scope for?</summary>
+          <div class="details-inner">
+            @scope lets you apply styles to a specific DOM subtree (the "scope root") and optionally exclude a sub-subtree (the "scope limit"). Scoped styles have lower specificity by default.
+          </div>
+        </details>
+        <details>
+          <summary>What is anchor positioning?</summary>
+          <div class="details-inner">
+            CSS anchor positioning lets you tether positioned elements to anchor elements. The anchored element reads the anchor's size and position via anchor() and anchor-size() functions, enabling tooltips, dropdowns, and menus without JavaScript.
+          </div>
+        </details>
+      </div>
+      <div class="card-code">
+        <code><span class="css-sel">details::details-content</span> {<br>
+&nbsp;&nbsp;<span class="css-prop">height</span>: <span class="css-num">0</span>; <span class="css-prop">overflow</span>: <span class="css-val">hidden</span>;<br>
+&nbsp;&nbsp;<span class="css-prop">transition</span>: <span class="css-val">height 0.4s ease,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;content-visibility 0.4s allow-discrete</span>;<br>
+}<br>
+<span class="css-sel">details[open]::details-content</span> {<br>
+&nbsp;&nbsp;<span class="css-prop">height</span>: <span class="css-val">auto</span>;<br>
+}</code>
+      </div>
+    </div>
+
+    <!-- ::backdrop -->
+    <div class="demo-card">
+      <div class="card-header">
+        <span class="card-title">::backdrop — Style dialog/popover backdrops</span>
+        <span class="card-support sup-good">Widely supported</span>
+      </div>
+      <div class="card-demo">
+        <p style="font-size:0.78rem; color:var(--dim); margin-bottom:0.75rem;">The popover demo above uses styled ::backdrop. Here's a modal dialog:</p>
+        <button id="open-dialog-btn" style="padding:0.5rem 1.2rem; background:var(--surface2); border:1px solid var(--border); border-radius:6px; color:var(--text); cursor:pointer; font-size:0.8rem; font-family:inherit; transition:border-color 0.2s;" onmouseenter="this.style.borderColor='var(--green)'" onmouseleave="this.style.borderColor='var(--border)'" onclick="document.getElementById('demo-dialog').showModal()">
+          Open &lt;dialog&gt; with styled backdrop
+        </button>
+        <dialog id="demo-dialog" style="background:var(--surface); border:1px solid var(--green); border-radius:10px; padding:1.5rem; color:var(--text); max-width:300px; font-size:0.85rem;">
+          <style>
+            #demo-dialog::backdrop {
+              background: oklch(0% 0 0 / 0.7);
+              backdrop-filter: blur(8px) saturate(0.5);
+            }
+          </style>
+          <h4 style="margin-bottom:0.5rem;">Native &lt;dialog&gt;</h4>
+          <p style="color:var(--dim); font-size:0.78rem; margin-bottom:1rem;">The backdrop is styled with <code>::backdrop</code>. Top-layer element — no z-index needed.</p>
+          <button onclick="document.getElementById('demo-dialog').close()" style="padding:0.3rem 0.8rem; background:var(--surface2); border:1px solid var(--border); border-radius:5px; color:var(--dim); cursor:pointer; font-size:0.75rem; font-family:inherit;">Close</button>
+        </dialog>
+      </div>
+      <div class="card-code">
+        <code><span class="css-sel">dialog::backdrop</span> {<br>
+&nbsp;&nbsp;<span class="css-prop">background</span>: <span class="css-val">oklch(0% 0 0 / 0.7)</span>;<br>
+&nbsp;&nbsp;<span class="css-prop">backdrop-filter</span>: <span class="css-val">blur(8px) saturate(0.5)</span>;<br>
+}</code>
+      </div>
+    </div>
+
+    <!-- ::marker -->
+    <div class="demo-card">
+      <div class="card-header">
+        <span class="card-title">::marker — Style list markers</span>
+        <span class="card-support sup-good">Baseline 2022</span>
+      </div>
+      <div class="card-demo">
+        <ul id="marker-list" style="padding-left:1.5rem;">
+          <style>
+            #marker-list li::marker {
+              color: var(--teal);
+              font-size: 1.2em;
+              font-family: 'DM Mono', monospace;
+            }
+            #marker-list li:nth-child(2)::marker { color: var(--purple); content: '▸ '; }
+            #marker-list li:nth-child(3)::marker { color: var(--orange); content: '→ '; }
+            #marker-list li:nth-child(4)::marker { color: var(--rose); content: '✦ '; }
+          </style>
+          <li style="font-size:0.85rem; color:var(--dim); margin-bottom:0.3rem;">Default teal marker</li>
+          <li style="font-size:0.85rem; color:var(--dim); margin-bottom:0.3rem;">Custom content: ▸</li>
+          <li style="font-size:0.85rem; color:var(--dim); margin-bottom:0.3rem;">Custom content: →</li>
+          <li style="font-size:0.85rem; color:var(--dim);">Custom content: ✦</li>
+        </ul>
+      </div>
+      <div class="card-code">
+        <code><span class="css-sel">li::marker</span> { <span class="css-prop">color</span>: <span class="css-val">var(--teal)</span>; }<br>
+<span class="css-sel">li:nth-child(2)::marker</span> {<br>
+&nbsp;&nbsp;<span class="css-prop">content</span>: <span class="css-str">'▸ '</span>;<br>
+&nbsp;&nbsp;<span class="css-prop">color</span>: <span class="css-val">var(--purple)</span>;<br>
+}</code>
+      </div>
+    </div>
+
+    <!-- ::target-text / ::search-text -->
+    <div class="demo-card">
+      <div class="card-header">
+        <span class="card-title">::target-text · ::search-text — Text fragments</span>
+        <span class="card-support sup-partial">::search-text: Chrome 144+</span>
+      </div>
+      <div class="card-demo">
+        <style>
+          #target-text-demo ::target-text {
+            background: oklch(75% 0.22 90 / 0.3);
+            color: var(--amber);
+          }
+        </style>
+        <div id="target-text-demo">
+          <p style="font-size:0.82rem; color:var(--dim); line-height:1.7;">
+            The <code>::target-text</code> pseudo-element styles text matched by a URL fragment like <code>#:~:text=anchor</code>. The newer <code>::search-text</code> (Chrome 144+) styles browser find-in-page matches. Both enable native styling of highlighted text in documents.
+          </p>
+        </div>
+        <p style="font-size:0.72rem; color:var(--dimmer); margin-top:0.5rem;">Try browser Ctrl+F to see ::search-text in supported browsers</p>
+      </div>
+      <div class="card-code">
+        <code><span class="css-sel">::target-text</span> {<br>
+&nbsp;&nbsp;<span class="css-prop">background</span>: <span class="css-val">oklch(75% 0.22 90 / 0.3)</span>;<br>
+&nbsp;&nbsp;<span class="css-prop">color</span>: <span class="css-val">var(--amber)</span>;<br>
+}<br>
+<span class="css-cmt">/* URL: page.html#:~:text=anchor */</span><br>
+<span class="css-sel">::search-text</span> { <span class="css-cmt">/* Chrome 144+ */</span><br>
+&nbsp;&nbsp;<span class="css-prop">background</span>: <span class="css-val">oklch(80% 0.2 50 / 0.4)</span>;<br>
+}</code>
+      </div>
+    </div>
+
+    <!-- CSS Custom Highlight API ::highlight() -->
+    <div class="demo-card">
+      <div class="card-header">
+        <span class="card-title">CSS Custom Highlight API — ::highlight()</span>
+        <span class="card-support sup-good">Chrome 105+ · FF 134+</span>
+      </div>
+      <div class="card-demo highlight-demo">
+        <div class="hl-controls">
+          <button id="hl-btn-search" onclick="applyHighlight('search')" class="active">Search highlight</button>
+          <button id="hl-btn-keyword" onclick="applyHighlight('keyword')">CSS keyword</button>
+          <button id="hl-btn-clear" onclick="clearHighlights()">Clear</button>
+        </div>
+        <p id="highlight-paragraph">
+          CSS custom highlights let you programmatically highlight text ranges using the Highlight API and style them with ::highlight(name) pseudo-elements. This is perfect for search, code editors, and annotation tools.
+        </p>
+      </div>
+      <div class="card-code">
+        <code><span class="css-cmt">/* CSS */</span><br>
+<span class="css-sel">::highlight(search-result)</span> {<br>
+&nbsp;&nbsp;<span class="css-prop">background-color</span>: <span class="css-val">oklch(75% 0.22 90 / 0.25)</span>;<br>
+&nbsp;&nbsp;<span class="css-prop">color</span>: <span class="css-val">var(--amber)</span>;<br>
+}<br>
+<span class="css-cmt">/* JS */</span><br>
+<span class="css-val">const</span> range = <span class="css-val">new</span> <span class="css-fn">Range</span>();<br>
+<span class="css-val">CSS.highlights.set</span>(<span class="css-str">'search-result'</span>,<br>
+&nbsp;&nbsp;<span class="css-val">new</span> <span class="css-fn">Highlight</span>(range));</code>
+      </div>
+    </div>
+
+    <!-- ::scroll-button / ::scroll-marker (Chrome experimental) -->
+    <div class="demo-card">
+      <div class="card-header">
+        <span class="card-title">::scroll-marker · ::scroll-button — Native carousels</span>
+        <span class="card-support sup-chrome">Chrome only (flag)</span>
+      </div>
+      <div class="card-demo scroll-marker-demo">
+        <p style="font-size:0.75rem; color:var(--dim); margin-bottom:0.75rem;">
+          Native scroll-driven carousel with CSS-generated prev/next buttons and dot indicators. Enable chrome://flags/#enable-experimental-web-platform-features.
+        </p>
+        <div class="carousel">
+          <div class="slide" style="background:oklch(35% 0.2 260);">🌊<br><span style="font-size:0.7rem;">Slide 1</span></div>
+          <div class="slide" style="background:oklch(35% 0.2 130);">🌿<br><span style="font-size:0.7rem;">Slide 2</span></div>
+          <div class="slide" style="background:oklch(35% 0.2 350);">🌸<br><span style="font-size:0.7rem;">Slide 3</span></div>
+          <div class="slide" style="background:oklch(35% 0.2 50);">☀️<br><span style="font-size:0.7rem;">Slide 4</span></div>
+          <div class="slide" style="background:oklch(35% 0.2 200);">🌊<br><span style="font-size:0.7rem;">Slide 5</span></div>
+        </div>
+        <p style="font-size:0.68rem; color:var(--dimmer); margin-top:0.5rem;">Scroll horizontally (dots require Chrome flag)</p>
+      </div>
+      <div class="card-code">
+        <code><span class="css-sel">.carousel::scroll-marker-group</span> {<br>
+&nbsp;&nbsp;<span class="css-prop">display</span>: <span class="css-val">flex</span>; <span class="css-prop">gap</span>: <span class="css-num">0.5rem</span>;<br>
+}<br>
+<span class="css-sel">.slide::scroll-marker</span> {<br>
+&nbsp;&nbsp;<span class="css-prop">content</span>: <span class="css-str">''</span>;<br>
+&nbsp;&nbsp;<span class="css-prop">background</span>: <span class="css-val">var(--dimmer)</span>;<br>
+&nbsp;&nbsp;<span class="css-prop">border-radius</span>: <span class="css-num">50%</span>;<br>
+}<br>
+<span class="css-sel">.slide::scroll-marker:target-current</span> {<br>
+&nbsp;&nbsp;<span class="css-prop">background</span>: <span class="css-val">var(--teal)</span>;<br>
+}</code>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════
+     §4  COLORS
+════════════════════════════════════════════ -->
+<section id="sec-colors" class="section">
+  <div class="section-header">
+    <span class="section-number">§04</span>
+    <div class="section-content">
+      <h2 class="section-title">Colors</h2>
+      <p class="section-desc">CSS Color Level 4 & 5 — new color spaces, mixing, relative colors, and automatic dark mode. All widely supported in 2025.</p>
+    </div>
+    <span class="section-badge badge-color">colors</span>
+  </div>
+
+  <div class="demo-grid">
+    <!-- color-mix() -->
+    <div class="demo-card">
+      <div class="card-header">
+        <span class="card-title">color-mix() — Blend two colors in any color space</span>
+        <span class="card-support sup-good">Baseline 2024</span>
+      </div>
+      <div class="card-demo">
+        <div class="colormix-demo">
+          <div class="swatch" style="background:color-mix(in oklch, var(--teal) 100%, var(--purple) 0%)"><span>100%</span></div>
+          <div class="swatch" style="background:color-mix(in oklch, var(--teal) 75%, var(--purple) 25%)"><span>75/25</span></div>
+          <div class="swatch" style="background:color-mix(in oklch, var(--teal) 50%, var(--purple) 50%)"><span>50/50</span></div>
+          <div class="swatch" style="background:color-mix(in oklch, var(--teal) 25%, var(--purple) 75%)"><span>25/75</span></div>
+          <div class="swatch" style="background:color-mix(in oklch, var(--teal) 0%, var(--purple) 100%)"><span>0%</span></div>
+        </div>
+        <p style="font-size:0.72rem; color:var(--dim); margin-top:0.75rem;">color-mix(in oklch, teal 50%, purple 50%)</p>
+
+        <div style="margin-top:0.75rem; display:grid; grid-template-columns:repeat(4, 1fr); gap:4px; border-radius:6px; overflow:hidden;">
+          <div style="height:40px; background:color-mix(in srgb, red, blue 50%)"></div>
+          <div style="height:40px; background:color-mix(in oklch, red, blue 50%)"></div>
+          <div style="height:40px; background:color-mix(in hsl, red, blue 50%)"></div>
+          <div style="height:40px; background:color-mix(in lab, red, blue 50%)"></div>
+        </div>
+        <p style="font-size:0.68rem; color:var(--dimmer); margin-top:0.3rem;">red+blue 50% in: srgb · oklch · hsl · lab</p>
+      </div>
+      <div class="card-code">
+        <code><span class="css-fn">color-mix</span>(<span class="css-val">in oklch</span>, <span class="css-val">var(--teal) 50%</span>, <span class="css-val">var(--purple)</span>)<br>
+<span class="css-fn">color-mix</span>(<span class="css-val">in srgb</span>, <span class="css-val">red 50%</span>, <span class="css-val">blue</span>)<br>
+<span class="css-fn">color-mix</span>(<span class="css-val">in hsl longer hue</span>, <span class="css-val">red</span>, <span class="css-val">blue</span>)<br>
+<span class="css-cmt">/* Mix with transparent for opacity: */</span><br>
+<span class="css-fn">color-mix</span>(<span class="css-val">in oklch</span>, <span class="css-val">var(--teal) 50%</span>, <span class="css-val">transparent</span>)</code>
+      </div>
+    </div>
+
+    <!-- oklch / oklab -->
+    <div class="demo-card">
+      <div class="card-header">
+        <span class="card-title">oklch() · oklab() — Perceptually uniform colors</span>
+        <span class="card-support sup-good">Baseline 2024</span>
+      </div>
+      <div class="card-demo">
+        <p style="font-size:0.75rem; color:var(--dim); margin-bottom:0.5rem;">Same lightness (L=65%), rotating hue — OKLCH stays perceptually even:</p>
+        <div style="display:flex; gap:3px; border-radius:6px; overflow:hidden; margin-bottom:0.75rem;">
+          <div style="flex:1; height:50px; background:oklch(65% 0.22 0)"></div>
+          <div style="flex:1; height:50px; background:oklch(65% 0.22 30)"></div>
+          <div style="flex:1; height:50px; background:oklch(65% 0.22 60)"></div>
+          <div style="flex:1; height:50px; background:oklch(65% 0.22 90)"></div>
+          <div style="flex:1; height:50px; background:oklch(65% 0.22 120)"></div>
+          <div style="flex:1; height:50px; background:oklch(65% 0.22 150)"></div>
+          <div style="flex:1; height:50px; background:oklch(65% 0.22 180)"></div>
+          <div style="flex:1; height:50px; background:oklch(65% 0.22 210)"></div>
+          <div style="flex:1; height:50px; background:oklch(65% 0.22 240)"></div>
+          <div style="flex:1; height:50px; background:oklch(65% 0.22 270)"></div>
+          <div style="flex:1; height:50px; background:oklch(65% 0.22 300)"></div>
+          <div style="flex:1; height:50px; background:oklch(65% 0.22 330)"></div>
+        </div>
+        <p style="font-size:0.75rem; color:var(--dim); margin-bottom:0.5rem;">HSL for comparison — uneven perceived brightness:</p>
+        <div style="display:flex; gap:3px; border-radius:6px; overflow:hidden;">
+          <div style="flex:1; height:50px; background:hsl(0, 80%, 55%)"></div>
+          <div style="flex:1; height:50px; background:hsl(30, 80%, 55%)"></div>
+          <div style="flex:1; height:50px; background:hsl(60, 80%, 55%)"></div>
+          <div style="flex:1; height:50px; background:hsl(90, 80%, 55%)"></div>
+          <div style="flex:1; height:50px; background:hsl(120, 80%, 55%)"></div>
+          <div style="flex:1; height:50px; background:hsl(150, 80%, 55%)"></div>
+          <div style="flex:1; height:50px; background:hsl(180, 80%, 55%)"></div>
+          <div style="flex:1; height:50px; background:hsl(210, 80%, 55%)"></div>
+          <div style="flex:1; height:50px; background:hsl(240, 80%, 55%)"></div>
+          <div style="flex:1; height:50px; background:hsl(270, 80%, 55%)"></div>
+          <div style="flex:1; height:50px; background:hsl(300, 80%, 55%)"></div>
+          <div style="flex:1; height:50px; background:hsl(330, 80%, 55%)"></div>
+        </div>
+      </div>
+      <div class="card-code">
+        <code><span class="css-cmt">/* oklch(Lightness Chroma Hue) */</span><br>
+<span class="css-fn">oklch</span>(<span class="css-num">65%</span> <span class="css-num">0.22</span> <span class="css-num">240</span>)   <span class="css-cmt">/* blue */</span><br>
+<span class="css-fn">oklch</span>(<span class="css-num">65%</span> <span class="css-num">0.22</span> <span class="css-num">120</span>)   <span class="css-cmt">/* green */</span><br>
+<span class="css-fn">oklab</span>(<span class="css-num">65%</span> <span class="css-num">-0.1</span> <span class="css-num">0.15</span>) <span class="css-cmt">/* a/b axes */</span><br>
+<span class="css-fn">oklch</span>(<span class="css-num">65%</span> <span class="css-num">0</span> <span class="css-num">0</span>)       <span class="css-cmt">/* neutral gray */</span></code>
+      </div>
+    </div>
+
+    <!-- Relative Color Syntax -->
+    <div class="demo-card">
+      <div class="card-header">
+        <span class="card-title">Relative Color Syntax — oklch(from var(--c) l c h)</span>
+        <span class="card-support sup-good">Chrome 119+ · Safari 16.4+</span>
+      </div>
+      <div class="card-demo">
+        <p style="font-size:0.75rem; color:var(--dim); margin-bottom:0.5rem;">All derived from <code>--base: oklch(65% 0.22 260)</code>:</p>
+        <div class="relative-color-demo">
+          <div class="rc-swatch rc1">base</div>
+          <div class="rc-swatch rc2">+L</div>
+          <div class="rc-swatch rc3">−L</div>
+          <div class="rc-swatch rc4">−C</div>
+          <div class="rc-swatch rc5">h+30</div>
+          <div class="rc-swatch rc6">h+60</div>
+          <div class="rc-swatch rc7">h+120</div>
+          <div class="rc-swatch rc8">h+180</div>
+        </div>
+      </div>
+      <div class="card-code">
+        <code><span class="css-prop">--base</span>: <span class="css-fn">oklch</span>(<span class="css-num">65%</span> <span class="css-num">0.22</span> <span class="css-num">260</span>);<br>
+<span class="css-cmt">/* Lighter version */</span><br>
+<span class="css-fn">oklch</span>(<span class="css-val">from</span> <span class="css-val">var(--base)</span> <span class="css-fn">calc</span>(<span class="css-val">l + 0.15</span>) <span class="css-val">c h</span>)<br>
+<span class="css-cmt">/* Rotate hue 120° for triadic */</span><br>
+<span class="css-fn">oklch</span>(<span class="css-val">from</span> <span class="css-val">var(--base)</span> <span class="css-val">l c</span> <span class="css-fn">calc</span>(<span class="css-val">h + 120</span>))<br>
+<span class="css-cmt">/* 50% opacity */</span><br>
+<span class="css-fn">oklch</span>(<span class="css-val">from</span> <span class="css-val">var(--base)</span> <span class="css-val">l c h / 0.5</span>)</code>
+      </div>
+    </div>
+
+    <!-- light-dark() -->
+    <div class="demo-card">
+      <div class="card-header">
+        <span class="card-title">light-dark() — Automatic color scheme switching</span>
+        <span class="card-support sup-good">Chrome 123+ · FF 120+ · Safari 17.5+</span>
+      </div>
+      <div class="card-demo">
+        <div class="light-dark-demo">
+          <div class="ld-box ld-light">
+            <p style="font-family:'DM Mono',monospace; font-size:0.68rem; margin-bottom:0.3rem;">color-scheme: light</p>
+            Background: light-dark(#f8f9fa, #1a1a2e)<br>Forces light scheme
+          </div>
+          <div class="ld-box ld-dark">
+            <p style="font-family:'DM Mono',monospace; font-size:0.68rem; margin-bottom:0.3rem;">color-scheme: dark</p>
+            Background: light-dark(#f8f9fa, #1a1a2e)<br>Forces dark scheme
+          </div>
+        </div>
+        <p style="font-size:0.72rem; color:var(--dim); margin-top:0.75rem;">Same <code>light-dark()</code> value — different rendering based on color-scheme</p>
+      </div>
+      <div class="card-code">
+        <code><span class="css-prop">color-scheme</span>: <span class="css-val">light dark</span>; <span class="css-cmt">/* or "light" / "dark" */</span><br>
+<span class="css-prop">background</span>: <span class="css-fn">light-dark</span>(<span class="css-val">#f8f9fa</span>, <span class="css-val">#1a1a2e</span>);<br>
+<span class="css-prop">color</span>: <span class="css-fn">light-dark</span>(<span class="css-val">#1a1a2e</span>, <span class="css-val">#f8f9fa</span>);<br>
+<span class="css-prop">border-color</span>: <span class="css-fn">light-dark</span>(<span class="css-val">#dee2e6</span>, <span class="css-val">#2d2d4a</span>);</code>
+      </div>
+    </div>
+
+    <!-- @font-palette-values -->
+    <div class="demo-card">
+      <div class="card-header">
+        <span class="card-title">@font-palette-values — Override color font palettes</span>
+        <span class="card-support sup-good">Baseline 2024</span>
+      </div>
+      <div class="card-demo">
+        <div style="display:flex; flex-direction:column; gap:0.75rem;">
+          <div>
+            <p style="font-size:0.68rem; color:var(--dim); margin-bottom:0.3rem;">font-palette: normal</p>
+            <div style="font-size:2rem; font-palette:normal;">🎨🌈⭐🔥</div>
+          </div>
+          <div>
+            <p style="font-size:0.68rem; color:var(--dim); margin-bottom:0.3rem;">Custom color palette via @font-palette-values</p>
+            <div style="font-size:2rem;">🎨🌈⭐🔥</div>
+          </div>
+          <div>
+            <p style="font-size:0.68rem; color:var(--dim); margin-bottom:0.3rem;">CSS color spaces in text (P3 gamut)</p>
+            <div style="font-size:0.85rem; color:color(display-p3 0.5 0.9 0.3); font-family:'DM Mono',monospace;">display-p3: vivid colors beyond sRGB</div>
+            <div style="font-size:0.85rem; color:color(display-p3 0.9 0.2 0.5); font-family:'DM Mono',monospace;">display-p3: vivid magenta-red</div>
+          </div>
+        </div>
+      </div>
+      <div class="card-code">
+        <code><span class="css-at">@font-palette-values</span> <span class="css-sel">--custom-palette</span> {<br>
+&nbsp;&nbsp;<span class="css-prop">font-family</span>: <span class="css-str">'Noto Color Emoji'</span>;<br>
+&nbsp;&nbsp;<span class="css-prop">base-palette</span>: <span class="css-num">0</span>;<br>
+&nbsp;&nbsp;<span class="css-prop">override-colors</span>: <span class="css-num">0</span> <span class="css-val">var(--teal)</span>;<br>
+}<br><br>
+<span class="css-cmt">/* Wide-gamut P3 colors */</span><br>
+<span class="css-prop">color</span>: <span class="css-fn">color</span>(<span class="css-val">display-p3 0.5 0.9 0.3</span>);</code>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+
+
+<!-- §5 LAYOUT -->
+<section id="sec-layout" class="section">
+  <div class="section-header">
+    <span class="section-number">§05</span>
+    <div class="section-content">
+      <h2 class="section-title">Layout</h2>
+      <p class="section-desc">CSS Anchor Positioning (Baseline 2025), Subgrid, Container style queries, and Masonry layout.</p>
+    </div>
+    <span class="section-badge badge-layout">layout</span>
+  </div>
+  <div class="demo-grid">
+    <div class="demo-card">
+      <div class="card-header"><span class="card-title">CSS Anchor Positioning — Baseline 2025</span><span class="card-support sup-good">Chrome 125+ · Firefox 147+</span></div>
+      <div class="card-demo">
+        <div class="anchor-wrapper">
+          <button class="anchor-btn">Hover for tooltip ↑</button>
+          <div class="anchor-tooltip">📌 Anchored via anchor-name + position-area</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-top:0.75rem;">
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:0.6rem;font-size:0.72rem;color:var(--dim);"><code>anchor-name: --btn</code><br>Defines anchor</div>
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:0.6rem;font-size:0.72rem;color:var(--dim);"><code>position-anchor: --btn</code><br>Binds to anchor</div>
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:0.6rem;font-size:0.72rem;color:var(--dim);"><code>position-area: top center</code><br>Positions relative</div>
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:0.6rem;font-size:0.72rem;color:var(--dim);"><code>position-try-fallbacks</code><br>Auto-flip if clips</div>
+        </div>
+      </div>
+      <div class="card-code"><code><span class="css-sel">.trigger</span> { <span class="css-prop">anchor-name</span>: <span class="css-val">--btn-anchor</span>; }<br><span class="css-sel">.tooltip</span> {<br>&nbsp;&nbsp;<span class="css-prop">position-anchor</span>: <span class="css-val">--btn-anchor</span>;<br>&nbsp;&nbsp;<span class="css-prop">position-area</span>: <span class="css-val">top center</span>;<br>&nbsp;&nbsp;<span class="css-prop">position-try-fallbacks</span>: <span class="css-val">flip-block</span>;<br>}</code></div>
+    </div>
+
+    <div class="demo-card">
+      <div class="card-header"><span class="card-title">CSS Subgrid — Align nested elements to parent grid</span><span class="card-support sup-good">Baseline 2023</span></div>
+      <div class="card-demo">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:auto 1fr auto;gap:0.75rem;">
+          <div style="display:grid;grid-row:span 3;grid-template-rows:subgrid;background:var(--surface2);border:1px solid var(--border);border-radius:8px;overflow:hidden;"><div style="padding:0.75rem;background:var(--surface);border-bottom:1px solid var(--border);font-size:0.82rem;font-weight:600;color:var(--text);">Short</div><div style="padding:0.75rem;font-size:0.75rem;color:var(--dim);">Minimal.</div><div style="padding:0.5rem 0.75rem;border-top:1px solid var(--border);font-family:'DM Mono',monospace;font-size:0.65rem;color:var(--dimmer);">Footer</div></div>
+          <div style="display:grid;grid-row:span 3;grid-template-rows:subgrid;background:var(--surface2);border:1px solid var(--border);border-radius:8px;overflow:hidden;"><div style="padding:0.75rem;background:var(--surface);border-bottom:1px solid var(--border);font-size:0.82rem;font-weight:600;color:var(--text);">Much longer title wrapping to two lines</div><div style="padding:0.75rem;font-size:0.75rem;color:var(--dim);">Subgrid aligns footers perfectly regardless of content height above it.</div><div style="padding:0.5rem 0.75rem;border-top:1px solid var(--border);font-family:'DM Mono',monospace;font-size:0.65rem;color:var(--dimmer);">Footer</div></div>
+          <div style="display:grid;grid-row:span 3;grid-template-rows:subgrid;background:var(--surface2);border:1px solid var(--border);border-radius:8px;overflow:hidden;"><div style="padding:0.75rem;background:var(--surface);border-bottom:1px solid var(--border);font-size:0.82rem;font-weight:600;color:var(--text);">Medium title</div><div style="padding:0.75rem;font-size:0.75rem;color:var(--dim);">Some content.</div><div style="padding:0.5rem 0.75rem;border-top:1px solid var(--border);font-family:'DM Mono',monospace;font-size:0.65rem;color:var(--teal);">All aligned! ✓</div></div>
+        </div>
+      </div>
+      <div class="card-code"><code><span class="css-sel">.child</span> {<br>&nbsp;&nbsp;<span class="css-prop">display</span>: <span class="css-val">grid</span>;<br>&nbsp;&nbsp;<span class="css-prop">grid-row</span>: <span class="css-val">span 3</span>;<br>&nbsp;&nbsp;<span class="css-prop">grid-template-rows</span>: <span class="css-val">subgrid</span>;<br>}</code></div>
+    </div>
+
+    <div class="demo-card">
+      <div class="card-header"><span class="card-title">@container style() — Style queries on custom props</span><span class="card-support sup-good">Chrome 111+ · Safari 17+</span></div>
+      <div class="card-demo">
+        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.75rem;">
+          <button onclick="setVariant('danger')" style="padding:0.3rem 0.75rem;background:oklch(22% 0.1 25);border:1px solid oklch(40% 0.15 25);color:var(--red);border-radius:5px;cursor:pointer;font-size:0.72rem;font-family:inherit;">danger</button>
+          <button onclick="setVariant('success')" style="padding:0.3rem 0.75rem;background:oklch(22% 0.1 158);border:1px solid oklch(40% 0.15 158);color:var(--green);border-radius:5px;cursor:pointer;font-size:0.72rem;font-family:inherit;">success</button>
+          <button onclick="setVariant('warning')" style="padding:0.3rem 0.75rem;background:oklch(22% 0.1 90);border:1px solid oklch(40% 0.15 90);color:var(--amber);border-radius:5px;cursor:pointer;font-size:0.72rem;font-family:inherit;">warning</button>
+          <button onclick="setVariant('')" style="padding:0.3rem 0.75rem;background:var(--surface2);border:1px solid var(--border);color:var(--dim);border-radius:5px;cursor:pointer;font-size:0.72rem;font-family:inherit;">neutral</button>
+        </div>
+        <div id="style-query-container" class="style-query-demo">
+          <div class="sq-inner" id="sq-inner">I respond to @container style(--variant) queries</div>
+        </div>
+      </div>
+      <div class="card-code"><code><span class="css-sel">.wrapper</span> { <span class="css-prop">container-type</span>: <span class="css-val">style</span>; }<br><span class="css-at">@container</span> <span class="css-fn">style</span>(<span class="css-prop">--variant</span>: <span class="css-val">danger</span>) {<br>&nbsp;&nbsp;<span class="css-sel">.inner</span> { <span class="css-prop">background</span>: <span class="css-val">oklch(22% 0.1 25)</span>; }<br>}</code></div>
+    </div>
+
+    <div class="demo-card">
+      <div class="card-header"><span class="card-title">CSS Masonry — grid-template-rows: masonry</span><span class="card-support sup-exp">Experimental · Safari TP</span></div>
+      <div class="card-demo">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:masonry;gap:0.5rem;">
+          <div style="background:oklch(30% 0.15 260);border-radius:6px;padding:0.75rem;height:80px;font-size:0.72rem;color:white;">Block A</div>
+          <div style="background:oklch(30% 0.15 130);border-radius:6px;padding:0.75rem;height:120px;font-size:0.72rem;color:white;">Block B (tall)</div>
+          <div style="background:oklch(30% 0.15 350);border-radius:6px;padding:0.75rem;height:60px;font-size:0.72rem;color:white;">Block C</div>
+          <div style="background:oklch(30% 0.15 50);border-radius:6px;padding:0.75rem;height:100px;font-size:0.72rem;color:white;">Block D</div>
+          <div style="background:oklch(30% 0.15 200);border-radius:6px;padding:0.75rem;height:70px;font-size:0.72rem;color:white;">Block E</div>
+          <div style="background:oklch(30% 0.15 300);border-radius:6px;padding:0.75rem;height:90px;font-size:0.72rem;color:white;">Block F</div>
+        </div>
+      </div>
+      <div class="card-code"><code><span class="css-prop">grid-template-rows</span>: <span class="css-val">masonry</span>; <span class="css-cmt">/* experimental */</span></code></div>
+    </div>
+  </div>
+</section>
+
+<!-- §6 PROPERTIES -->
+<section id="sec-properties" class="section">
+  <div class="section-header">
+    <span class="section-number">§06</span>
+    <div class="section-content"><h2 class="section-title">New Properties</h2><p class="section-desc">interpolate-size, field-sizing, reading-flow, text-box, line-clamp (standard), dynamic-range-limit, zoom standard, text-wrap, content-visibility.</p></div>
+    <span class="section-badge badge-props">properties</span>
+  </div>
+  <div class="demo-grid">
+
+    <div class="demo-card">
+      <div class="card-header"><span class="card-title">interpolate-size: allow-keywords — Animate to auto</span><span class="card-support sup-good">Chrome 129+</span></div>
+      <div class="card-demo">
+        <button class="interp-btn" onclick="toggleExpand()">Toggle expand (height: 0 → auto)</button>
+        <div class="expandable-box" id="expandable"><div class="inner-content">🎉 Animates from <code>height: 0</code> to <code>height: auto</code>! Previously impossible with CSS alone. <code>interpolate-size: allow-keywords</code> enables transitions to keyword values like <code>auto</code>, <code>max-content</code>, <code>fit-content</code>.</div></div>
+      </div>
+      <div class="card-code"><code><span class="css-sel">:root</span> { <span class="css-prop">interpolate-size</span>: <span class="css-val">allow-keywords</span>; }<br><span class="css-sel">.box</span> { <span class="css-prop">height</span>: <span class="css-num">0</span>; <span class="css-prop">transition</span>: <span class="css-val">height 0.5s</span>; }<br><span class="css-sel">.box.open</span> { <span class="css-prop">height</span>: <span class="css-val">auto</span>; } <span class="css-cmt">/* works! */</span></code></div>
+    </div>
+
+    <div class="demo-card">
+      <div class="card-header"><span class="card-title">field-sizing: content — Auto-sizing form fields</span><span class="card-support sup-good">Chrome 123+</span></div>
+      <div class="card-demo field-sizing-demo">
+        <label style="font-size:0.75rem;color:var(--dim);margin-bottom:0.3rem;display:block;">Auto-growing textarea:</label>
+        <textarea class="auto-grow" placeholder="Type here — I grow as you type..."></textarea>
+        <label style="font-size:0.75rem;color:var(--dim);margin-top:0.5rem;margin-bottom:0.3rem;display:block;">Auto-width input:</label>
+        <input class="auto-width-input" type="text" placeholder="Type to expand →">
+      </div>
+      <div class="card-code"><code><span class="css-sel">textarea</span> { <span class="css-prop">field-sizing</span>: <span class="css-val">content</span>; <span class="css-prop">min-height</span>: <span class="css-num">40px</span>; }<br><span class="css-sel">input</span> { <span class="css-prop">field-sizing</span>: <span class="css-val">content</span>; <span class="css-prop">min-width</span>: <span class="css-num">80px</span>; }</code></div>
+    </div>
+
+    <div class="demo-card">
+      <div class="card-header"><span class="card-title">text-box / text-box-trim / text-box-edge</span><span class="card-support sup-good">Chrome 123+ · Safari 17.4+</span></div>
+      <div class="card-demo">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;overflow:hidden;"><div style="background:var(--border);padding:0.3rem 0.6rem;font-family:'DM Mono',monospace;font-size:0.6rem;color:var(--dim);">Without text-box</div><div style="padding:0.75rem;background:oklch(22% 0.1 260 / 0.3);"><h3 style="font-size:1.6rem;line-height:1.3;color:var(--text);">Leading</h3></div></div>
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;overflow:hidden;"><div style="background:var(--border);padding:0.3rem 0.6rem;font-family:'DM Mono',monospace;font-size:0.6rem;color:var(--dim);">text-box: trim-both cap alphabetic</div><div style="padding:0.75rem;background:oklch(22% 0.1 158 / 0.3);"><h3 style="font-size:1.6rem;line-height:1.3;color:var(--teal);text-box:trim-both cap alphabetic;">Trimmed!</h3></div></div>
+        </div>
+        <p style="font-size:0.72rem;color:var(--dim);margin-top:0.5rem;">Removes font leading for pixel-perfect optical alignment.</p>
+      </div>
+      <div class="card-code"><code><span class="css-sel">h1</span> { <span class="css-prop">text-box</span>: <span class="css-val">trim-both cap alphabetic</span>; }<br><span class="css-prop">text-box-trim</span>: <span class="css-val">trim-both</span>; <span class="css-prop">text-box-edge</span>: <span class="css-val">cap alphabetic</span>;</code></div>
+    </div>
+
+    <div class="demo-card">
+      <div class="card-header"><span class="card-title">line-clamp — Standard property (Chrome 131+)</span><span class="card-support sup-good">Chrome 131+</span></div>
+      <div class="card-demo lineclamp-demo">
+        <p style="font-size:0.72rem;color:var(--dim);margin-bottom:0.4rem;">Standard <code>line-clamp: 3</code> (no -webkit- prefix):</p>
+        <p class="clamped-text-compat" style="margin-bottom:0.75rem;">The standard line-clamp property finally arrives after years of using the -webkit- prefixed hack. It works with overflow: hidden and clips text at exactly N lines with an ellipsis — no JavaScript needed.</p>
+        <p style="font-size:0.72rem;color:var(--dim);margin-bottom:0.4rem;">-webkit- compat (still widely needed):</p>
+        <p class="clamped-text-compat">The older -webkit-line-clamp version requires a display:-webkit-box hack. The new standard property is cleaner and more predictable across browsers.</p>
+      </div>
+      <div class="card-code"><code><span class="css-cmt">/* Standard — Chrome 131+ */</span><br><span class="css-prop">line-clamp</span>: <span class="css-num">3</span>; <span class="css-prop">overflow</span>: <span class="css-val">hidden</span>;<br><span class="css-cmt">/* Compat */</span><br><span class="css-prop">display</span>: <span class="css-val">-webkit-box</span>; <span class="css-prop">-webkit-line-clamp</span>: <span class="css-num">3</span>;<br><span class="css-prop">-webkit-box-orient</span>: <span class="css-val">vertical</span>; <span class="css-prop">overflow</span>: <span class="css-val">hidden</span>;</code></div>
+    </div>
+
+    <div class="demo-card">
+      <div class="card-header"><span class="card-title">reading-flow — Logical tab/reading order</span><span class="card-support sup-chrome">Chrome 133+</span></div>
+      <div class="card-demo">
+        <p style="font-size:0.75rem;color:var(--dim);margin-bottom:0.75rem;">Tab through — focus follows visual order, not DOM order:</p>
+        <div class="reading-flow-demo">
+          <a href="#" class="rf-item" style="order:3;flex-basis:130px;">DOM 1st · Visual 3rd</a>
+          <a href="#" class="rf-item" style="order:1;flex-basis:130px;">DOM 2nd · Visual 1st</a>
+          <a href="#" class="rf-item" style="order:2;flex-basis:130px;">DOM 3rd · Visual 2nd</a>
+          <a href="#" class="rf-item" style="flex-basis:60px;">4th</a>
+          <a href="#" class="rf-item" style="flex-basis:60px;">5th</a>
+        </div>
+      </div>
+      <div class="card-code"><code><span class="css-prop">reading-flow</span>: <span class="css-val">flex-visual</span>;<br><span class="css-cmt">/* flex-visual | flex-source | grid-rows | grid-columns */</span></code></div>
+    </div>
+
+    <div class="demo-card">
+      <div class="card-header"><span class="card-title">text-wrap: balance · pretty — Smarter line breaks</span><span class="card-support sup-good">Chrome 117+ · FF 121+</span></div>
+      <div class="card-demo">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
+          <div><p style="font-size:0.62rem;color:var(--dim);margin-bottom:0.3rem;font-family:'DM Mono',monospace;">text-wrap: balance</p><h4 style="font-size:0.9rem;color:var(--text);text-wrap:balance;line-height:1.3;">A Heading Wrapped Without Ugly Orphans</h4></div>
+          <div><p style="font-size:0.62rem;color:var(--dim);margin-bottom:0.3rem;font-family:'DM Mono',monospace;">text-wrap: default</p><h4 style="font-size:0.9rem;color:var(--dim);line-height:1.3;">A Heading Wrapped Without Ugly Orphans</h4></div>
+        </div>
+        <p style="font-size:0.72rem;color:var(--dim);margin-top:0.75rem;text-wrap:pretty;line-height:1.6;"><code>text-wrap: pretty</code> prevents lone orphan words on the final line of a paragraph without the performance cost of balance.</p>
+      </div>
+      <div class="card-code"><code><span class="css-sel">h1, h2, h3</span> { <span class="css-prop">text-wrap</span>: <span class="css-val">balance</span>; }<br><span class="css-sel">p</span> { <span class="css-prop">text-wrap</span>: <span class="css-val">pretty</span>; }</code></div>
+    </div>
+
+    <div class="demo-card">
+      <div class="card-header"><span class="card-title">dynamic-range-limit — HDR color control</span><span class="card-support sup-partial">Chrome 128+ · Safari 17.4+</span></div>
+      <div class="card-demo hdr-demo">
+        <div style="display:flex;flex-direction:column;gap:0.5rem;">
+          <div><p style="font-family:'DM Mono',monospace;font-size:0.62rem;color:var(--dim);margin-bottom:0.3rem;">standard</p><div class="hdr-box hdr-standard">Standard SDR</div></div>
+          <div><p style="font-family:'DM Mono',monospace;font-size:0.62rem;color:var(--dim);margin-bottom:0.3rem;">high</p><div class="hdr-box hdr-high">High HDR (needs HDR display)</div></div>
+          <div><p style="font-family:'DM Mono',monospace;font-size:0.62rem;color:var(--dim);margin-bottom:0.3rem;">constrained-high</p><div class="hdr-box hdr-constr">Constrained HDR</div></div>
+        </div>
+      </div>
+      <div class="card-code"><code><span class="css-prop">dynamic-range-limit</span>: <span class="css-val">standard</span> | <span class="css-val">high</span> | <span class="css-val">constrained-high</span>;</code></div>
+    </div>
+
+    <div class="demo-card">
+      <div class="card-header"><span class="card-title">zoom — Now a standard CSS property</span><span class="card-support sup-good">Baseline 2024</span></div>
+      <div class="card-demo zoom-demo">
+        <div class="zoom-box z-0-5"><span>0.5</span></div>
+        <div class="zoom-box z-1"><span>1</span></div>
+        <div class="zoom-box z-1-5"><span>1.5</span></div>
+        <div class="zoom-box z-2"><span>2</span></div>
+        <p style="font-size:0.72rem;color:var(--dim);width:100%;margin-top:0.3rem;">zoom affects layout flow — unlike scale() which is visual-only</p>
+      </div>
+      <div class="card-code"><code><span class="css-prop">zoom</span>: <span class="css-num">0.5</span> | <span class="css-num">1</span> | <span class="css-num">1.5</span> | <span class="css-num">200%</span>;</code></div>
+    </div>
+
+    <div class="demo-card">
+      <div class="card-header"><span class="card-title">content-visibility: auto — Skip off-screen rendering</span><span class="card-support sup-good">Chrome 85+ · Firefox 125+</span></div>
+      <div class="card-demo cv-demo">
+        <div class="cv-section"><h4>Section 1</h4><p>content-visibility: auto skips rendering until near viewport.</p></div>
+        <div class="cv-section"><h4>Section 2</h4><p>contain-intrinsic-height reserves space so scroll stays stable.</p></div>
+        <div class="cv-section"><h4>Section 3 — up to 5× faster initial load</h4><p>Google measured huge rendering improvements on long pages.</p></div>
+      </div>
+      <div class="card-code"><code><span class="css-sel">.section</span> {<br>&nbsp;&nbsp;<span class="css-prop">content-visibility</span>: <span class="css-val">auto</span>;<br>&nbsp;&nbsp;<span class="css-prop">contain-intrinsic-height</span>: <span class="css-val">auto 120px</span>;<br>}</code></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- §7 ANIMATIONS -->
+<section id="sec-animations" class="section">
+  <div class="section-header">
+    <span class="section-number">§07</span>
+    <div class="section-content"><h2 class="section-title">Animations</h2><p class="section-desc">Scroll-driven animations with scroll() and view() timelines, @starting-style entries, transition-behavior: allow-discrete, and View Transitions.</p></div>
+    <span class="section-badge badge-anim">animations</span>
+  </div>
+  <div class="demo-grid">
+
+    <div class="demo-card">
+      <div class="card-header"><span class="card-title">animation-timeline: scroll() · view() — Scroll-driven</span><span class="card-support sup-good">Chrome 115+ · FF 110+</span></div>
+      <div class="card-demo">
+        <p style="font-size:0.72rem;color:var(--dim);margin-bottom:0.5rem;">Items below slide in as they enter the scroll container:</p>
+        <div class="scroll-demo-wrapper">
+          <div class="scroll-content">
+            <div class="scroll-anim-item">📌 Slides in via animation-timeline: view()</div>
+            <div class="scroll-anim-item">🎨 animation-range: entry 0% entry 30%</div>
+            <div class="scroll-anim-item">⚡ GPU-accelerated, no JS</div>
+            <div class="scroll-anim-item">🔮 Works inside scroll containers</div>
+            <div class="scroll-anim-item">🌊 Named view-timeline-name for parallax</div>
+            <div class="scroll-anim-item">✦ Page progress bar uses scroll(root block)</div>
+          </div>
+        </div>
+      </div>
+      <div class="card-code"><code><span class="css-sel">.item</span> {<br>&nbsp;&nbsp;<span class="css-prop">animation</span>: <span class="css-val">slide-in linear both</span>;<br>&nbsp;&nbsp;<span class="css-prop">animation-timeline</span>: <span class="css-fn">view</span>(<span class="css-val">block</span>);<br>&nbsp;&nbsp;<span class="css-prop">animation-range</span>: <span class="css-val">entry 0% entry 30%</span>;<br>}</code></div>
+    </div>
+
+    <div class="demo-card">
+      <div class="card-header"><span class="card-title">View Transitions — document.startViewTransition()</span><span class="card-support sup-good">Baseline 2025</span></div>
+      <div class="card-demo vt-demo">
+        <div><button class="vt-btn" onclick="swapPanel('a')">Panel A</button><button class="vt-btn" onclick="swapPanel('b')">Panel B</button><button class="vt-btn" onclick="swapPanel('c')">Panel C</button></div>
+        <div class="vt-panel" id="vt-panel"><h4>Panel A — View Transitions</h4><p>Uses document.startViewTransition() + ::view-transition-* pseudo-elements for smooth DOM swaps.</p></div>
+      </div>
+      <div class="card-code"><code><span class="css-sel">.panel</span> { <span class="css-prop">view-transition-name</span>: <span class="css-val">panel-swap</span>; }<br><span class="css-sel">::view-transition-new(panel-swap)</span> { <span class="css-prop">animation</span>: <span class="css-val">fade-in 0.3s</span>; }<br><span class="css-cmt">/* JS: document.startViewTransition(() => update()) */</span></code></div>
+    </div>
+
+    <div class="demo-card">
+      <div class="card-header"><span class="card-title">transition-behavior: allow-discrete — Animate display</span><span class="card-support sup-good">Chrome 117+ · Firefox 129+</span></div>
+      <div class="card-demo">
+        <div style="display:flex;gap:0.5rem;margin-bottom:0.75rem;">
+          <button onclick="showDiscrete('box1')" style="padding:0.35rem 0.75rem;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:5px;cursor:pointer;font-size:0.75rem;font-family:inherit;">Show</button>
+          <button onclick="hideDiscrete('box1')" style="padding:0.35rem 0.75rem;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:5px;cursor:pointer;font-size:0.75rem;font-family:inherit;">Hide</button>
+        </div>
+        <div id="discrete-box1" style="background:oklch(25% 0.15 300);border:1px solid oklch(45% 0.2 300);border-radius:8px;padding:1rem;font-size:0.8rem;transition:opacity 0.4s,transform 0.4s,display 0.4s allow-discrete;opacity:1;transform:translateY(0);">
+          <code>display</code> is now animatable!<br><span style="color:var(--dim);font-size:0.72rem;">display: none can fade out with allow-discrete</span>
+        </div>
+        <style>#discrete-box1.hidden{opacity:0;transform:translateY(8px);display:none;}</style>
+      </div>
+      <div class="card-code"><code><span class="css-prop">transition</span>: <span class="css-val">opacity 0.4s,<br>&nbsp;&nbsp;display 0.4s allow-discrete</span>;<br><span class="css-sel">.hidden</span> { <span class="css-prop">opacity</span>: <span class="css-num">0</span>; <span class="css-prop">display</span>: <span class="css-val">none</span>; }</code></div>
+    </div>
+
+    <div class="demo-card">
+      <div class="card-header"><span class="card-title">view-timeline-name — Named parallax timelines</span><span class="card-support sup-good">Chrome 115+ · FF 114+</span></div>
+      <div class="card-demo">
+        <div style="height:220px;overflow-y:scroll;border:1px solid var(--border);border-radius:8px;">
+          <style>
+            .vt2-item{padding:0.75rem;margin:0.5rem;background:var(--surface2);border:1px solid var(--border);border-radius:8px;font-size:0.8rem;color:var(--dim);view-timeline-name:--vt2-tl;view-timeline-axis:block;}
+            .vt2-item .inner{animation:vt2-anim linear both;animation-timeline:--vt2-tl;animation-range:entry 0% cover 100%;}
+            @keyframes vt2-anim{from{opacity:0.2;filter:blur(3px);translate:0 8px;}50%{opacity:1;filter:blur(0);translate:0 0;}to{opacity:0.4;filter:blur(2px);translate:0 -8px;}}
+          </style>
+          <div class="vt2-item"><div class="inner">🌊 Parallax 1 — named view timeline</div></div>
+          <div class="vt2-item"><div class="inner">🎨 Parallax 2 — fades as you scroll</div></div>
+          <div class="vt2-item"><div class="inner">⚡ Parallax 3 — CSS only</div></div>
+          <div class="vt2-item"><div class="inner">🔮 Parallax 4 — no JS at all</div></div>
+          <div class="vt2-item"><div class="inner">✦ Parallax 5 — smooth GPU animation</div></div>
+        </div>
+      </div>
+      <div class="card-code"><code><span class="css-sel">.item</span> { <span class="css-prop">view-timeline-name</span>: <span class="css-val">--my-tl</span>; }<br><span class="css-sel">.child</span> {<br>&nbsp;&nbsp;<span class="css-prop">animation-timeline</span>: <span class="css-val">--my-tl</span>;<br>&nbsp;&nbsp;<span class="css-prop">animation-range</span>: <span class="css-val">entry 0% cover 100%</span>;<br>}</code></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- §8 VALUES & FUNCTIONS -->
+<section id="sec-values" class="section">
+  <div class="section-header">
+    <span class="section-number">§08</span>
+    <div class="section-content"><h2 class="section-title">Values &amp; Functions</h2><p class="section-desc">New CSS math: round(), mod(), rem(), abs(), sign(). Typed attr() with type conversion. shape() for clip-path. anchor() and anchor-size().</p></div>
+    <span class="section-badge badge-values">values</span>
+  </div>
+  <div class="demo-grid">
+
+    <div class="demo-card">
+      <div class="card-header"><span class="card-title">round() · mod() · rem() · abs() · sign()</span><span class="card-support sup-good">Chrome 125+ · FF 118+ · Safari 15.4+</span></div>
+      <div class="card-demo">
+        <p style="font-size:0.72rem;color:var(--dim);margin-bottom:0.75rem;">Widths computed via new CSS math functions:</p>
+        <div class="math-demo">
+          <div class="math-bar bar-round">round(73%, 10%) = 70%</div>
+          <div class="math-bar bar-mod">mod(90%, 40%) = 10%</div>
+          <div class="math-bar bar-rem">rem(95%, 40%) = 15%</div>
+          <div class="math-bar" style="width:abs(-60% + 100%);background:oklch(50% 0.2 50);">abs(−60%+100%) = 40%</div>
+          <div class="math-bar" style="width:calc(50% * sign(3 - 1));background:oklch(50% 0.2 20);">sign(3−1)=1 → 50%</div>
+        </div>
+      </div>
+      <div class="card-code"><code><span class="css-fn">round</span>(<span class="css-num">73%</span>, <span class="css-num">10%</span>) <span class="css-cmt">/* → 70% */</span><br><span class="css-fn">mod</span>(<span class="css-num">90%</span>, <span class="css-num">40%</span>) <span class="css-cmt">/* → 10% */</span><br><span class="css-fn">abs</span>(<span class="css-num">-60px</span>) <span class="css-cmt">/* → 60px */</span><br><span class="css-fn">sign</span>(<span class="css-num">-5</span>) <span class="css-cmt">/* → -1 */</span> · <span class="css-fn">sign</span>(<span class="css-num">3</span>) <span class="css-cmt">/* → 1 */</span></code></div>
+    </div>
+
+    <div class="demo-card">
+      <div class="card-header"><span class="card-title">shape() — Complex clip-path with CSS units &amp; curves</span><span class="card-support sup-good">Chrome 126+ · Safari 18+</span></div>
+      <div class="card-demo shape-demo">
+        <div class="shaped shape-arrow">arrow</div>
+        <div class="shaped shape-badge">badge</div>
+        <div class="shaped shape-tab">tab</div>
+        <div class="shaped" style="clip-path:shape(from 0% 0%,line to 80% 0%,line to 100% 50%,line to 80% 100%,line to 0% 100%,close);">chevron</div>
+        <p style="width:100%;margin-top:0.5rem;font-size:0.72rem;color:var(--dim);"><code>shape()</code> accepts CSS units, %, calc(). Unlike polygon(), it supports bezier curves and arcs.</p>
+      </div>
+      <div class="card-code"><code><span class="css-prop">clip-path</span>: <span class="css-fn">shape</span>(<br>&nbsp;&nbsp;<span class="css-val">from top left, hline to 70%,</span><br>&nbsp;&nbsp;<span class="css-val">vline to 30%, hline to 100%,</span><br>&nbsp;&nbsp;<span class="css-val">close</span><br>);</code></div>
+    </div>
+
+    <div class="demo-card">
+      <div class="card-header"><span class="card-title">attr() with type() — Typed attribute values</span><span class="card-support sup-good">Chrome 129+ · Safari 18+</span></div>
+      <div class="card-demo">
+        <p style="font-size:0.72rem;color:var(--dim);margin-bottom:0.75rem;">Sizes and colors from HTML data attributes:</p>
+        <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;">
+          <div data-sz="32" style="width:32px;height:32px;background:oklch(45% 0.2 240);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.55rem;color:white;">32</div>
+          <div data-sz="48" style="width:48px;height:48px;background:oklch(45% 0.2 240);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.6rem;color:white;">48</div>
+          <div data-sz="64" style="width:64px;height:64px;background:oklch(45% 0.2 240);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.65rem;color:white;">64</div>
+          <div style="width:48px;height:48px;border-radius:8px;background:oklch(60% 0.22 180);" title="hue 180"></div>
+          <div style="width:48px;height:48px;border-radius:8px;background:oklch(60% 0.22 240);" title="hue 240"></div>
+          <div style="width:48px;height:48px;border-radius:8px;background:oklch(60% 0.22 300);" title="hue 300"></div>
+          <div style="width:48px;height:48px;border-radius:8px;background:oklch(60% 0.22 40);"  title="hue 40"></div>
+        </div>
+      </div>
+      <div class="card-code"><code><span class="css-sel">[data-size]</span> {<br>&nbsp;&nbsp;<span class="css-prop">width</span>: <span class="css-fn">attr</span>(<span class="css-val">data-size type(&lt;length&gt;)</span>, <span class="css-num">40px</span>);<br>}<span class="css-cmt">/* type(&lt;integer&gt;)|type(&lt;color&gt;)|type(&lt;angle&gt;) */</span></code></div>
+    </div>
+
+    <div class="demo-card">
+      <div class="card-header"><span class="card-title">anchor() · anchor-size() — Geometric functions</span><span class="card-support sup-good">Chrome 125+ · Firefox 147+</span></div>
+      <div class="card-demo">
+        <div style="position:relative;height:180px;background:var(--surface2);border-radius:8px;border:1px dashed var(--border);">
+          <style>
+            #af { anchor-name:--af; position:absolute; top:50%; left:40%; transform:translate(-50%,-50%); width:80px; height:50px; background:oklch(30% 0.18 200); border:1px solid oklch(55% 0.22 200); border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:0.65rem; color:var(--teal); }
+            #as2 { position:absolute; position-anchor:--af; left:anchor(--af right); top:anchor(--af top); width:anchor-size(--af width); height:anchor-size(--af height); background:oklch(30% 0.18 300); border:1px solid oklch(55% 0.22 300); border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:0.6rem; color:var(--purple); margin-left:8px; white-space:nowrap; }
+          </style>
+          <div id="af">anchor</div>
+          <div id="as2">same size!</div>
+        </div>
+        <p style="font-size:0.72rem;color:var(--dim);margin-top:0.5rem;">Right div matches anchor dimensions via anchor-size()</p>
+      </div>
+      <div class="card-code"><code><span class="css-sel">.el</span> {<br>&nbsp;&nbsp;<span class="css-prop">left</span>: <span class="css-fn">anchor</span>(<span class="css-val">--ref right</span>);<br>&nbsp;&nbsp;<span class="css-prop">top</span>: <span class="css-fn">anchor</span>(<span class="css-val">--ref top</span>);<br>&nbsp;&nbsp;<span class="css-prop">width</span>: <span class="css-fn">anchor-size</span>(<span class="css-val">--ref width</span>);<br>&nbsp;&nbsp;<span class="css-prop">height</span>: <span class="css-fn">anchor-size</span>(<span class="css-val">--ref height</span>);<br>}</code></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- §9 NESTING -->
+<section id="sec-nesting" class="section">
+  <div class="section-header">
+    <span class="section-number">§09</span>
+    <div class="section-content"><h2 class="section-title">Nesting &amp; Layers</h2><p class="section-desc">Native CSS nesting with nested at-rules and @layer cascade architecture.</p></div>
+    <span class="section-badge badge-at">nesting</span>
+  </div>
+  <div class="demo-grid wide">
+    <div class="demo-card">
+      <div class="card-header"><span class="card-title">Native CSS Nesting — No preprocessor needed</span><span class="card-support sup-good">Baseline 2024</span></div>
+      <div class="card-demo nesting-demo">
+        <div class="parent-element">Parent element<div class="child">Direct child via &amp; > .child</div><div class="child active">Active child — triggers :has() on parent</div></div>
+      </div>
+      <div class="card-code"><code><span class="css-sel">.parent</span> {<br>&nbsp;&nbsp;<span class="css-sel">& > .child</span> { <span class="css-prop">color</span>: <span class="css-val">var(--teal)</span>; }<br>&nbsp;&nbsp;<span class="css-sel">&:has(.active)</span> { <span class="css-prop">border-color</span>: <span class="css-val">var(--teal)</span>; }<br>&nbsp;&nbsp;<span class="css-at">@media</span> (<span class="css-prop">min-width</span>: <span class="css-num">600px</span>) { <span class="css-prop">display</span>: <span class="css-val">flex</span>; }<br>&nbsp;&nbsp;<span class="css-at">@container</span> (<span class="css-prop">min-width</span>: <span class="css-num">300px</span>) { <span class="css-prop">padding</span>: <span class="css-num">2rem</span>; }<br>}</code></div>
+    </div>
+    <div class="demo-card">
+      <div class="card-header"><span class="card-title">@layer — Explicit cascade layer ordering</span><span class="card-support sup-good">Baseline 2023</span></div>
+      <div class="card-demo">
+        <div style="display:flex;flex-direction:column;gap:0.5rem;">
+          <div style="padding:0.75rem;border-radius:6px;background:oklch(25% 0.1 240);border:1px solid oklch(40% 0.15 240);font-size:0.8rem;color:var(--blue);">Inside @layer demos — lower priority than unlayered</div>
+          <div style="padding:0.75rem;border-radius:6px;background:oklch(25% 0.12 130);border:1px solid oklch(40% 0.18 130);font-size:0.8rem;color:var(--lime);">Unlayered style — always wins over layers</div>
+          <div style="padding:0.75rem;border-radius:6px;border:1px solid var(--border);font-size:0.78rem;color:var(--dim);">Order: <code>reset &lt; base &lt; components &lt; utilities &lt; demos</code></div>
+        </div>
+      </div>
+      <div class="card-code"><code><span class="css-at">@layer</span> <span class="css-val">reset, base, components, utilities</span>;<br><span class="css-at">@layer</span> <span class="css-val">components</span> { <span class="css-sel">.btn</span> { … } }<br><span class="css-cmt">/* Unlayered always wins over any @layer */</span></code></div>
+    </div>
+  </div>
+</section>
+
+<!-- §10 EXPERIMENTAL -->
+<section id="sec-experimental" class="section">
+  <div class="section-header">
+    <span class="section-number">§10</span>
+    <div class="section-content"><h2 class="section-title">Experimental &amp; Draft</h2><p class="section-desc">Active CSS WG drafts as of March 2026 — some require flags, some spec-only.</p></div>
+    <span class="section-badge" style="background:oklch(22% 0.12 300);color:var(--purple);">⚗ drafts</span>
+  </div>
+  <div class="feature-note">All items here are experimental, draft-stage, or require browser flags.</div>
+  <div class="demo-grid">
+
+    <div class="demo-card">
+      <div class="card-header"><span class="card-title">CSS if() — Inline conditionals (Values Level 5)</span><span class="card-support sup-exp">No browser support yet</span></div>
+      <div class="card-demo if-demo-note">
+        <p>Native inline conditionals — querying media, supports, container, and style:</p>
+        <pre style="margin-top:0.75rem;overflow-x:auto;"><code><span class="css-sel">.btn</span> {
+  <span class="css-prop">color</span>: <span class="css-fn">if</span>(
+    <span class="css-val">style(--v: danger)</span>  : <span class="css-fn">oklch</span>(<span class="css-num">70% 0.25 25</span>);
+    <span class="css-val">style(--v: success)</span> : <span class="css-fn">oklch</span>(<span class="css-num">70% 0.2 158</span>);
+    <span class="css-val">else</span>                : <span class="css-val">var(--text)</span>
+  );
+  <span class="css-prop">transition-duration</span>: <span class="css-fn">if</span>(
+    <span class="css-val">media(prefers-reduced-motion)</span>: <span class="css-num">0ms</span>;
+    <span class="css-val">else</span>: <span class="css-num">200ms</span>
+  );
+}</code></pre>
+      </div>
+    </div>
+
+    <div class="demo-card">
+      <div class="card-header"><span class="card-title">@function — CSS Custom Functions (Level 5)</span><span class="card-support sup-exp">Draft — no browsers</span></div>
+      <div class="card-demo">
+        <p style="font-size:0.8rem;color:var(--dim);margin-bottom:0.75rem;">Reusable native CSS functions — like Sass @function:</p>
+        <pre style="overflow-x:auto;font-size:0.7rem;"><code><span class="css-at">@function</span> <span class="css-sel">--fluid</span>(<span class="css-prop">--min</span>, <span class="css-prop">--max</span>, <span class="css-prop">--from</span>, <span class="css-prop">--to</span>) {
+  <span class="css-prop">result</span>: <span class="css-fn">clamp</span>(
+    <span class="css-val">var(--min)</span>,
+    <span class="css-fn">calc</span>(<span class="css-val">var(--min)</span> + (<span class="css-val">var(--max)</span> - <span class="css-val">var(--min)</span>)
+      * ((<span class="css-num">100vw</span> - <span class="css-val">var(--from)</span>) / (<span class="css-val">var(--to)</span> - <span class="css-val">var(--from)</span>))),
+    <span class="css-val">var(--max)</span>
+  );
+}
+<span class="css-sel">h1</span> { <span class="css-prop">font-size</span>: <span class="css-fn">--fluid</span>(<span class="css-num">1.5rem</span>, <span class="css-num">4rem</span>, <span class="css-num">320px</span>, <span class="css-num">1440px</span>); }</code></pre>
+      </div>
+    </div>
+
+    <div class="demo-card">
+      <div class="card-header"><span class="card-title">corner-shape — Squircle, notch, bevel natively</span><span class="card-support sup-exp">Chrome flag required</span></div>
+      <div class="card-demo">
+        <p style="font-size:0.72rem;color:var(--dim);margin-bottom:0.75rem;">Controls corner curve interpolation — native iOS-style squircles:</p>
+        <div style="display:flex;flex-wrap:wrap;gap:0.75rem;align-items:center;">
+          <div style="width:64px;height:64px;background:oklch(40% 0.2 260);border-radius:16px;corner-shape:round;display:flex;align-items:center;justify-content:center;font-size:0.6rem;color:white;text-align:center;">round</div>
+          <div style="width:64px;height:64px;background:oklch(40% 0.2 130);border-radius:16px;corner-shape:squircle;display:flex;align-items:center;justify-content:center;font-size:0.6rem;color:white;text-align:center;">squircle</div>
+          <div style="width:64px;height:64px;background:oklch(40% 0.2 350);border-radius:16px;corner-shape:notch;display:flex;align-items:center;justify-content:center;font-size:0.6rem;color:white;text-align:center;">notch</div>
+          <div style="width:64px;height:64px;background:oklch(40% 0.2 50);border-radius:16px;corner-shape:bevel;display:flex;align-items:center;justify-content:center;font-size:0.6rem;color:white;text-align:center;">bevel</div>
+          <div style="width:64px;height:64px;background:oklch(40% 0.2 300);border-radius:16px;corner-shape:scoop;display:flex;align-items:center;justify-content:center;font-size:0.6rem;color:white;text-align:center;">scoop</div>
+        </div>
+        <p style="font-size:0.68rem;color:var(--dimmer);margin-top:0.5rem;">Need Chrome flag: enable-experimental-web-platform-features</p>
+      </div>
+      <div class="card-code"><code><span class="css-sel">.squircle</span> {<br>&nbsp;&nbsp;<span class="css-prop">border-radius</span>: <span class="css-num">16px</span>;<br>&nbsp;&nbsp;<span class="css-prop">corner-shape</span>: <span class="css-val">squircle</span>;<br>}<span class="css-cmt">/* round|squircle|bevel|notch|scoop */</span><br><span class="css-prop">corner-top-left-shape</span>: <span class="css-val">notch</span>; <span class="css-cmt">/* per-corner */</span></code></div>
+    </div>
+
+    <div class="demo-card" style="grid-column:1/-1;">
+      <div class="card-header"><span class="card-title">Interop 2026 — Cross-browser joint focus areas (Chrome + Firefox + Safari)</span><span class="card-support sup-good">Active</span></div>
+      <div class="card-demo">
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:0.5rem;">
+          <div style="background:var(--surface2);border:1px solid oklch(35% 0.15 240 / 0.5);border-radius:6px;padding:0.6rem 0.75rem;font-size:0.75rem;"><div style="color:var(--blue);font-family:'DM Mono',monospace;font-size:0.65rem;margin-bottom:0.2rem;">Cross-doc View Transitions</div><div style="color:var(--dim);">MPA page transitions without JS</div></div>
+          <div style="background:var(--surface2);border:1px solid oklch(35% 0.15 158 / 0.5);border-radius:6px;padding:0.6rem 0.75rem;font-size:0.75rem;"><div style="color:var(--green);font-family:'DM Mono',monospace;font-size:0.65rem;margin-bottom:0.2rem;">Scroll-driven Animations</div><div style="color:var(--dim);">Cross-browser Baseline push</div></div>
+          <div style="background:var(--surface2);border:1px solid oklch(35% 0.15 300 / 0.5);border-radius:6px;padding:0.6rem 0.75rem;font-size:0.75rem;"><div style="color:var(--purple);font-family:'DM Mono',monospace;font-size:0.65rem;margin-bottom:0.2rem;">CSS Anchor Positioning</div><div style="color:var(--dim);">Firefox 147+ now shipping</div></div>
+          <div style="background:var(--surface2);border:1px solid oklch(35% 0.15 50 / 0.5);border-radius:6px;padding:0.6rem 0.75rem;font-size:0.75rem;"><div style="color:var(--orange);font-family:'DM Mono',monospace;font-size:0.65rem;margin-bottom:0.2rem;">CSS Reading Flow</div><div style="color:var(--dim);">Logical a11y tab order</div></div>
+          <div style="background:var(--surface2);border:1px solid oklch(35% 0.15 90 / 0.5);border-radius:6px;padding:0.6rem 0.75rem;font-size:0.75rem;"><div style="color:var(--amber);font-family:'DM Mono',monospace;font-size:0.65rem;margin-bottom:0.2rem;">clip-path: shape()</div><div style="color:var(--dim);">Complex CSS clip paths</div></div>
+          <div style="background:var(--surface2);border:1px solid oklch(35% 0.15 200 / 0.5);border-radius:6px;padding:0.6rem 0.75rem;font-size:0.75rem;"><div style="color:var(--teal);font-family:'DM Mono',monospace;font-size:0.65rem;margin-bottom:0.2rem;">Masonry Layout</div><div style="color:var(--dim);">grid-template-rows: masonry</div></div>
+          <div style="background:var(--surface2);border:1px solid oklch(35% 0.15 260 / 0.5);border-radius:6px;padding:0.6rem 0.75rem;font-size:0.75rem;"><div style="color:var(--blue);font-family:'DM Mono',monospace;font-size:0.65rem;margin-bottom:0.2rem;">CSS if() / @function</div><div style="color:var(--dim);">Native conditionals in values</div></div>
+          <div style="background:var(--surface2);border:1px solid oklch(35% 0.15 130 / 0.5);border-radius:6px;padding:0.6rem 0.75rem;font-size:0.75rem;"><div style="color:var(--lime);font-family:'DM Mono',monospace;font-size:0.65rem;margin-bottom:0.2rem;">corner-shape</div><div style="color:var(--dim);">Squircles natively in CSS</div></div>
+          <div style="background:var(--surface2);border:1px solid oklch(35% 0.15 310 / 0.5);border-radius:6px;padding:0.6rem 0.75rem;font-size:0.75rem;"><div style="color:var(--purple);font-family:'DM Mono',monospace;font-size:0.65rem;margin-bottom:0.2rem;">::scroll-marker / ::scroll-button</div><div style="color:var(--dim);">Native CSS carousels</div></div>
+          <div style="background:var(--surface2);border:1px solid oklch(35% 0.15 350 / 0.5);border-radius:6px;padding:0.6rem 0.75rem;font-size:0.75rem;"><div style="color:var(--rose);font-family:'DM Mono',monospace;font-size:0.65rem;margin-bottom:0.2rem;">Anchor Positioning Level 2</div><div style="color:var(--dim);">anchor-scope for lists</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<footer style="border-top:1px solid var(--border);padding:3rem;color:var(--dimmer);font-size:0.75rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
+  <div>
+    <span style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;color:var(--dim);">CSS 2025–2026 Living Reference</span><br>
+    <span style="font-family:'DM Mono',monospace;">All demos: native HTML + CSS + vanilla JS. Zero frameworks.</span><br>
+    <span style="font-family:'DM Mono',monospace;font-size:0.68rem;color:var(--dimmer);">March 17, 2026 · Open browser console to see feature support log</span>
+  </div>
+  <div style="font-family:'DM Mono',monospace;text-align:right;font-size:0.68rem;">
+    <div>§01 At-Rules · §02 Selectors · §03 Pseudo-Elements</div>
+    <div>§04 Colors · §05 Layout · §06 Properties</div>
+    <div>§07 Animations · §08 Values · §09 Nesting · §10 Experimental</div>
+  </div>
+</footer>
+
+</main>
+
+<script>
+'use strict';
+const sections = document.querySelectorAll('.section, #hero');
+const navLinks = document.querySelectorAll('nav#toc a');
+new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      document.querySelector(`nav#toc a[href="#${e.target.id}"]`)?.classList.add('active');
+    }
+  });
+}, { threshold: 0.15, rootMargin: '-60px 0px -40% 0px' }).observe ?? sections.forEach(s => {
+  new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        navLinks.forEach(l => l.classList.remove('active'));
+        document.querySelector(`nav#toc a[href="#${e.target.id}"]`)?.classList.add('active');
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '-60px 0px -40% 0px' }).observe(s);
+});
+sections.forEach(s => {
+  new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        navLinks.forEach(l => l.classList.remove('active'));
+        document.querySelector(`nav#toc a[href="#${e.target.id}"]`)?.classList.add('active');
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '-60px 0px -40% 0px' }).observe(s);
+});
+
+document.querySelectorAll('nav#toc a[href^="#"]').forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    document.querySelector(link.getAttribute('href'))?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+
+function replayStartingStyle() {
+  document.querySelectorAll('.ssbox').forEach(b => {
+    b.style.transition = 'none'; b.style.opacity = '0'; b.style.transform = 'translateY(12px)';
+    requestAnimationFrame(() => requestAnimationFrame(() => { b.style.transition = b.style.opacity = b.style.transform = ''; }));
+  });
+}
+
+function replayStagger() {
+  const items = document.querySelectorAll('#stagger-demo li');
+  items.forEach(li => { li.style.transition = 'none'; li.style.opacity = '0'; li.style.transform = 'translateX(-8px)'; });
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    items.forEach(li => { li.style.transition = li.style.opacity = li.style.transform = ''; });
+  }));
+}
+
+const panels = {
+  a: { title: 'Panel A — View Transitions', body: 'Uses document.startViewTransition() + ::view-transition-* pseudo-elements for smooth DOM updates.' },
+  b: { title: 'Panel B — Same Document VT', body: 'view-transition-name coordinates entrance/exit animations across any DOM update wrapped in startViewTransition.' },
+  c: { title: 'Panel C — Custom Keyframes', body: '::view-transition-old(name) and ::view-transition-new(name) accept any CSS @keyframes animation.' }
+};
+function swapPanel(key) {
+  const panel = document.getElementById('vt-panel');
+  const d = panels[key];
+  if ('startViewTransition' in document) {
+    document.startViewTransition(() => { panel.querySelector('h4').textContent = d.title; panel.querySelector('p').textContent = d.body; });
+  } else {
+    panel.querySelector('h4').textContent = d.title; panel.querySelector('p').textContent = d.body;
+  }
+}
+
+function toggleExpand() { document.getElementById('expandable').classList.toggle('open'); }
+
+function setVariant(v) {
+  const c = document.getElementById('style-query-container');
+  const i = document.getElementById('sq-inner');
+  v ? c.style.setProperty('--variant', v) : c.style.removeProperty('--variant');
+  i.textContent = v ? `--variant: "${v}" → @container style() applied matching rule` : 'No --variant set — default neutral styles active';
+}
+
+function applyHighlight(type) {
+  if (!window.CSS?.highlights) return;
+  CSS.highlights.delete('search-result'); CSS.highlights.delete('css-keyword');
+  document.querySelectorAll('.hl-controls button').forEach(b => b.classList.remove('active'));
+  const para = document.getElementById('highlight-paragraph');
+  if (!para) return;
+  const text = para.firstChild; const content = para.textContent;
+  const words = type === 'search' ? ['highlight', 'text ranges', 'Highlight API', 'annotation'] : ['::highlight', 'programmatically', 'pseudo-elements'];
+  const ranges = words.flatMap(w => {
+    const rs = []; let i = 0;
+    while ((i = content.indexOf(w, i)) !== -1) {
+      const r = new Range(); r.setStart(text, i); r.setEnd(text, i + w.length); rs.push(r); i += w.length;
+    }
+    return rs;
+  });
+  if (ranges.length) CSS.highlights.set(type === 'search' ? 'search-result' : 'css-keyword', new Highlight(...ranges));
+  document.getElementById(`hl-btn-${type === 'search' ? 'search' : 'keyword'}`)?.classList.add('active');
+}
+function clearHighlights() {
+  if (!window.CSS?.highlights) return;
+  CSS.highlights.delete('search-result'); CSS.highlights.delete('css-keyword');
+  document.querySelectorAll('.hl-controls button').forEach(b => b.classList.remove('active'));
+}
+
+document.addEventListener('DOMContentLoaded', () => setTimeout(() => applyHighlight('search'), 600));
+
+function showDiscrete(id) { document.getElementById(`discrete-${id}`)?.classList.remove('hidden'); }
+function hideDiscrete(id) { document.getElementById(`discrete-${id}`)?.classList.add('hidden'); }
+
+const hueEl = document.getElementById('hue-demo');
+if (hueEl) {
+  let hue = 260, iv;
+  hueEl.addEventListener('mouseenter', () => {
+    iv = setInterval(() => { hue = Math.min(360, hue + 8); hueEl.textContent = `hue: ${Math.round(hue)} — oklch(60% 0.22 ${Math.round(hue)})`; }, 70);
+  });
+  hueEl.addEventListener('mouseleave', () => {
+    clearInterval(iv);
+    setTimeout(() => { hue = 260; hueEl.textContent = 'Hover me — --hue transitions! oklch(60% 0.22 var(--hue))'; }, 800);
+  });
+}
+
+const checks = {
+  '@scope':           CSS.supports('selector(:scope div)'),
+  'anchor-name':      CSS.supports('anchor-name', '--x'),
+  'interpolate-size': CSS.supports('interpolate-size', 'allow-keywords'),
+  'field-sizing':     CSS.supports('field-sizing', 'content'),
+  'color-mix()':      CSS.supports('color', 'color-mix(in oklch, red, blue)'),
+  'oklch()':          CSS.supports('color', 'oklch(50% 0.2 240)'),
+  'light-dark()':     CSS.supports('color', 'light-dark(black, white)'),
+  'Rel. Color Syn.':  CSS.supports('color', 'oklch(from red l c h)'),
+  'text-box':         CSS.supports('text-box', 'trim-both cap alphabetic'),
+  'reading-flow':     CSS.supports('reading-flow', 'flex-visual'),
+  'sibling-index()':  CSS.supports('order', 'sibling-index()'),
+  'shape()':          CSS.supports('clip-path', 'shape(from 0 0, close)'),
+  'round()':          CSS.supports('width', 'round(73%, 10%)'),
+  'zoom standard':    CSS.supports('zoom', '1.5'),
+  'Highlight API':    !!window.CSS?.highlights,
+  'View Transitions': 'startViewTransition' in document,
+  'Scroll-driven':    CSS.supports('animation-timeline', 'scroll()'),
+  'Popover API':      'popover' in document.createElement('div'),
+  'container:s-s':    CSS.supports('container-type', 'scroll-state'),
+};
+console.group('%cCSS 2025-2026 Feature Support', 'font:bold 1.1em monospace;color:#34d399');
+Object.entries(checks).forEach(([n, ok]) =>
+  console.log(`%c${ok ? '✓' : '✗'} %c${n}`, `color:${ok ? '#34d399' : '#f87171'};font-weight:bold`, 'color:inherit'));
+console.groupEnd();
+</script>
+</body>
+</html>
