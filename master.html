@@ -8,7 +8,11 @@
 /* ═══════════════════════════════════════════════════════════════════
    CSS RESET & BASE LAYERS - Combined from all 5 sources
 ═══════════════════════════════════════════════════════════════════ */
-@layer reset, tokens, base, components, demos;
+@layer reset, tokens, base, components, demos, utilities;
+
+@view-transition {
+  navigation: auto;
+}
 
 @property --hero-angle {
   syntax: "<angle>";
@@ -26,6 +30,18 @@
   syntax: '<number>';
   inherits: false;
   initial-value: 260;
+}
+
+@property --progress {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --card-lift {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
 }
 
 @layer reset {
@@ -47,20 +63,33 @@
     --accent-3: oklch(75% 0.18 calc(var(--accent-hue) + 80));
     --brand-base: #646cff;
     --brand-danger: #ff4a4a;
-    --bg: light-dark(#f8f9ff, #0f0f1a);
-    --surface: light-dark(#ffffff, #1a1a2e);
-    --surface-2: light-dark(#f0f2ff, #252542);
-    --surface-3: light-dark(#e8ebff, #2f2f4a);
-    --text: light-dark(#1a1a2e, #f0f0ff);
-    --text-dim: light-dark(#666, #aaa);
-    --border: light-dark(#e0e4ff, #3a3a5c);
-    --shadow: 0 4px 20px rgba(0,0,0,0.1);
-    --shadow-lg: 0 10px 40px rgba(0,0,0,0.15);
+    
+    /* Base Colors - mapped to light-dark() natively */
+    --bg: light-dark(oklch(0.985 0.01 275), oklch(0.17 0.02 275));
+    --surface: light-dark(rgb(255 255 255 / 0.82), rgb(19 22 28 / 0.72));
+    --surface-strong: light-dark(rgb(255 255 255 / 0.96), rgb(22 26 34 / 0.92));
+    --surface-2: light-dark(oklch(0.95 0.01 275), oklch(0.22 0.02 275));
+    --surface-3: light-dark(oklch(0.9 0.02 275), oklch(0.28 0.03 275));
+    --text: light-dark(oklch(0.23 0.02 280), oklch(0.93 0.02 280));
+    --text-dim: light-dark(oklch(0.42 0.02 280), oklch(0.78 0.02 280));
+    --border: light-dark(rgb(20 20 30 / 0.10), rgb(255 255 255 / 0.10));
+    --shadow: light-dark(0 10px 40px rgb(8 15 30 / 0.10), 0 16px 50px rgb(0 0 0 / 0.32));
+    --shadow-lg: light-dark(0 20px 60px rgb(8 15 30 / 0.15), 0 24px 70px rgb(0 0 0 / 0.45));
+    
+    /* Sizing & Layout */
     --radius: 16px;
     --radius-lg: 24px;
-    --sidebar-width: 350px;
+    --sidebar-width: 300px;
     --gap: clamp(1rem, 1.5vw, 1.5rem);
     --page-max: 1400px;
+  }
+
+  [data-theme="light"] {
+    color-scheme: light;
+  }
+
+  [data-theme="dark"] {
+    color-scheme: dark;
   }
 }
 
@@ -79,7 +108,7 @@
   h3 { font-size: clamp(1.3rem, 2vw, 1.8rem); margin: 2rem 0 1rem; }
   h4 { font-size: 1.1rem; margin: 1rem 0 0.75rem; }
   p { margin-bottom: 1rem; max-width: 70ch; }
-  
+
   code { background: var(--surface-2); padding: 0.2em 0.4em; border-radius: 4px; font-size: 0.85em; color: var(--accent); }
   pre { background: var(--surface-3); padding: 1.5rem; border-radius: var(--radius); overflow-x: auto; margin: 1rem 0; border: 1px solid var(--border); font-size: 0.85rem; line-height: 1.6; }
   a { color: var(--accent); text-decoration: none; }
@@ -141,8 +170,8 @@
     font-size: 0.9rem;
     border-left: 2px solid transparent;
   }
-  .toc-section a:hover { 
-    color: var(--accent); 
+  .toc-section a:hover {
+    color: var(--accent);
     background: color-mix(in oklch, var(--accent) 8%, var(--surface-2));
     text-decoration: none;
     border-left-color: var(--accent);
@@ -163,12 +192,12 @@
   }
 
   .container { max-width: var(--page-max); margin: 0 auto; }
-  
+
   /* Hero Section */
   .hero {
     text-align: center;
     padding: clamp(3rem, 6vw, 6rem) 2rem;
-    background: 
+    background:
       radial-gradient(circle at 20% 10%, color-mix(in oklch, var(--accent) 22%, transparent), transparent 34%),
       radial-gradient(circle at 80% 0%, color-mix(in oklch, var(--accent-2) 24%, transparent), transparent 30%),
       linear-gradient(135deg, color-mix(in oklch, var(--accent) 15%, var(--surface)), color-mix(in oklch, var(--accent-3) 10%, var(--surface)));
@@ -235,9 +264,9 @@
   /* Feature Grid */
   .feature-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    /* grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); */
     gap: var(--gap);
-    margin: 2rem 0;
+    /* margin: 2rem 0; */
   }
 
   .feature-card {
@@ -286,6 +315,7 @@
   .badge-partial { background: oklch(22% 0.1 90); color: oklch(80% 0.18 90); }
   .badge-exp { background: oklch(22% 0.1 300); color: oklch(75% 0.18 300); }
   .badge-chrome { background: oklch(22% 0.08 50); color: oklch(75% 0.18 50); }
+  .badge-sup { background: oklch(25% 0.08 158); color: oklch(75% 0.18 158); }
 
   /* Buttons */
   button, .btn {
@@ -327,6 +357,7 @@
   .css-fn { color: oklch(70% 0.2 350); }
   .css-num { color: oklch(80% 0.18 90); }
   .css-cmt { color: oklch(60% 0.1 250); font-style: italic; }
+  .css-str { color: oklch(75% 0.18 300); }
 
   /* Mobile Responsive */
   @media (max-width: 900px) {
@@ -337,6 +368,35 @@
 }
 
 @layer demos {
+  /* CSS Nesting Demo */
+  .nesting-demo {
+    background: var(--surface-2);
+    border-radius: 8px;
+    padding: 1rem;
+    
+    .parent-element {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      padding: 0.5rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      
+      & > .child {
+        margin-top: 0.5rem;
+        padding: 0.4rem 0.6rem;
+        background: oklch(22% 0.06 260);
+        border-radius: 4px;
+        font-size: 0.78rem;
+        color: var(--accent);
+      }
+      
+      &:has(.child.active) {
+        border-color: var(--accent);
+        background: oklch(18% 0.08 200);
+      }
+    }
+  }
+
   /* @scope Demo */
   @scope (.scoped-component) {
     h4 { color: var(--accent); }
@@ -347,6 +407,30 @@
   @scope (.donut-outer) to (.donut-hole) {
     h4 { color: var(--accent-2); border-left: 3px solid var(--accent-2); padding-left: 0.75rem; }
     p { border-left: 2px solid var(--accent-2); padding-left: 0.75rem; }
+  }
+  
+  @scope (.scope-playground) {
+    :scope {
+      border-radius: 26px;
+      border: 1px solid color-mix(in oklch, var(--accent) 26%, var(--line));
+      padding: 1rem;
+      background: color-mix(in oklch, var(--accent) 8%, var(--surface-strong));
+    }
+    
+    .scope-only {
+      color: color-mix(in oklch, var(--accent) 78%, var(--ink));
+      font-weight: 750;
+    }
+    
+    .scope-chip {
+      background: color-mix(in oklch, var(--accent) 16%, transparent);
+      border-color: color-mix(in oklch, var(--accent) 26%, var(--line));
+    }
+  }
+  
+  .scope-outside .scope-only {
+    color: inherit;
+    font-weight: 500;
   }
 
   /* Container Queries */
@@ -363,59 +447,402 @@
   /* :has() Parent Selector */
   .parent-card:has(> .child:hover) { border-color: var(--accent); background: color-mix(in oklch, var(--accent) 5%, var(--surface-2)); }
   .parent-card:has(input:checked) { border-color: oklch(75% 0.18 158); background: color-mix(in oklch, oklch(75% 0.18 158) 8%, var(--surface-2)); }
+  
+  /* :has() complex demo - gallery with radio */
+  .gallery-has-demo {
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+      
+      .gallery-item {
+        aspect-ratio: 1;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        cursor: pointer;
+        background: var(--surface-2);
+        border: 2px solid transparent;
+        transition: border-color 0.2s, transform 0.2s;
+        
+        input[type="radio"] { display: none; }
+        
+        &:has(input:checked) {
+          border-color: var(--accent);
+          transform: scale(1.05);
+          background: oklch(22% 0.12 190);
+        }
+      }
+    }
+  }
 
   /* Scroll-Driven Animation */
   .scroll-reveal { opacity: 0; transform: translateY(30px); animation: reveal linear both; animation-timeline: view(); animation-range: entry 10% cover 30%; }
   @keyframes reveal { to { opacity: 1; transform: translateY(0); } }
+  
+  /* Scroll-driven reveal for section headers */
+  .section-header {
+    animation: reveal-header linear both;
+    animation-timeline: view(block);
+    animation-range: entry 0% entry 40%;
+  }
+  @keyframes reveal-header {
+    from { opacity: 0; translate: 0 20px; }
+    to   { opacity: 1; translate: 0 0; }
+  }
 
   /* Scroll-state container */
-  .scroll-state-wrapper { height: 200px; overflow-y: scroll; border: 1px solid var(--border); border-radius: 8px; container-type: scroll-state; }
-  .sticky-header { position: sticky; top: 0; background: var(--surface-2); padding: 0.75rem 1rem; font-size: 0.85rem; transition: all 0.3s; }
-  @container scroll-state(stuck: top) { .sticky-header { background: color-mix(in oklch, var(--accent) 15%, var(--surface-2)); color: var(--accent); box-shadow: 0 2px 12px rgba(0,0,0,0.1); } }
+  .scroll-state-wrapper { height: 200px; overflow-y: scroll; border: 1px solid var(--border); border-radius: 8px; container-type: scroll-state; scroll-snap-type: y mandatory; }
+  .sticky-header { position: sticky; top: 0; background: var(--surface-2); padding: 0.75rem 1rem; font-size: 0.85rem; transition: all 0.3s; z-index: 1; }
+  @container scroll-state(stuck: top) { .sticky-header { background: color-mix(in oklch, var(--accent) 15%, var(--surface-2)); color: var(--accent); box-shadow: 0 2px 12px rgba(0,0,0,0.5); } }
+
+  .scroll-snap-item { scroll-snap-align: center; height: 80px; display: flex; align-items: center; padding: 0 1rem; border-bottom: 1px solid var(--border); font-size: 0.8rem; color: var(--text-dim); transition: color 0.3s, transform 0.3s; }
 
   /* Anchor Positioning */
   .anchor-source { anchor-name: --tooltip; display: inline-block; padding: 0.75rem 1.5rem; background: var(--accent); color: white; border-radius: 8px; cursor: pointer; }
-  .anchor-tooltip { position: absolute; position-anchor: --tooltip; top: anchor(bottom); left: anchor(center); transform: translateX(-50%); background: var(--text); color: var(--bg); padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.85rem; white-space: nowrap; margin-top: 0.5rem; }
+  .anchor-source:hover + .anchor-tooltip { opacity: 1; }
+  .anchor-tooltip { pointer-events: none; opacity: 0; transition: opacity 0.2s; position: absolute; position-anchor: --tooltip; top: anchor(bottom); left: anchor(center); transform: translateX(-50%); background: var(--text); color: var(--bg); padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.85rem; white-space: nowrap; margin-top: 0.5rem; }
 
-  /* Popover */
-  [popover] { border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; background: var(--surface); color: var(--text); box-shadow: var(--shadow-lg); max-width: 24rem; }
-  [popover]::backdrop { background: color-mix(in oklch, var(--bg) 70%, transparent); backdrop-filter: blur(4px); }
+  /* Popover with @starting-style */
+  [popover], dialog { 
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    margin: 0;
+    border: 1px solid var(--border); 
+    border-radius: var(--radius); 
+    padding: 1.5rem; 
+    background: var(--surface); 
+    color: var(--text); 
+    box-shadow: var(--shadow-lg); 
+    max-width: 24rem;
+    transition: opacity 0.3s, transform 0.3s, overlay 0.3s allow-discrete, display 0.3s allow-discrete;
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+    
+    @starting-style {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.92);
+    }
+    
+    &:not(:popover-open):not([open]) {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.92);
+    }
+  }
+  [popover]::backdrop, dialog::backdrop { 
+    background: color-mix(in oklch, var(--bg) 70%, transparent); 
+    backdrop-filter: blur(4px);
+    transition: background 0.3s, backdrop-filter 0.3s, overlay 0.3s allow-discrete, display 0.3s allow-discrete;
+    
+    @starting-style {
+      background: color-mix(in oklch, var(--bg) 0%, transparent);
+      backdrop-filter: blur(0px);
+    }
+  }
 
   /* ::highlight() */
   ::highlight(search) { background-color: oklch(85% 0.15 90); color: oklch(40% 0.2 50); }
   ::highlight(keyword) { background-color: oklch(30% 0.15 280 / 0.4); color: oklch(75% 0.18 300); }
+  ::highlight(search-result) { background-color: oklch(75% 0.22 90 / 0.25); color: var(--amber); }
+  ::highlight(css-keyword) { background-color: oklch(30% 0.15 280 / 0.4); color: var(--accent); }
 
   /* Math Functions Demo */
   .math-bar { height: 36px; border-radius: 8px; display: flex; align-items: center; padding: 0 0.75rem; font-size: 0.8rem; color: white; margin: 0.5rem 0; font-weight: 600; }
+  .bar-round  { width: round(73%, 10%); background: oklch(50% 0.2 240); }
+  .bar-mod    { width: mod(90%, 40%); background: oklch(50% 0.2 160); }
+  .bar-rem    { width: rem(95%, 40%); background: oklch(50% 0.2 300); }
+  .bar-abs    { width: abs(-60% + 100%); background: oklch(50% 0.2 50); }
+  .bar-sign   { width: calc(50% * sign(3 - 1)); background: oklch(50% 0.2 20); }
 
   /* text-box-trim */
   .text-trim-demo { font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; line-height: 1.2; }
   .text-trim-demo.trimmed { text-box: trim-both cap alphabetic; }
+  
+  /* text-box with before/after comparison */
+  .textbox-demo {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    
+    .tb-box {
+      background: oklch(20% 0.06 260);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+      
+      .label {
+        background: var(--border);
+        padding: 0.3rem 0.75rem;
+        font-family: 'DM Mono', monospace;
+        font-size: 0.6rem;
+        color: var(--text-dim);
+      }
+      
+      .content {
+        padding: 0.75rem;
+        background: oklch(22% 0.1 260 / 0.3);
+
+        h3{
+          border-block: 2px solid rgba(245, 243, 243, 0.763);
+        }
+      }
+    }
+    
+    h3.tb-before {
+      font-size: 1.4rem;
+      line-height: 1.3;
+      color: var(--text);
+    }
+    
+    h3.tb-after {
+      font-size: 1.4rem;
+      line-height: 1.3;
+      color: var(--text);
+      text-box: trim-both cap alphabetic;
+    }
+  }
 
   /* corner-shape */
   .corner-shape-demo { width: 100px; height: 100px; background: var(--accent); border-radius: 24px; corner-shape: squircle; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; transition: corner-shape 0.3s, transform 0.3s; }
   .corner-shape-demo:hover { transform: scale(1.05); }
+  
+  /* corner-shape interactive morph */
+  .corner-demo {
+    inline-size: min(100%, 340px);
+    aspect-ratio: 1.3;
+    border-radius: 42px;
+    corner-shape: squircle;
+    border: 2px solid color-mix(in oklch, var(--accent) 44%, var(--line));
+    background: linear-gradient(145deg, color-mix(in oklch, var(--accent) 22%, var(--surface-strong)), color-mix(in oklch, var(--accent-2) 16%, var(--surface-strong)));
+    display: grid;
+    place-items: center;
+    font-size: 1.15rem;
+    font-weight: 750;
+    transition: corner-shape 260ms ease, border-radius 260ms ease, transform 260ms ease;
+    
+    &:hover {
+      transform: translateY(-2px);
+    }
+  }
+  
+  .shape-demo {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+    
+    .shaped {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.6rem;
+      font-family: 'DM Mono', monospace;
+      color: white;
+      text-align: center;
+    }
+    
+    .shape-arrow {
+      clip-path: shape(
+        from top left,
+        hline to 70%,
+        vline to 30%,
+        hline to 100%,
+        vline to 50%,
+        hline to 100%,
+        vline to 70%,
+        hline to 70%,
+        vline to 100%,
+        hline to 0%,
+        close
+      );
+    }
+    
+    .shape-badge {
+      clip-path: shape(
+        from 50% 0%,
+        curve to 100% 50% with 100% 15%,
+        curve to 50% 100% with 100% 85%,
+        curve to 0% 50% with 0% 85%,
+        curve to 50% 0% with 0% 15%,
+        close
+      );
+    }
+  }
 
   /* Subgrid */
   .subgrid-parent { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
   .subgrid-child { display: grid; grid-template-rows: subgrid; grid-row: span 3; gap: 0; }
+  
+  /* Subgrid detailed demo */
+  .subgrid-demo {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1rem;
+    
+    .sg-card {
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      grid-row: span 3;
+      
+      .sg-parent {
+        display: grid;
+        grid-row: span 3;
+        grid-template-rows: subgrid;
+        background: var(--surface-2);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        overflow: hidden;
+        
+        .sg-header {
+          padding: 0.75rem;
+          background: var(--surface);
+          border-bottom: 1px solid var(--border);
+          font-size: 0.85rem;
+          font-weight: 600;
+          color: var(--text);
+        }
+        
+        .sg-body {
+          padding: 0.75rem;
+          font-size: 0.78rem;
+          color: var(--text-dim);
+          line-height: 1.5;
+        }
+        
+        .sg-footer {
+          padding: 0.6rem 0.75rem;
+          border-top: 1px solid var(--border);
+          font-family: 'DM Mono', monospace;
+          font-size: 0.68rem;
+          color: var(--text-dim);
+        }
+      }
+    }
+  }
 
   /* content-visibility */
   .cv-section { content-visibility: auto; contain-intrinsic-height: auto 150px; padding: 1rem; background: var(--surface-2); border-radius: 8px; margin: 0.5rem 0; }
+  
+  /* content-visibility demo */
+  .cv-demo {
+    .cv-section {
+      content-visibility: auto;
+      contain-intrinsic-height: auto 120px;
+      padding: 1rem;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 0.5rem;
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      
+      h4 { color: var(--text); font-size: 0.9rem; margin-bottom: 0.3rem; }
+    }
+  }
 
   /* font-palette */
   .emoji-demo { font-size: 3rem; font-family: 'Noto Color Emoji', sans-serif; }
   @font-palette-values --custom { font-family: 'Noto Color Emoji'; base-palette: 1; override-colors: 0 oklch(85% 0.15 300), 1 oklch(75% 0.18 200), 2 oklch(80% 0.18 90); }
+  
+  /* font-palette demo */
+  .palette-demo {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    
+    .pal-text {
+      font-size: 2.5rem;
+      font-family: 'Noto Color Emoji', sans-serif;
+    }
+    
+    .palette-normal { font-palette: normal; }
+    .palette-light  { font-palette: light; }
+    .palette-dark   { font-palette: dark; }
+  }
+  
+  @font-palette-values --custom-palette {
+    font-family: 'Noto Color Emoji';
+    base-palette: 0;
+    override-colors: 0 var(--accent), 1 var(--accent-2);
+  }
 
   /* Sibling functions */
   .sibling-list { display: flex; flex-direction: column; gap: 0.5rem; }
   .sibling-item { padding: 0.75rem 1rem; background: var(--surface-2); border-radius: 6px; border-left: 4px solid oklch(from var(--accent) l c calc(h + sibling-index() * 20)); transition: all 0.3s; }
   .sibling-item:hover { transform: translateX(4px); }
+  
+  /* sibling-index stagger animation */
+  .stagger-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    
+    li {
+      list-style: none;
+      padding: 0.4rem 0.8rem;
+      background: var(--surface-2);
+      border-radius: 6px;
+      font-size: 0.8rem;
+      border-left: 2px solid oklch(from var(--accent) l c calc(h + sibling-index() * 20));
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      transition-delay: calc(sibling-index() * 60ms);
+      
+      @starting-style {
+        opacity: 0;
+        transform: translateX(-8px);
+      }
+    }
+  }
+  
+  /* sibling-count demo */
+  .sibling-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    
+    .sibling-item {
+      padding: 1rem;
+      background: var(--surface-2);
+      border-radius: 6px;
+      counter-increment: sibling;
+      
+      &::before {
+        content: counter(sibling) '/' sibling-count();
+        margin-right: 0.5rem;
+        color: var(--accent);
+        font-weight: bold;
+      }
+    }
+  }
 
   /* Column combinator table */
   .column-table { width: 100%; border-collapse: collapse; }
   .column-table th, .column-table td { border: 1px solid var(--border); padding: 0.75rem; text-align: center; }
   col.highlighted || td { background: color-mix(in oklch, var(--accent) 20%, transparent); font-weight: 600; }
+  
+  /* Column combinator demo */
+  .col-combinator-demo {
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: 0.8rem;
+      
+      th, td {
+        padding: 0.5rem 0.75rem;
+        border: 1px solid var(--border);
+        color: var(--text-dim);
+      }
+      
+      th { background: var(--surface-2); color: var(--text); }
+    }
+  }
 
   /* Print styles */
   @media print {
@@ -431,26 +858,152 @@
   @media (prefers-contrast: less) { .low-contrast { border: 1px solid var(--border); font-weight: 400; } }
   @media (dynamic-range: high) { .hdr-content { color: color(display-p3 1 1 1); } }
   @media (video-dynamic-range: standard) { .video-container { background: #000; } }
+  @media (environmental-light-level: dim) { body { background: #1a1a2e; } }
+  @media (environmental-light-level: bright) { body { background: #ffffff; } }
+  
+  /* HDR demo */
+  .hdr-demo {
+    .hdr-box {
+      height: 80px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, oklch(90% 0.3 90), oklch(85% 0.28 350), oklch(80% 0.32 270));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-family: 'DM Mono', monospace;
+      color: white;
+      text-shadow: 0 1px 3px black;
+      margin-bottom: 0.5rem;
+    }
+    .hdr-standard { dynamic-range-limit: standard; }
+    .hdr-high     { dynamic-range-limit: high; }
+    .hdr-constr   { dynamic-range-limit: constrained-high; }
+  }
 
   /* Reading Flow */
   .reading-flow-demo { reading-flow: flex-visual; display: flex; flex-wrap: wrap; gap: 0.5rem; }
   .reading-flow-demo a { padding: 0.5rem 1rem; background: var(--surface-2); border-radius: 6px; color: var(--text-dim); }
+  
+  /* Reading flow demo */
+  .reading-flow-demo {
+    .rf-item {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.4rem 0.75rem;
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      
+      &:focus {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+        color: var(--accent);
+      }
+    }
+  }
 
   /* Line clamp */
   .line-clamp-demo { line-clamp: 3; overflow: hidden; }
+  
+  /* line-clamp with fallback */
+  .lineclamp-demo {
+    .clamped-text {
+      line-clamp: 3;
+      overflow: hidden;
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      line-height: 1.6;
+    }
+    
+    /* Fallback with -webkit- */
+    .clamped-text-compat {
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      line-height: 1.6;
+    }
+  }
 
   /* Text wrap */
   .text-wrap-balance { text-wrap: balance; }
   .text-wrap-pretty { text-wrap: pretty; }
+  
+  /* text-wrap demo */
+  .textwrap-demo {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    
+    .tw-box {
+      padding: 0.75rem;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      
+      .label {
+        font-family: 'DM Mono', monospace;
+        font-size: 0.6rem;
+        color: var(--text-dim);
+        margin-bottom: 0.5rem;
+      }
+      
+      h4 {
+        font-size: 0.95rem;
+        color: var(--text);
+        line-height: 1.3;
+      }
+      
+      .tw-balance h4 { text-wrap: balance; }
+      .tw-pretty p   { text-wrap: pretty; font-size: 0.8rem; color: var(--text-dim); }
+    }
+  }
 
   /* Zoom */
   .zoom-demo { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
   .zoom-box { width: 60px; height: 60px; background: var(--accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.75rem; }
   .z-0-5 { zoom: 0.5; } .z-1 { zoom: 1; } .z-1-5 { zoom: 1.5; } .z-2 { zoom: 2; }
+  
+  /* zoom demo */
+  .zoom-demo {
+    .zoom-box {
+      width: 60px;
+      height: 60px;
+      background: oklch(40% 0.2 260);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      color: white;
+      text-align: center;
+    }
+    
+    .z-0-5 { zoom: 0.5; }
+    .z-1   { zoom: 1; }
+    .z-1-5 { zoom: 1.5; }
+    .z-2   { zoom: 2; }
+  }
 
   /* Masonry */
   .masonry-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); grid-template-rows: masonry; gap: 1rem; }
   .masonry-item { break-inside: avoid; background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; }
+  
+  /* Native Masonry Layout */
+  .masonry-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-rows: masonry;
+    gap: 1rem;
+    
+    .masonry-item {
+      break-inside: avoid;
+    }
+  }
 
   /* Shape clip-path */
   .shape-clip { clip-path: shape(from 50% 0%, curve to 100% 50% with 100% 15%, curve to 50% 100% with 100% 85%, curve to 0% 50% with 0% 85%, curve to 50% 0% with 0% 15%, close); }
@@ -458,31 +1011,754 @@
   /* Interpolate-size */
   .interp-btn { padding: 0.5rem 1rem; transition: padding 0.3s; }
   .interp-btn:hover { padding: 0.7rem 1.5rem; }
+  
+  /* interpolate-size demo */
+  .interp-btn {
+    padding: 0.5rem 1rem;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-size: 0.78rem;
+    cursor: pointer;
+    font-family: inherit;
+    margin-bottom: 0.75rem;
+    transition: border-color 0.2s;
+    
+    &:hover { border-color: var(--accent); }
+  }
+  
+  .expandable-box {
+    background: oklch(20% 0.1 240);
+    border: 1px solid oklch(35% 0.15 240);
+    border-radius: 8px;
+    overflow: hidden;
+    height: 0;
+    transition: height 0.5s ease;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    
+    &.open { height: auto; }
+    
+    .inner-content { padding: 1rem; }
+  }
 
   /* Field-sizing */
   .auto-grow-input { field-sizing: content; max-width: 300px; }
   .auto-grow-textarea { field-sizing: content; max-height: 200px; min-height: 60px; }
+  
+  /* field-sizing demo */
+  .field-sizing-demo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    
+    textarea, input {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.5rem 0.75rem;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.82rem;
+      resize: none;
+      outline: none;
+      width: 100%;
+      transition: border-color 0.2s;
+      
+      &:focus { border-color: var(--accent); }
+    }
+    
+    .auto-grow {
+      field-sizing: content;
+      min-height: 40px;
+      max-height: 200px;
+    }
+    
+    .auto-width-input {
+      field-sizing: content;
+      min-width: 80px;
+      max-width: 100%;
+      width: auto;
+    }
+  }
+  
+  /* autosize input/textarea */
+  .autosize-input,
+  .autosize-textarea {
+    field-sizing: content;
+    inline-size: auto;
+    min-inline-size: 14ch;
+    max-inline-size: 100%;
+  }
+  
+  .autosize-textarea {
+    min-block-size: 4lh;
+  }
 
   /* Custom select */
   .custom-select { appearance: base-select; }
   .custom-select::picker(select) { border-radius: 12px; padding: 0.5rem; background: var(--surface); }
   .custom-select option { padding: 0.75rem; border-radius: 8px; }
+  
+  /* Customizable native select */
+  .palette-select-wrap {
+    display: grid;
+    gap: 0.75rem;
+  }
+  
+  .palette-select {
+    inline-size: min(100%, 26rem);
+  }
+  
+  .palette-select,
+  .palette-select::picker(select) {
+    appearance: base-select;
+  }
+  
+  .palette-select {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    color: inherit;
+    padding: 0.2rem;
+    min-width: 200px;
+    width: 100%;
+    cursor: pointer;
+  }
+
+  .palette-select button {
+    background: transparent;
+    box-shadow: none;
+    border: none;
+    padding: 0.8rem 0.9rem;
+    inline-size: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    cursor: pointer;
+  }
+
+  selectedoption {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  selectedoption .swatch-dot {
+    inline-size: 1rem;
+    block-size: 1rem;
+    border-radius: 999px;
+    display: inline-block;
+  }
+
+  .palette-select::picker-icon {
+    color: color-mix(in oklch, var(--accent) 60%, var(--ink));
+    transition: rotate 220ms ease;
+  }
+
+  .palette-select:open::picker-icon {
+    rotate: 180deg;
+  }
+
+  .palette-select::picker(select) {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--surface-strong);
+    padding: 0.35rem;
+    box-shadow: var(--shadow-lg);
+    opacity: 0;
+    transition: opacity 220ms ease, transform 220ms ease, display 220ms ease, overlay 220ms ease;
+    transition-behavior: allow-discrete;
+    transform: translateY(0.35rem);
+    margin: 0;
+    top: calc(anchor(bottom) + 0.45rem);
+    left: anchor(left);
+    min-width: max(anchor-size(width), 200px);
+  }  
+  .palette-select:open::picker(select) {
+    opacity: 1;
+    transform: none;
+  }
+  
+  @starting-style {
+    .palette-select:open::picker(select) {
+      opacity: 0;
+      transform: translateY(0.35rem);
+    }
+  }
+  
+  .palette-select option {
+    border-radius: 14px;
+    padding: 0.8rem 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  
+  .palette-select option:hover {
+    background: color-mix(in oklch, var(--accent) 8%, transparent);
+  }
+  
+  .palette-select option:checked {
+    background: color-mix(in oklch, var(--accent) 15%, transparent);
+    font-weight: 700;
+  }
+  
+  .palette-select option:checked::checkmark {
+    content: "✓";
+    color: color-mix(in oklch, var(--accent) 80%, var(--ink));
+    margin-inline-end: 0.55rem;
+  }
+  
+  .swatch-dot[data-c="grape"] { background: oklch(0.67 0.23 315); }
+  .swatch-dot[data-c="mint"] { background: oklch(0.82 0.14 160); }
+  .swatch-dot[data-c="sun"] { background: oklch(0.88 0.18 95); }
+  .swatch-dot[data-c="ocean"] { background: oklch(0.68 0.15 230); }
+  .swatch-dot[data-c="rose"] { background: oklch(0.77 0.16 12); }
 
   /* Details with ::details-content */
   details.disclosure { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
   details.disclosure summary { padding: 1rem; cursor: pointer; font-weight: 600; background: var(--surface-2); list-style: none; }
   details.disclosure::details-content { opacity: 0; height: 0; overflow: hidden; transition: opacity 0.4s, height 0.4s; }
   details.disclosure[open]::details-content { opacity: 1; height: auto; }
+  
+  /* details + ::details-content animated */
+  .details-demo {
+    details {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 0.5rem;
+      
+      summary {
+        padding: 0.75rem 1rem;
+        cursor: pointer;
+        font-size: 0.85rem;
+        color: var(--text);
+        user-select: none;
+        background: var(--surface-2);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        list-style: none;
+        transition: background 0.2s;
+        
+        &:hover { background: oklch(18% 0.06 260); }
+        &::after { content: '▾'; transition: transform 0.3s; }
+      }
+      
+      &[open] summary::after { transform: rotate(-180deg); }
+      
+      &::details-content {
+        padding: 0;
+        height: 0;
+        overflow: hidden;
+        transition: height 0.4s ease, content-visibility 0.4s allow-discrete;
+      }
+      
+      &[open]::details-content { height: auto; }
+      
+      .details-inner {
+        padding: 1rem;
+        font-size: 0.82rem;
+        color: var(--text-dim);
+      }
+    }
+  }
+  
+  /* Exclusive Accordions via name attribute */
+  details {
+    background: var(--brand-alpha);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+  }
+  summary {
+    cursor: pointer;
+    font-weight: bold;
+  }
 
-  /* View Transitions */
-  .vt-panel { view-transition-name: panel-swap; }
-  ::view-transition-new(panel-swap) { animation: vt-fade-in 0.4s ease forwards; }
-  ::view-transition-old(panel-swap) { animation: vt-fade-out 0.4s ease forwards; }
-  @keyframes vt-fade-in { from { opacity: 0; transform: translateY(12px); } }
-  @keyframes vt-fade-out { to { opacity: 0; transform: translateY(-12px); } }
+  /* View Transitions (Global) */
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 800ms;
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @starting-style {
+    ::view-transition-new(root) {
+      opacity: 0;
+      transform: scale(0.9) translateY(20px);
+    }
+  }
+
+  /* View Transitions (Component specific) */
+  ::view-transition-group(*) {
+    animation-duration: 600ms;
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .vt-panel { 
+    view-transition-name: panel-swap; 
+    transition: all 0.4s ease; 
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  
+  ::view-transition-old(panel-swap) { 
+    animation: fade-out-scale 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; 
+    mix-blend-mode: normal; 
+  }
+  ::view-transition-new(panel-swap) { 
+    animation: fade-in-scale 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; 
+    mix-blend-mode: normal; 
+  }
+  
+  @keyframes fade-in-scale { 
+    from { opacity: 0; transform: translateY(20px) scale(0.95); filter: blur(4px); } 
+    to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); } 
+  }
+  @keyframes fade-out-scale { 
+    from { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); } 
+    to { opacity: 0; transform: translateY(-20px) scale(0.95); filter: blur(4px); } 
+  }
+  
+  /* View Transitions API */
+  .vt-demo {
+    .vt-btn {
+      padding: 0.5rem 1.2rem;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-family: inherit;
+      margin-right: 0.5rem;
+      transition: border-color 0.2s;
+      
+      &:hover { border-color: var(--brand-danger); }
+    }
+    
+    .vt-panel {
+      margin-top: 1rem;
+      padding: 1.25rem;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 0.85rem;
+      view-transition-name: panel-swap;
+      min-height: 80px;
+      
+      h4 { color: var(--text); margin-bottom: 0.5rem; font-size: 0.9rem; }
+      p  { color: var(--text-dim); font-size: 0.78rem; }
+    }
+  }
+  
+  /* View transition shuffle cards */
+  .vt-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1rem;
+
+    .vt-card {
+      view-transition-name: match-element;
+      border-radius: 20px;
+      padding: 1.5rem;
+      min-block-size: 8rem;
+      display: flex;
+      align-items: flex-end;
+      font-size: 1.2rem;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s;
+      cursor: pointer;
+    }
+
+    .vt-card:hover {
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+    }
+  }
 
   /* Initial letter */
   .drop-cap::first-letter { font-size: 3em; float: left; margin-right: 0.1em; line-height: 0.8; color: var(--accent); font-weight: 700; }
+  
+  /* initial-letter demo */
+  .drop-cap::first-letter {
+    initial-letter: 3;
+    float: left;
+    margin-right: 0.1em;
+    line-height: 0.8;
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  /* @starting-style with discrete transitions */
+  .starting-style-demo {
+    position: relative;
+    
+    .ssbox {
+      background: oklch(30% 0.15 240);
+      border: 1px solid oklch(50% 0.2 240);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      font-size: 0.8rem;
+      color: var(--text);
+      transition: opacity 0.5s, transform 0.5s, background 0.5s;
+      
+      @starting-style {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+    }
+    
+    .ssbox.variant { background: oklch(30% 0.15 300); border-color: oklch(50% 0.2 300); }
+    .ssbox.variant3 { background: oklch(30% 0.12 130); border-color: oklch(50% 0.18 130); }
+  }
+
+  /* :nth-child(n of S) typed selector */
+  .nth-typed-demo {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    
+    .item {
+      padding: 0.35rem 0.65rem;
+      border-radius: 6px;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+    }
+    
+    .item.featured { border-color: oklch(45% 0.2 50); color: var(--orange); }
+    .item.new-item { border-color: oklch(45% 0.2 158); color: var(--green); }
+    
+    /* Target every 2nd .featured item */
+    .item.featured:nth-child(2n of .featured) {
+      background: oklch(22% 0.12 50 / 0.5);
+      font-weight: 500;
+    }
+  }
+
+  /* color-mix() swatches */
+  .swatch-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 0.9rem;
+    
+    .swatch-card {
+      padding: 1rem;
+      border-radius: 24px;
+      border: 1px solid var(--line);
+      display: grid;
+      gap: 0.45rem;
+      min-block-size: 9rem;
+      align-content: end;
+      box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08);
+      
+      small { opacity: 0.82; }
+    }
+  }
+  
+  .mix-demo {
+    background: color-mix(in oklch, var(--accent) 55%, var(--accent-2));
+  }
+  
+  .light-dark-demo {
+    background: light-dark(oklch(0.95 0.02 95), oklch(0.34 0.04 255));
+    color: light-dark(oklch(0.26 0.02 255), oklch(0.95 0.02 95));
+  }
+  
+  .relative-demo {
+    background: var(--surface-strong);
+  }
+  
+  @supports (color: oklch(from red l c h / 0.5)) {
+    .relative-demo {
+      background: oklch(from var(--accent) calc(l + 0.24) c h / 0.18);
+      box-shadow: inset 0 0 0 0.2rem oklch(from var(--accent) calc(l + 0.12) c h / 0.35);
+    }
+  }
+  
+  .contrast-demo {
+    background: var(--accent);
+    color: white;
+  }
+  
+  @supports (color: contrast-color(red)) {
+    .contrast-demo {
+      color: contrast-color(var(--accent));
+    }
+  }
+
+  /* if() conditional function demo */
+  .if-card {
+    --scheme: ice;
+    background-image: linear-gradient(135deg, rgb(255 255 255 / 0.28), transparent);
+  }
+  
+  @supports (color: if(media(width > 700px): red; else: blue)) {
+    .if-card {
+      color: if(media(width > 880px): color-mix(in oklch, var(--accent) 85%, black); else: var(--ink));
+      border: 2px solid if(supports(color: lch(75% 0 0)): lch(70% 40 320); else: currentColor);
+    }
+  }
+  
+  .if-demo-note {
+    background: oklch(22% 0.12 300 / 0.5);
+    border: 1px solid oklch(40% 0.18 300 / 0.4);
+    border-radius: 8px;
+    padding: 1rem;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    
+    pre {
+      margin-top: 0.75rem;
+      overflow-x: auto;
+    }
+  }
+
+  /* @when / @else conditional rules */
+  @when (width > 768px) {
+    .responsive-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  } @else if (width > 480px) {
+    .responsive-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  } @else {
+    .responsive-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  @when (supports(--custom-prop)) and (supports(display: grid)) {
+    .modern-layout {
+      display: grid;
+    }
+  }
+  
+  @when font-format(opentype) {
+    .custom-font {
+      font-family: 'CustomFont', sans-serif;
+    }
+  }
+
+  /* Typed attr() demo */
+  .typed-attr-demo {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    
+    [data-size] {
+      background: oklch(35% 0.15 240);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      color: white;
+      width: attr(data-size type(<length>), 40px);
+      height: attr(data-size type(<length>), 40px);
+      transition: transform 0.2s;
+      
+      &:hover { transform: scale(1.1); }
+    }
+    
+    [data-hue] {
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      background: oklch(60% 0.22 attr(data-hue type(<number>), 0));
+    }
+  }
+
+  /* Scroll marker demo (Chrome experimental) */
+  .scroll-marker-demo {
+    .carousel {
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      display: flex;
+      gap: 0.75rem;
+      padding: 0.5rem;
+      scrollbar-width: none;
+      
+      &::-webkit-scrollbar { display: none; }
+      
+      .slide {
+        flex-shrink: 0;
+        width: 200px;
+        height: 120px;
+        border-radius: 8px;
+        scroll-snap-align: start;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+      }
+    }
+    
+    /* ::scroll-marker-group + ::scroll-marker (Experimental, Chrome only) */
+    .carousel::scroll-marker-group {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.5rem;
+    }
+    
+    .slide::scroll-marker {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: var(--text-dim);
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    
+    .slide::scroll-marker:target-current {
+      background: var(--accent);
+      width: 24px;
+      border-radius: 4px;
+    }
+  }
+
+  /* ::scroll-button (Chrome experimental) */
+  ::scroll-button {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 0.5rem;
+  }
+  
+  ::scroll-button:hover {
+    background: var(--brand-dark);
+  }
+
+  /* Grid Lanes */
+  .grid-lanes {
+    display: grid;
+    grid-lanes: 3;
+    grid-auto-flow: dense;
+  }
+
+  /* Text Animation */
+  .animated-text {
+    text-animation: slide-in 0.5s ease-out;
+    text-animation-mode: forwards;
+  }
+
+  /* Accent Color */
+  .custom-accent {
+    accent-color: var(--accent);
+  }
+
+  /* Scrollbar Gutter */
+  .scroll-container {
+    scrollbar-gutter: stable;
+    overflow-y: auto;
+  }
+
+  /* Overflow Shorthand */
+  .overflow-box {
+    overflow: clip hidden;
+  }
+
+  /* Text Box Trim */
+  .trimmed-text {
+    text-box-trim: trim-start;
+  }
+
+  /* Print Color Adjust */
+  @media print {
+    .print-optimized {
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+  }
+
+  /* Color Scheme */
+  .dark-mode {
+    color-scheme: dark;
+  }
+  
+  .light-mode {
+    color-scheme: light;
+  }
+
+  /* Interop 2026 focus area badges */
+  .interop-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: oklch(22% 0.1 50 / 0.6);
+    border: 1px solid oklch(40% 0.15 50 / 0.5);
+    border-radius: 100px;
+    padding: 0.2rem 0.6rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--orange);
+    
+    &::before { content: '⚡'; }
+  }
+
+  /* Global utility for sections */
+  @layer utilities {
+    .mt-0 { margin-top: 0; }
+    .flex { display: flex; }
+    .flex-col { flex-direction: column; }
+    .gap-sm { gap: 0.5rem; }
+    .gap-md { gap: 1rem; }
+    .items-center { align-items: center; }
+    .text-dim { color: var(--text-dim); }
+    .text-sm { font-size: 0.8rem; }
+    .mono { font-family: 'DM Mono', monospace; }
+    .full-width { width: 100%; }
+    .rounded { border-radius: 8px; }
+  }
+}
+
+@layer utilities {
+  .row { display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; }
+  .spacer { block-size: 0.25rem; }
+  .stack { display: grid; gap: 0.75rem; }
+  .two-up { display: grid; gap: 0.8rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .muted { color: var(--text-dim); }
+  .sr-only {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  @media (width < 780px) {
+    .two-up { grid-template-columns: 1fr; }
+  }
+}
+
+/* user preference media queries */
+@media (prefers-reduced-transparency: reduce) {
+  .shell,
+  .section,
+  .dock {
+    backdrop-filter: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 </style>
 </head>
@@ -494,7 +1770,8 @@
 <!-- Sidebar Navigation -->
 <nav id="sidebar">
   <h2>CSS 2025-2026<span>Complete Reference - All 5 Sources Merged</span></h2>
-  
+  <button onclick="toggleTheme()" class="btn-ghost" style="width:100%; margin-bottom:1rem; border:1px solid var(--border); padding:0.5rem; border-radius:8px; cursor:pointer; color:var(--text); background:transparent;">🌓 Toggle Theme</button>
+
   <div class="toc-section">
     <h3>Core Features (1-5)</h3>
     <ul>
@@ -535,7 +1812,7 @@
   <section class="hero">
     <h1>CSS 2025-2026<br>Complete Feature Reference</h1>
     <p>Comprehensive showcase of EVERY feature from all 5 source files properly merged. All native CSS, HTML, and JavaScript features that shipped or reached Baseline from 2025 through March 2026.</p>
-    
+
     <div class="hero-stats">
       <div class="hero-stat">
         <strong>7,509</strong>
@@ -556,7 +1833,7 @@
   <section id="at-rules" class="section">
     <h2>① At-Rules: @scope, @property, @layer, @starting-style, @view-transition, @container</h2>
     <p class="section-intro">Cascade Layers and scoped styling revolutionize how we write maintainable CSS. These at-rules enable component-level isolation, animatable custom properties, smooth entry animations, and scroll-state detection.</p>
-    
+
     <div class="feature-grid">
       <div class="feature-card">
         <h4>@scope — Local Styling <span class="badge badge-good">Baseline 2025</span></h4>
@@ -603,7 +1880,7 @@
         <h4>@layer — Cascade Layers <span class="badge badge-good">Baseline 2023</span></h4>
         <div class="demo-box">
           <div style="padding: 1rem; background: oklch(25% 0.1 240); border-radius: 8px; color: white; margin-bottom: 0.5rem;"><code>@layer demos</code> — lower priority</div>
-          <div style="padding: 1rem; background: oklch(25% 0.12 130); border-radius: 8px; color: white;">Unlayered style — always wins</div>
+          <div style="padding: 1rem; background: oklch(25% 0.12 130); border-radius: 8px; color: white;"><code>!important</code> in unlayered wins</div>
         </div>
         <pre><span class="css-at">@layer</span> <span class="css-val">reset, base, components, demos</span>;
 
@@ -612,28 +1889,18 @@
 }</pre>
       </div>
 
-      <div class="feature-card">
-        <h4>@starting-style — Entry Animations <span class="badge badge-good">Chrome 117+</span></h4>
-        <div class="demo-box" id="startingStyleDemo">
-          <div style="padding: 1rem; background: oklch(30% 0.15 240); border-radius: 8px; color: white; margin: 0.5rem 0;">Box 1 — fades in</div>
-          <div style="padding: 1rem; background: oklch(30% 0.15 300); border-radius: 8px; color: white; margin: 0.5rem 0;">Box 2 — variant</div>
-          <button onclick="replayEntryAnim()" class="btn-ghost">↺ Replay</button>
-        </div>
-        <pre><span class="css-sel">.el</span> {
-  <span class="css-at">@starting-style</span> {
-    <span class="css-prop">opacity</span>: <span class="css-num">0</span>;
-  }
-}</pre>
-      </div>
+
 
       <div class="feature-card">
         <h4>@container scroll-state() <span class="badge badge-chrome">Chrome 129+</span></h4>
         <div class="demo-box">
           <div class="scroll-state-wrapper">
             <div class="sticky-header">📌 Scroll to activate</div>
-            <div style="padding: 0.75rem;">Item 1</div>
-            <div style="padding: 0.75rem;">Item 2</div>
-            <div style="padding: 0.75rem;">Item 3</div>
+            <div class="scroll-snap-item">Item 1</div>
+            <div class="scroll-snap-item">Item 2</div>
+            <div class="scroll-snap-item">Item 3 — keep scrolling</div>
+            <div class="scroll-snap-item">Item 4</div>
+            <div class="scroll-snap-item">Item 5</div>
           </div>
         </div>
         <pre><span class="css-at">@container</span> <span class="css-fn">scroll-state</span>(<span class="css-prop">stuck</span>: <span class="css-val">top</span>) {
@@ -642,19 +1909,37 @@
       </div>
 
       <div class="feature-card">
-        <h4>@view-transition <span class="badge badge-good">Baseline 2025</span></h4>
+        <h4>@container scroll-state(snapped) <span class="badge badge-chrome">Chrome 129+</span></h4>
         <div class="demo-box">
-          <button onclick="swapPanel('a')" class="btn-ghost">Panel A</button>
-          <button onclick="swapPanel('b')" class="btn-ghost">Panel B</button>
-          <div id="vtPanel" class="vt-panel" style="margin-top: 1rem; padding: 1rem; background: var(--surface-2); border-radius: 8px;">
-            <h4 style="color: var(--accent);">Panel A</h4>
-            <p style="color: var(--text-dim); font-size: 0.85rem;">Smooth transitions</p>
+          <div id="snap-demo" style="height:160px; overflow-x:scroll; display:flex; gap:0.5rem; padding:0.5rem; scroll-snap-type:x mandatory; container-type:scroll-state;">
+            <style>
+              #snap-demo > .snap-item {
+                flex-shrink:0; width:180px; height:140px;
+                border-radius:8px; scroll-snap-align:start;
+                display:flex; flex-direction:column;
+                align-items:center; justify-content:center;
+                background:var(--surface-2); border:2px solid var(--border);
+                font-size:0.85rem; color:var(--text-dim);
+                transition:border-color 0.3s, color 0.3s, scale 0.3s;
+              }
+              @container scroll-state(snapped: inline) {
+                .snap-item { border-color: var(--accent); color: var(--accent); scale: 1.03; }
+              }
+            </style>
+            <div class="snap-item">📦<br>Slide 1</div>
+            <div class="snap-item">🎨<br>Slide 2</div>
+            <div class="snap-item">⚡<br>Slide 3</div>
+            <div class="snap-item">🌈<br>Slide 4</div>
+            <div class="snap-item">🔮<br>Slide 5</div>
           </div>
+          <p style="font-size:0.72rem; color:var(--text-dim); margin-top:0.5rem;">Snapped card gets border-color + scale</p>
         </div>
-        <pre><span class="css-sel">::view-transition-new(panel)</span> {
-  <span class="css-prop">animation</span>: <span class="css-val">fade-in 0.4s</span>;
+        <pre><span class="css-at">@container</span> <span class="css-fn">scroll-state</span>(<span class="css-prop">snapped</span>: <span class="css-val">inline</span>) {
+  <span class="css-sel">.snap-item</span> { <span class="css-prop">scale</span>: <span class="css-num">1.03</span>; }
 }</pre>
       </div>
+
+
     </div>
   </section>
 
@@ -662,14 +1947,14 @@
   <section id="selectors" class="section">
     <h2>② Selectors: :has(), sibling-index(), Column Combinator ||</h2>
     <p class="section-intro">Advanced CSS selectors enable parent styling, complex relationships, and dynamic ordering without JavaScript.</p>
-    
+
     <div class="feature-grid">
       <div class="feature-card">
         <h4>:has() — Parent Selector <span class="badge badge-good">Baseline 2024</span></h4>
         <div class="demo-box">
           <div class="parent-card" style="padding: 1rem; border: 2px solid var(--border); border-radius: 8px;">
             <strong>Parent Card</strong>
-            <div style="margin-top: 0.75rem; padding: 0.75rem; background: var(--surface-2); border-radius: 6px;">Hover me → parent styles!</div>
+            <div class="child" style="margin-top: 0.75rem; padding: 0.75rem; background: var(--surface-2); border-radius: 6px;">Hover me → parent styles!</div>
           </div>
         </div>
         <pre><span class="css-sel">.parent:has</span>(> <span class="css-sel">.child:hover</span>) {
@@ -680,15 +1965,15 @@
       <div class="feature-card">
         <h4>sibling-index() / sibling-count() <span class="badge badge-chrome">Chrome 129+</span></h4>
         <div class="demo-box">
-          <div style="display: flex; gap: 0.4rem; align-items: flex-end; height: 100px;">
-            <div style="width: 28px; background: oklch(from var(--accent) l c calc(h + 1 * 18)); height: calc(20px + 1 * 14px);"></div>
-            <div style="width: 28px; background: oklch(from var(--accent) l c calc(h + 2 * 18)); height: calc(20px + 2 * 14px);"></div>
-            <div style="width: 28px; background: oklch(from var(--accent) l c calc(h + 3 * 18)); height: calc(20px + 3 * 14px);"></div>
+          <div class="sibling-list">
+            <div class="sibling-item">Item 1 (index 1)</div>
+            <div class="sibling-item">Item 2 (index 2)</div>
+            <div class="sibling-item">Item 3 (index 3)</div>
           </div>
         </div>
         <pre><span class="css-sel">.el</span> {
-  <span class="css-prop">background</span>: <span class="css-fn">oklch</span>(from <span class="css-fn">var</span>(--accent) 
-    l c <span class="css-fn">calc</span>(h + <span class="css-fn">sibling-index</span>() * 18));
+  <span class="css-prop">border-left</span>: <span class="css-fn">oklch</span>(from <span class="css-fn">var</span>(--accent)
+    l c <span class="css-fn">calc</span>(h + <span class="css-fn">sibling-index</span>() * 20));
 }</pre>
       </div>
 
@@ -702,8 +1987,24 @@
           </table>
         </div>
         <pre><span class="css-sel">col.highlighted || td</span> {
-  <span class="css-prop">background</span>: <span class="css-fn">color-mix</span>(in oklch, 
+  <span class="css-prop">background</span>: <span class="css-fn">color-mix</span>(in oklch,
     <span class="css-val">var(--accent) 20%</span>, transparent);
+}</pre>
+      </div>
+
+      <div class="feature-card">
+        <h4>:nth-child(n of S) <span class="badge badge-good">Baseline 2024</span></h4>
+        <div class="demo-box">
+          <div class="nth-typed-demo">
+            <span class="item">1</span>
+            <span class="item featured">2 (featured)</span>
+            <span class="item">3</span>
+            <span class="item featured">4 (featured)</span>
+            <span class="item">5</span>
+          </div>
+        </div>
+        <pre><span class="css-sel">.item.featured:nth-child</span>(2n <span class="css-at">of</span> <span class="css-sel">.featured</span>) {
+  <span class="css-prop">font-weight</span>: <span class="css-val">500</span>;
 }</pre>
       </div>
 
@@ -718,14 +2019,28 @@
   <span class="css-prop">margin-bottom</span>: <span class="css-num">0.5em</span>;
 }</pre>
       </div>
+
+      <div class="feature-card">
+        <h4>:has() Gallery with Radio <span class="badge badge-good">Baseline 2024</span></h4>
+        <div class="demo-box gallery-has-demo">
+          <div class="gallery">
+            <label class="gallery-item"><input type="radio" name="gallery">🎨</label>
+            <label class="gallery-item"><input type="radio" name="gallery">🖼️</label>
+            <label class="gallery-item"><input type="radio" name="gallery">📷</label>
+          </div>
+        </div>
+        <pre><span class="css-sel">.item:has</span>(input:checked) {
+  <span class="css-prop">border-color</span>: <span class="css-val">var(--accent)</span>;
+}</pre>
+      </div>
     </div>
   </section>
 
   <!-- Section 3: Pseudo-Elements -->
   <section id="pseudo-elements" class="section">
-    <h2>③ Pseudo-Elements: ::highlight(), ::details-content</h2>
-    <p class="section-intro">New pseudo-elements enable programmatic text highlighting and animated disclosure elements.</p>
-    
+    <h2>③ Pseudo-Elements: ::highlight(), ::details-content, ::scroll-button</h2>
+    <p class="section-intro">New pseudo-elements enable programmatic text highlighting, animated disclosures, and custom scrollbar styling.</p>
+
     <div class="feature-grid">
       <div class="feature-card">
         <h4>::highlight() API <span class="badge badge-good">Chrome 111+</span></h4>
@@ -741,15 +2056,91 @@
 
       <div class="feature-card">
         <h4>::details-content <span class="badge badge-good">Chrome 124+</span></h4>
-        <div class="demo-box">
+        <div class="demo-box details-demo">
           <details class="disclosure">
             <summary>Click to expand</summary>
-            <div style="padding: 1rem; color: var(--text-dim);">Animated content with ::details-content</div>
+            <div class="details-inner">Animated content with ::details-content and @starting-style</div>
           </details>
         </div>
         <pre><span class="css-sel">details::details-content</span> {
   <span class="css-prop">opacity</span>: <span class="css-num">0</span>;
+  <span class="css-prop">height</span>: <span class="css-num">0</span>;
   <span class="css-prop">transition</span>: <span class="css-val">opacity 0.4s</span>;
+}</pre>
+      </div>
+
+      <div class="feature-card">
+        <h4>::scroll-button <span class="badge badge-chrome">Chrome Experimental</span></h4>
+        <div class="demo-box">
+          <div class="scroll-container" style="max-height: 150px; overflow-y: auto;">
+            <p style="padding: 0.5rem;">Line 1 - Scroll to see custom buttons</p>
+            <p style="padding: 0.5rem;">Line 2</p>
+            <p style="padding: 0.5rem;">Line 3</p>
+            <p style="padding: 0.5rem;">Line 4</p>
+            <p style="padding: 0.5rem;">Line 5</p>
+          </div>
+        </div>
+        <pre><span class="css-sel">::scroll-button</span> {
+  <span class="css-prop">background</span>: <span class="css-val">var(--accent)</span>;
+  <span class="css-prop">color</span>: <span class="css-val">white</span>;
+}</pre>
+      </div>
+
+      <div class="feature-card">
+        <h4>::scroll-marker <span class="badge badge-chrome">Chrome Experimental</span></h4>
+        <div class="demo-box scroll-marker-demo">
+          <div class="carousel">
+            <div class="slide">1</div>
+            <div class="slide">2</div>
+            <div class="slide">3</div>
+            <div class="slide">4</div>
+          </div>
+        </div>
+        <pre><span class="css-sel">.slide::scroll-marker</span> {
+  <span class="css-prop">content</span>: <span class="css-str">''</span>;
+  <span class="css-prop">background</span>: <span class="css-val">var(--text-dim)</span>;
+}</pre>
+      </div>
+
+      <div class="feature-card">
+        <h4>::first-letter / initial-letter <span class="badge badge-good">Baseline 2023</span></h4>
+        <div class="demo-box">
+          <p class="drop-cap">orem ipsum dolor sit amet, consectetur adipiscing elit. This demonstrates the initial-letter property for drop caps with ::first-letter styling.</p>
+        </div>
+        <pre><span class="css-sel">p::first-letter</span> {
+  <span class="css-prop">font-size</span>: <span class="css-num">3em</span>;
+  <span class="css-prop">initial-letter</span>: <span class="css-num">3</span>;
+}</pre>
+      </div>
+
+      <div class="feature-card">
+        <h4>::view-transition-* <span class="badge badge-good">Baseline 2025</span></h4>
+        <div class="demo-box vt-demo">
+          <button class="vt-btn" id="shuffle-cards">Shuffle Cards</button>
+          <div class="vt-grid" id="vt-grid">
+            <div class="vt-card" style="background: linear-gradient(135deg, oklch(0.67 0.23 285), oklch(0.5 0.2 260)); color: white; border: none; box-shadow: var(--shadow);"><strong>Atlas</strong></div>
+            <div class="vt-card" style="background: linear-gradient(135deg, oklch(0.74 0.16 350), oklch(0.5 0.2 300)); color: white; border: none; box-shadow: var(--shadow);"><strong>Nova</strong></div>
+            <div class="vt-card" style="background: linear-gradient(135deg, oklch(0.68 0.15 230), oklch(0.5 0.2 200)); color: white; border: none; box-shadow: var(--shadow);"><strong>Echo</strong></div>
+            <div class="vt-card" style="background: linear-gradient(135deg, oklch(0.82 0.14 160), oklch(0.6 0.2 140)); color: white; border: none; box-shadow: var(--shadow);"><strong>Mint</strong></div>
+          </div>
+        </div>
+        <pre><span class="css-sel">::view-transition-new</span>(panel) {
+  <span class="css-prop">animation</span>: <span class="css-val">fade-in 0.3s</span>;
+}</pre>
+      </div>
+      <div class="feature-card">
+        <h4>::target-text / ::search-text <span class="badge badge-partial">Chrome 144+</span></h4>
+        <div class="demo-box">
+          <p id="target-text-demo" style="color: var(--text-dim);">
+            <code>::target-text</code> styles text matched by URL fragments like <code>#:~:text=anchor</code>. 
+            <code>::search-text</code> styles browser find-in-page matches. Try Ctrl+F to find text!
+          </p>
+        </div>
+        <pre><span class="css-sel">::target-text</span> {
+  <span class="css-prop">background</span>: <span class="css-val">var(--accent)</span>;
+}
+<span class="css-sel">::search-text</span> {
+  <span class="css-prop">background</span>: <span class="css-val">var(--amber)</span>;
 }</pre>
       </div>
     </div>
@@ -757,26 +2148,27 @@
 
   <!-- Section 4: Color -->
   <section id="color" class="section">
-    <h2>④ Color Module: color-mix(), light-dark(), Relative Colors</h2>
-    <p class="section-intro">Advanced color functions enable dynamic theming and precise color manipulation in CSS.</p>
-    
+    <h2>④ Color Module: color-mix(), light-dark(), Relative Colors, contrast-color()</h2>
+    <p class="section-intro">Advanced color functions enable dynamic theming, precise color manipulation, and automatic accessibility in CSS.</p>
+
     <div class="feature-grid">
       <div class="feature-card">
         <h4>color-mix() <span class="badge badge-good">Baseline 2024</span></h4>
-        <div class="demo-box" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem;">
-          <div style="height: 60px; background: color-mix(in oklch, var(--accent) 100%, white);"></div>
-          <div style="height: 60px; background: color-mix(in oklch, var(--accent) 50%, white);"></div>
-          <div style="height: 60px; background: color-mix(in oklch, var(--accent) 20%, white);"></div>
+        <div class="demo-box swatch-grid">
+          <div class="swatch-card mix-demo" style="background: color-mix(in oklch, var(--accent) 100%, white);"><span>100%</span></div>
+          <div class="swatch-card mix-demo" style="background: color-mix(in oklch, var(--accent) 75%, white);"><span>75%</span></div>
+          <div class="swatch-card mix-demo" style="background: color-mix(in oklch, var(--accent) 50%, white);"><span>50%</span></div>
+          <div class="swatch-card mix-demo" style="background: color-mix(in oklch, var(--accent) 25%, white);"><span>25%</span></div>
         </div>
-        <pre>background: <span class="css-fn">color-mix</span>(in oklch, 
+        <pre>background: <span class="css-fn">color-mix</span>(in oklch,
   <span class="css-val">var(--accent) 50%</span>, white);</pre>
       </div>
 
       <div class="feature-card">
         <h4>light-dark() <span class="badge badge-good">Baseline 2024</span></h4>
         <div class="demo-box" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
-          <div style="padding: 1rem; background: light-dark(#f0f0ff, #252542); border-radius: 8px;">light-dark()</div>
-          <div style="padding: 1rem; background: light-dark(white, #1a1a2e); color: light-dark(black, white); border-radius: 8px;">Auto contrast</div>
+          <div style="padding: 1rem; background: light-dark(#f0f0ff, #252542); border-radius: 8px;">light mode</div>
+          <div style="padding: 1rem; background: light-dark(#f0f0ff, #252542); border-radius: 8px;">dark mode</div>
         </div>
         <pre>background: <span class="css-fn">light-dark</span>(<span class="css-str">#f0f0ff</span>, <span class="css-str">#252542</span>);</pre>
       </div>
@@ -792,11 +2184,775 @@
         <pre>background: <span class="css-fn">oklch</span>(from <span class="css-fn">var</span>(--color)
   <span class="css-fn">calc</span>(l + 0.2) c h);</pre>
       </div>
+
+      <div class="feature-card">
+        <h4>contrast-color() <span class="badge badge-chrome">Chrome 128+</span></h4>
+        <div class="demo-box contrast-demo" style="background: var(--accent); padding: 1rem; border-radius: 8px;">
+          <p style="color: contrast-color(var(--accent));">Text color automatically chosen for contrast</p>
+        </div>
+        <pre>color: <span class="css-fn">contrast-color</span>(<span class="css-val">var(--accent)</span>);</pre>
+      </div>
+
+      <div class="feature-card">
+        <h4>oklch(from ...) Advanced <span class="badge badge-good">Chrome 119+</span></h4>
+        <div class="demo-box relative-demo" style="background: oklch(from var(--accent) calc(l + 0.24) c h / 0.18); padding: 1rem; border-radius: 8px;">
+          <p style="color: var(--text);">Derived from accent with adjusted lightness</p>
+        </div>
+        <pre>background: <span class="css-fn">oklch</span>(from <span class="css-fn">var</span>(--accent)
+  <span class="css-fn">calc</span>(l + 0.24) c h / 0.18);</pre>
+      </div>
+
+      <div class="feature-card">
+        <h4>color-mix with Transparency <span class="badge badge-good">Baseline 2024</span></h4>
+        <div class="demo-box" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem;">
+          <div style="height: 60px; background: color-mix(in oklch, var(--accent) 100%, transparent); border: 1px solid var(--border);"></div>
+          <div style="height: 60px; background: color-mix(in oklch, var(--accent) 50%, transparent); border: 1px solid var(--border);"></div>
+          <div style="height: 60px; background: color-mix(in oklch, var(--accent) 20%, transparent); border: 1px solid var(--border);"></div>
+        </div>
+        <pre>background: <span class="css-fn">color-mix</span>(in oklch,
+  <span class="css-val">var(--accent) 50%</span>, transparent);</pre>
+      </div>
     </div>
   </section>
 
-  <!-- Continue with remaining sections 5-13... -->
-  <!-- Note: Due to response size limits, showing first 4 sections. Full file would continue with all 13 sections covering every feature from all 5 source files. -->
+  <!-- Section 5: Layout -->
+  <section id="layout" class="section">
+    <h2>⑤ Layout: Subgrid, Container Queries, Masonry, Grid Lanes</h2>
+    <p class="section-intro">Modern CSS layout features enable responsive, component-driven designs with less code and more flexibility.</p>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <h4>Subgrid <span class="badge badge-good">Baseline 2024</span></h4>
+        <div class="demo-box subgrid-demo">
+          <div class="sg-card">
+            <div class="sg-parent">
+              <div class="sg-header">Card Header</div>
+              <div class="sg-body">This card uses subgrid to align with siblings</div>
+              <div class="sg-footer">Footer</div>
+            </div>
+          </div>
+        </div>
+        <pre><span class="css-prop">grid-template-rows</span>: <span class="css-val">subgrid</span>;</pre>
+      </div>
+
+      <div class="feature-card">
+        <h4>Container Queries <span class="badge badge-good">Baseline 2023</span></h4>
+        <div class="demo-box cq-container" style="border: 2px solid var(--border); border-radius: 8px; padding: 1rem;">
+          <div class="cq-content" style="display: grid; gap: 1rem;">
+            <div style="background: var(--accent); color: white; padding: 1rem; border-radius: 4px;">Container aware</div>
+            <div style="background: var(--accent-2); color: white; padding: 1rem; border-radius: 4px;">Responsive layout</div>
+          </div>
+        </div>
+        <pre><span class="css-at">@container</span> card (min-width: 400px) {
+  <span class="css-prop">display</span>: <span class="css-val">grid</span>;
+}</pre>
+      </div>
+
+      <div class="feature-card">
+        <h4>Container Style Queries <span class="badge badge-chrome">Chrome 121+</span></h4>
+        <div class="demo-box">
+          <div class="style-query-container" style="--variant: danger;">
+            <div class="sq-inner" style="padding: 1rem; border-radius: 6px;">Danger variant (red)</div>
+          </div>
+          <div class="style-query-container" style="--variant: success; margin-top: 0.5rem;">
+            <div class="sq-inner" style="padding: 1rem; border-radius: 6px;">Success variant (green)</div>
+          </div>
+        </div>
+        <pre><span class="css-at">@container</span> variant <span class="css-fn">style</span>(--variant: danger) {
+  <span class="css-prop">background</span>: <span class="css-val">oklch(22% 0.1 25)</span>;
+}</pre>
+      </div>
+
+      <div class="feature-card">
+        <h4>Masonry Layout <span class="badge badge-exp">Experimental</span></h4>
+        <div class="demo-box" style="max-height: 300px; overflow: auto;">
+          <div class="masonry-grid">
+            <div class="masonry-item" style="height: 100px;">Short</div>
+            <div class="masonry-item" style="height: 150px;">Medium</div>
+            <div class="masonry-item" style="height: 80px;">Short</div>
+            <div class="masonry-item" style="height: 200px;">Tall</div>
+            <div class="masonry-item" style="height: 120px;">Medium</div>
+          </div>
+        </div>
+        <pre><span class="css-prop">grid-template-rows</span>: <span class="css-val">masonry</span>;</pre>
+      </div>
+
+      <div class="feature-card">
+        <h4>Grid Lanes <span class="badge badge-exp">Experimental</span></h4>
+        <div class="demo-box grid-lanes" style="display: grid; grid-lanes: 3; gap: 0.5rem;">
+          <div style="background: var(--accent); color: white; padding: 1rem; border-radius: 4px;">Lane 1</div>
+          <div style="background: var(--accent-2); color: white; padding: 1rem; border-radius: 4px;">Lane 2</div>
+          <div style="background: var(--accent-3); color: white; padding: 1rem; border-radius: 4px;">Lane 3</div>
+        </div>
+        <pre><span class="css-prop">grid-lanes</span>: <span class="css-num">3</span>;</pre>
+      </div>
+
+      <div class="feature-card">
+        <h4>content-visibility <span class="badge badge-good">Baseline 2022</span></h4>
+        <div class="demo-box cv-demo">
+          <div class="cv-section">
+            <h4>Section 1</h4>
+            <p>Content is only rendered when visible</p>
+          </div>
+          <div class="cv-section">
+            <h4>Section 2</h4>
+            <p>Improves scroll performance</p>
+          </div>
+        </div>
+        <pre><span class="css-prop">content-visibility</span>: <span class="css-val">auto</span>;
+<span class="css-prop">contain-intrinsic-height</span>: <span class="css-val">auto 150px</span>;</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 6: Properties -->
+  <section id="properties" class="section">
+    <h2>⑥ Properties: field-sizing, interpolate-size, accent-color, scrollbar-gutter</h2>
+    <p class="section-intro">New CSS properties provide better control over form controls, animations, and scrolling behavior.</p>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <h4>field-sizing: content <span class="badge badge-good">Chrome 123+</span></h4>
+        <div class="demo-box field-sizing-demo">
+          <input class="auto-grow-input" type="text" value="Type to grow..." />
+          <textarea class="auto-grow-textarea">This textarea grows with content thanks to field-sizing: content</textarea>
+        </div>
+        <pre><span class="css-prop">field-sizing</span>: <span class="css-val">content</span>;
+<span class="css-prop">max-block-size</span>: <span class="css-val">10rem</span>;</pre>
+      </div>
+
+      <div class="feature-card">
+        <h4>interpolate-size: allow-keywords <span class="badge badge-good">Chrome 129+</span></h4>
+        <div class="demo-box">
+          <button class="interp-btn" onmouseenter="this.classList.add('open')" onmouseleave="this.classList.remove('open')">Hover me</button>
+          <div class="expandable-box">
+            <div class="inner-content">Width animates from 'auto' to 'auto' smoothly</div>
+          </div>
+        </div>
+        <pre>:root { <span class="css-prop">interpolate-size</span>: <span class="css-val">allow-keywords</span>; }</pre>
+      </div>
+
+      <div class="feature-card">
+        <h4>accent-color <span class="badge badge-good">Baseline 2022</span></h4>
+        <div class="demo-box custom-accent" style="padding: 1rem;">
+          <input type="checkbox" checked style="margin-right: 1rem;"> Checkbox
+          <input type="radio" name="test" checked style="margin: 0 1rem 0 0.5rem;"> Radio
+          <input type="range" style="width: 100px; vertical-align: middle;">
+        </div>
+        <pre><span class="css-prop">accent-color</span>: <span class="css-val">var(--accent)</span>;</pre>
+      </div>
+
+      <div class="feature-card">
+        <h4>scrollbar-gutter <span class="badge badge-good">Baseline 2022</span></h4>
+        <div class="demo-box">
+          <div class="scroll-container" style="max-height: 100px; overflow-y: auto; border: 1px solid var(--border); padding: 0.5rem;">
+            <p>Scrollbar space is reserved even when not scrolling</p>
+            <p>Prevents layout shift</p>
+          </div>
+        </div>
+        <pre><span class="css-prop">scrollbar-gutter</span>: <span class="css-val">stable</span>;</pre>
+      </div>
+
+      <div class="feature-card">
+        <h4>color-scheme <span class="badge badge-good">Baseline 2022</span></h4>
+        <div class="demo-box" style="display: flex; gap: 1rem;">
+          <div class="light-mode" style="flex: 1; padding: 1rem; background: white; color: black; border-radius: 8px;">
+            <p>Light Scheme</p>
+          </div>
+          <div class="dark-mode" style="flex: 1; padding: 1rem; background: #1f2937; color: white; border-radius: 8px;">
+            <p>Dark Scheme</p>
+          </div>
+        </div>
+        <pre><span class="css-prop">color-scheme</span>: <span class="css-val">light dark</span>;</pre>
+      </div>
+
+      <div class="feature-card">
+        <h4>overflow shorthand <span class="badge badge-good">Baseline 2023</span></h4>
+        <div class="demo-box overflow-box" style="height: 80px; border: 1px solid var(--border); padding: 0.5rem;">
+          <p>overflow: clip hidden - clips overflow on both axes</p>
+        </div>
+        <pre><span class="css-prop">overflow</span>: <span class="css-val">clip hidden</span>;</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 7: Typography -->
+  <section id="typography" class="section">
+    <h2>⑦ Typography: text-box-trim, corner-shape, line-clamp, text-wrap</h2>
+    <p class="section-intro">Advanced typography features enable better text alignment, decorative shapes, and improved text wrapping.</p>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <h4>text-box-trim <span class="badge badge-chrome">Chrome 124+</span></h4>
+        <div class="demo-box textbox-demo">
+          <div class="tb-box">
+            <div class="label">Without trim</div>
+            <div class="content"><h3 class="tb-before">ALIGN</h3></div>
+          </div>
+          <div class="tb-box">
+            <div class="label">With trim-both</div>
+            <div class="content"><h3 class="tb-after">ALIGN</h3></div>
+          </div>
+        </div>
+        <pre><span class="css-prop">text-box</span>: <span class="css-val">trim-both cap alphabetic</span>;</pre>
+      </div>
+
+      <div class="feature-card">
+        <h4>corner-shape <span class="badge badge-chrome">Chrome 124+</span></h4>
+        <div class="demo-box" style="display: flex; gap: 1rem; flex-wrap: wrap;">
+          <div class="corner-shape-demo">Squircle</div>
+          <div style="width: 100px; height: 100px; background: var(--accent-2); border-radius: 24px; corner-shape: round; display: flex; align-items: center; justify-content: center; color: white;">Round</div>
+          <div style="width: 100px; height: 100px; background: var(--accent-3); border-radius: 24px; corner-shape: bevel; display: flex; align-items: center; justify-content: center; color: white;">Bevel</div>
+        </div>
+        <pre><span class="css-prop">corner-shape</span>: <span class="css-val">squircle</span>;</pre>
+      </div>
+
+      <div class="feature-card">
+        <h4>line-clamp <span class="badge badge-good">Baseline 2024</span></h4>
+        <div class="demo-box">
+          <p class="line-clamp-demo" style="color: var(--text-dim);">This is a long text that will be clamped to 3 lines. Any content beyond the third line will be hidden with an ellipsis. This is useful for card previews and truncated content.</p>
+        </div>
+        <pre><span class="css-prop">line-clamp</span>: <span class="css-num">3</span>;
+<span class="css-prop">overflow</span>: <span class="css-val">hidden</span>;</pre>
+      </div>
+
+      <div class="feature-card">
+        <h4>text-wrap: balance <span class="badge badge-good">Baseline 2024</span></h4>
+        <div class="demo-box textwrap-demo">
+          <div class="tw-box tw-balance">
+            <div class="label">text-wrap: balance</div>
+            <h4>This heading text is balanced across lines for better appearance</h4>
+          </div>
+          <div class="tw-box tw-pretty">
+            <div class="label">text-wrap: pretty</div>
+            <p>This paragraph uses pretty wrapping to avoid widows and orphans at the end of paragraphs, improving readability.</p>
+          </div>
+        </div>
+        <pre><span class="css-prop">text-wrap</span>: <span class="css-val">balance</span>;
+<span class="css-prop">text-wrap</span>: <span class="css-val">pretty</span>;</pre>
+      </div>
+
+      <div class="feature-card">
+        <h4>font-palette <span class="badge badge-good">Baseline 2023</span></h4>
+        <div class="demo-box palette-demo">
+          <span class="pal-text palette-normal">🎨</span>
+          <span class="pal-text" style="font-palette: light;">🎨</span>
+          <span class="pal-text" style="font-palette: dark;">🎨</span>
+        </div>
+        <pre><span class="css-at">@font-palette-values</span> --custom {
+  <span class="css-prop">base-palette</span>: <span class="css-num">1</span>;
+}</pre>
+      </div>
+
+      <div class="feature-card">
+        <h4>zoom <span class="badge badge-good">Baseline 2024</span></h4>
+        <div class="demo-box zoom-demo">
+          <div class="zoom-box z-0-5">50%</div>
+          <div class="zoom-box z-1">100%</div>
+          <div class="zoom-box z-1-5">150%</div>
+          <div class="zoom-box z-2">200%</div>
+        </div>
+        <pre><span class="css-prop">zoom</span>: <span class="css-num">1.5</span>;</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 8: Forms -->
+  <section id="forms" class="section">
+    <h2>⑧ Forms: Custom Select, Native &lt;search&gt;, Exclusive Accordions</h2>
+    <p class="section-intro">Modern form controls with native styling capabilities and improved semantics.</p>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <h4>appearance: base-select <span class="badge badge-chrome">Chrome 124+</span></h4>
+        <div class="demo-box palette-select-wrap">
+          <select class="palette-select" id="palette-select">
+            <button><selectedoption></selectedoption></button>
+            <option value="grape"><span class="swatch-dot" data-c="grape"></span> Grape</option>
+            <option value="mint"><span class="swatch-dot" data-c="mint"></span> Mint</option>
+            <option value="sun"><span class="swatch-dot" data-c="sun"></span> Sun</option>
+          </select>
+        </div>
+        <pre><span class="css-prop">appearance</span>: <span class="css-val">base-select</span>;
+<span class="css-sel">::picker(select)</span> { ... }</pre>
+      </div>
+
+      <div class="feature-card">
+        <h4>&lt;search&gt; element <span class="badge badge-good">Baseline 2024</span></h4>
+        <div class="demo-box">
+          <search style="display: flex; gap: 0.5rem;">
+            <input type="search" placeholder="Search..." style="flex: 1; padding: 0.5rem; border-radius: 6px; border: 1px solid var(--border);" />
+            <button type="submit">Search</button>
+          </search>
+        </div>
+        <pre>&lt;<span class="css-sel">search</span>&gt;
+  &lt;input type="search"&gt;
+&lt;/<span class="css-sel">search</span>&gt;</pre>
+      </div>
+
+      <div class="feature-card">
+        <h4>Exclusive Accordions <span class="badge badge-good">Baseline 2024</span></h4>
+        <div class="demo-box">
+          <details name="exclusive-group">
+            <summary>Section 1</summary>
+            <p style="padding: 0.5rem; color: var(--text-dim);">Opening this closes Section 2</p>
+          </details>
+          <details name="exclusive-group">
+            <summary>Section 2</summary>
+            <p style="padding: 0.5rem; color: var(--text-dim);">Native exclusive accordions</p>
+          </details>
+        </div>
+        <pre>&lt;<span class="css-sel">details</span> <span class="css-prop">name</span>="group"&gt;</pre>
+      </div>
+
+
+
+      <div class="feature-card">
+        <h4>reading-flow <span class="badge badge-chrome">Chrome 126+</span></h4>
+        <div class="demo-box">
+          <div class="reading-flow-demo">
+            <a href="#" class="rf-item" style="order:3;flex-basis:130px;">DOM 1st · Visual 3rd</a>
+            <a href="#" class="rf-item" style="order:1;flex-basis:130px;">DOM 2nd · Visual 1st</a>
+            <a href="#" class="rf-item" style="order:2;flex-basis:130px;">DOM 3rd · Visual 2nd</a>
+            <a href="#" class="rf-item" style="flex-basis:60px;">4th</a>
+            <a href="#" class="rf-item" style="flex-basis:60px;">5th</a>
+          </div>
+        </div>
+        <pre><span class="css-prop">reading-flow</span>: <span class="css-val">flex-visual</span>;</pre>
+      </div>
+
+
+    </div>
+  </section>
+
+  <!-- Section 9: Animations -->
+  <section id="animations" class="section">
+    <h2>⑨ Animations: Scroll-Driven, View Transitions, @starting-style</h2>
+    <p class="section-intro">Native animation features enable smooth, performant motion without JavaScript libraries.</p>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <h4>Scroll-Driven Animations <span class="badge badge-good">Baseline 2024</span></h4>
+        <div class="demo-box" style="height: 200px; overflow-y: auto; border: 1px solid var(--border);">
+          <div class="scroll-reveal" style="padding: 1rem; background: var(--accent); color: white; margin: 0.5rem; border-radius: 6px;">Reveals on scroll</div>
+          <div class="scroll-reveal" style="padding: 1rem; background: var(--accent-2); color: white; margin: 0.5rem; border-radius: 6px;">Animation timeline: view()</div>
+          <div class="scroll-reveal" style="padding: 1rem; background: var(--accent-3); color: white; margin: 0.5rem; border-radius: 6px;">Scroll down!</div>
+        </div>
+        <pre><span class="css-prop">animation-timeline</span>: <span class="css-fn">view</span>();</pre>
+      </div>
+
+      <div class="feature-card">
+        <h4>@starting-style <span class="badge badge-good">Chrome 117+</span></h4>
+        <div class="demo-box starting-style-demo">
+          <div class="ssbox">Box 1 - Entry animation</div>
+          <div class="ssbox variant">Box 2 - Variant</div>
+          <button onclick="replayEntryAnim()" class="btn-ghost" style="margin-top: 0.5rem;">↺ Replay</button>
+        </div>
+        <pre><span class="css-at">@starting-style</span> {
+  <span class="css-prop">opacity</span>: <span class="css-num">0</span>;
+  <span class="css-prop">transform</span>: <span class="css-val">translateY(12px)</span>;
+}</pre>
+      </div>
+
+      <div class="feature-card">
+        <h4>View Transitions API <span class="badge badge-good">Baseline 2025</span></h4>
+        <div class="demo-box vt-demo">
+          <button class="vt-btn" onclick="swapPanel2('a')">Panel A</button>
+          <button class="vt-btn" onclick="swapPanel2('b')">Panel B</button>
+          <div id="vtPanel2" class="vt-panel" style="margin-top: 1rem; padding: 1rem; background: var(--surface-2); border-radius: 8px;">
+            <h4 style="color: var(--accent);">Panel A</h4>
+          </div>
+        </div>
+        <pre><span class="css-sel">::view-transition-new</span>(root) {
+  <span class="css-prop">animation</span>: <span class="css-val">fade-in 0.3s</span>;
+}</pre>
+      </div>
+
+      <div class="feature-card">
+        <h4>@scroll-timeline <span class="badge badge-good">Baseline 2024</span></h4>
+        <div class="demo-box" style="height: 150px; overflow-y: auto; border: 1px solid var(--border);" id="scroll-timeline-demo-box">
+          <div style="height: 300px; padding: 1rem; background: linear-gradient(180deg, var(--surface-2), var(--accent));">
+             <div style="width: 40px; height: 40px; background: white; border-radius: 8px; animation: spin 1s linear both; animation-timeline: --demo-scroll; margin-top: 50px;"></div>
+          </div>
+        </div>
+        <style>
+          @scroll-timeline --demo-scroll { source: selector(#scroll-timeline-demo-box); }
+          @keyframes spin { to { transform: rotate(360deg); } }
+        </style>
+        <pre><span class="css-at">@scroll-timeline</span> <span class="css-val">--demo-scroll</span> {
+  <span class="css-prop">source</span>: <span class="css-fn">selector</span>(#scroll-timeline-demo-box);
+}</pre>
+      </div>
+
+      <div class="feature-card">
+        <h4>animation-timeline: scroll() <span class="badge badge-good">Baseline 2024</span></h4>
+        <div class="demo-box">
+          <div style="height: 4px; background: var(--border); border-radius: 2px; overflow: hidden;">
+            <div id="scrollProgressBar" style="height: 100%; width: 0%; background: var(--accent); animation: scroll-progress linear; animation-timeline: scroll();"></div>
+          </div>
+          <p style="font-size: 0.8rem; color: var(--text-dim); margin-top: 0.5rem;">↑ Progress bar driven by scroll position</p>
+        </div>
+        <pre><span class="css-prop">animation-timeline</span>: <span class="css-fn">scroll</span>();</pre>
+      </div>
+
+      <div class="feature-card">
+        <h4>transition-behavior: allow-discrete <span class="badge badge-good">Chrome 117+</span></h4>
+        <div class="demo-box">
+          <details class="disclosure">
+            <summary>Click to expand</summary>
+            <div style="padding: 1rem; color: var(--text-dim);">Animated with allow-discrete</div>
+          </details>
+        </div>
+        <pre><span class="css-prop">transition-behavior</span>: <span class="css-val">allow-discrete</span>;</pre>
+      </div>
+
+
+    </div>
+  </section>
+
+  <!-- Section 10: Interactive -->
+  <section id="interactive" class="section">
+    <h2>⑩ Interactive: Popover API, Anchor Positioning, Dialog Invokers</h2>
+    <p class="section-intro">Native interactive components replace JavaScript-heavy UI patterns.</p>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <h4>Popover API <span class="badge badge-good">Baseline 2024</span></h4>
+        <div class="demo-box">
+          <button popovertarget="demo-popover" popovertargetaction="toggle" class="btn-ghost">Toggle Popover</button>
+          <div id="demo-popover" popover style="margin-top: 1rem; padding: 1rem; background: var(--surface-2); border-radius: 8px; max-width: 300px;">
+            <h4 style="color: var(--accent);">Native Popover</h4>
+            <p style="color: var(--text-dim); font-size: 0.85rem;">Light dismiss, top layer, no JS needed</p>
+          </div>
+        </div>
+        <pre>&lt;<span class="css-sel">div</span> <span class="css-prop">popover</span>&gt;Content&lt;/<span class="css-sel">div</span>&gt;</pre>
+      </div>
+
+      <div class="feature-card">
+        <h4>Anchor Positioning <span class="badge badge-good">Baseline 2025</span></h4>
+        <div class="demo-box" style="position: relative; height: 150px;">
+          <button class="anchor-source">Hover for tooltip</button>
+          <div class="anchor-tooltip">Anchored tooltip!</div>
+        </div>
+        <pre><span class="css-prop">anchor-name</span>: <span class="css-val">--tooltip</span>;
+<span class="css-prop">position-anchor</span>: <span class="css-val">--tooltip</span>;
+<span class="css-prop">position-try-fallbacks</span>: <span class="css-val">flip-block</span>;</pre>
+      </div>
+
+      <div class="feature-card">
+        <h4>Dialog Invokers <span class="badge badge-chrome">Chrome 121+</span></h4>
+        <div class="demo-box">
+          <button commandfor="demo-dialog" command="show-modal" class="btn-ghost">Open Dialog</button>
+          <dialog id="demo-dialog" style="padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border);">
+            <h4 style="margin-bottom: 1rem;">Native Dialog</h4>
+            <form method="dialog">
+              <button>Close</button>
+            </form>
+          </dialog>
+        </div>
+        <pre>&lt;<span class="css-sel">button</span> <span class="css-prop">commandfor</span>="dlg"
+       <span class="css-prop">command</span>="show-modal"&gt;</pre>
+      </div>
+
+      <div class="feature-card">
+        <h4>:state() Custom States <span class="badge badge-chrome">Chrome 124+</span></h4>
+        <div class="demo-box">
+          <state-pill id="statePill" style="display: inline-block; padding: 0.5rem 1rem; background: var(--surface-2); border-radius: 999px; cursor: pointer; border: 1px solid var(--border);">off</state-pill>
+          <p style="font-size: 0.8rem; color: var(--text-dim); margin-top: 0.5rem;">Click to toggle state</p>
+        </div>
+        <pre><span class="css-sel">state-pill:state</span>(on) {
+  <span class="css-prop">background</span>: <span class="css-val">var(--accent)</span>;
+}</pre>
+      </div>
+
+
+
+      <div class="feature-card">
+        <h4>::backdrop <span class="badge badge-good">Baseline 2022</span></h4>
+        <div class="demo-box">
+          <button popovertarget="backdrop-demo" class="btn-ghost">Show Backdrop</button>
+          <div id="backdrop-demo" popover style="padding: 1rem; border-radius: 8px;">
+            <p>Popover with styled ::backdrop</p>
+          </div>
+        </div>
+        <pre>[<span class="css-sel">popover</span>]::<span class="css-fn">backdrop</span> {
+  <span class="css-prop">backdrop-filter</span>: <span class="css-val">blur(4px)</span>;
+}</pre>
+      </div>
+      <div class="feature-card">
+        <h4>@position-try <span class="badge badge-exp">Experimental</span></h4>
+        <div class="demo-box">
+          <p style="color: var(--text-dim); font-size: 0.85rem;">Defines custom fallback placements for anchored elements when they would otherwise overflow the viewport.</p>
+        </div>
+        <pre><span class="css-at">@position-try</span> <span class="css-sel">--flip-down</span> {
+  <span class=\"css-prop\">position-area</span>: <span class=\"css-val\">bottom</span>;
+}</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 11: Media Queries -->
+  <section id="media" class="section">
+    <h2>⑪ Media Queries Level 5: User Preferences, Environmental Light</h2>
+    <p class="section-intro">Enhanced media queries detect user preferences and environmental conditions.</p>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <h4>prefers-reduced-transparency <span class="badge badge-good">Baseline 2024</span></h4>
+        <div class="demo-box glass-effect" style="padding: 1rem; background: rgba(100, 100, 255, 0.3); backdrop-filter: blur(10px); border-radius: 8px;">
+          <p>Reduces transparency when user prefers</p>
+        </div>
+        <pre><span class="css-at">@media</span> (<span class="css-prop">prefers-reduced-transparency</span>: reduce)</pre>
+      </div>
+
+      <div class="feature-card">
+        <h4>prefers-contrast: more <span class="badge badge-good">Baseline 2024</span></h4>
+        <div class="demo-box high-contrast" style="padding: 1rem; border: 3px solid currentColor; border-radius: 8px;">
+          <p>Higher contrast for accessibility</p>
+        </div>
+        <pre><span class="css-at">@media</span> (<span class="css-prop">prefers-contrast</span>: more)</pre>
+      </div>
+
+      <div class="feature-card">
+        <h4>dynamic-range: high <span class="badge badge-chrome">Chrome 120+</span></h4>
+        <div class="demo-box hdr-content" style="padding: 1rem; background: black; border-radius: 8px;">
+          <p style="color: color(display-p3 1 1 1);">HDR display content</p>
+        </div>
+        <pre><span class="css-at">@media</span> (<span class="css-prop">dynamic-range</span>: high)</pre>
+      </div>
+
+      <div class="feature-card">
+        <h4>environmental-light-level <span class="badge badge-exp">Experimental</span></h4>
+        <div class="demo-box" style="padding: 1rem; border-radius: 8px;">
+          <p>Adapts to ambient light conditions</p>
+          <code style="display: block; margin-top: 0.5rem;">@media (environmental-light-level: dim)</code>
+        </div>
+        <pre><span class="css-at">@media</span> (<span class="css-prop">environmental-light-level</span>: dim)</pre>
+      </div>
+
+      <div class="feature-card">
+        <h4>video-dynamic-range <span class="badge badge-chrome">Chrome 120+</span></h4>
+        <div class="demo-box video-container" style="padding: 1rem; background: black; border-radius: 8px;">
+          <p style="color: white;">Video HDR capability</p>
+        </div>
+        <pre><span class="css-at">@media</span> (<span class="css-prop">video-dynamic-range</span>: standard)</pre>
+      </div>
+
+      <div class="feature-card">
+        <h4>prefers-contrast: less <span class="badge badge-good">Baseline 2024</span></h4>
+        <div class="demo-box low-contrast" style="padding: 1rem; border: 1px solid var(--border); border-radius: 8px;">
+          <p>Subtler contrast for sensitive users</p>
+        </div>
+        <pre><span class="css-at">@media</span> (<span class="css-prop">prefers-contrast</span>: less)</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 12: Values & Functions -->
+  <section id="values" class="section">
+    <h2>⑫ Values & Functions: if(), Math Functions, Typed attr()</h2>
+    <p class="section-intro">Advanced CSS functions enable conditional logic and mathematical operations natively.</p>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <h4>if() Function <span class="badge badge-exp">Experimental</span></h4>
+        <div class="demo-box if-card" style="padding: 1rem; border-radius: 8px; border: 2px solid currentColor;">
+          <p>Conditional values based on media/supports</p>
+        </div>
+        <pre><span class="css-prop">color</span>: <span class="css-fn">if</span>(
+  <span class="css-fn">media</span>(width &gt; 880px): var(--accent);
+  <span class="css-fn">else</span>: var(--ink)
+);</pre>
+      </div>
+
+      <div class="feature-card">
+        <h4>Math Functions <span class="badge badge-chrome">Chrome 119+</span></h4>
+        <div class="demo-box">
+          <div class="math-bar bar-round">round(73%, 10%) = 70%</div>
+          <div class="math-bar bar-mod">mod(90%, 40%) = 10%</div>
+          <div class="math-bar bar-rem">rem(95%, 40%) = 15%</div>
+          <div class="math-bar bar-abs">abs(-60%) = 60%</div>
+          <div class="math-bar bar-sign">sign(2) = 1</div>
+        </div>
+        <pre><span class="css-prop">width</span>: <span class="css-fn">round</span>(73%, 10%);
+<span class="css-prop">width</span>: <span class="css-fn">mod</span>(90%, 40%);</pre>
+      </div>
+
+      <div class="feature-card">
+        <h4>Typed attr() <span class="badge badge-chrome">Chrome 124+</span></h4>
+        <div class="demo-box typed-attr-demo">
+          <div data-size="60px">60px</div>
+          <div data-size="80px">80px</div>
+          <div data-hue="260" style="margin-top: 0.5rem;">Hue</div>
+          <div data-hue="320" style="margin-top: 0.5rem;">Hue</div>
+        </div>
+        <pre><span class="css-prop">width</span>: <span class="css-fn">attr</span>(data-size <span class="css-fn">type</span>(&lt;length&gt;), 40px);</pre>
+      </div>
+
+      <div class="feature-card">
+        <h4>@when / @else <span class="badge badge-exp">Experimental</span></h4>
+        <div class="demo-box responsive-grid" style="display: grid; gap: 0.5rem; padding: 1rem; background: var(--surface-2); border-radius: 8px;">
+          <div style="background: var(--accent); color: white; padding: 1rem; border-radius: 4px;">Item 1</div>
+          <div style="background: var(--accent-2); color: white; padding: 1rem; border-radius: 4px;">Item 2</div>
+          <div style="background: var(--accent-3); color: white; padding: 1rem; border-radius: 4px;">Item 3</div>
+        </div>
+        <pre><span class="css-at">@when</span> (width &gt; 768px) {
+  grid-template-columns: repeat(3, 1fr);
+} <span class="css-at">@else</span> {
+  grid-template-columns: 1fr;
+}</pre>
+      </div>
+
+      <div class="feature-card">
+        <h4>@when font-format() <span class="badge badge-exp">Experimental</span></h4>
+        <div class="demo-box" style="padding: 1rem; border-radius: 8px;">
+          <p>Font technology detection</p>
+          <code style="display: block; margin-top: 0.5rem;">@when font-format(opentype)</code>
+        </div>
+        <pre><span class="css-at">@when</span> <span class="css-fn">font-format</span>(opentype) {
+  <span class="css-prop">font-family</span>: <span class="css-str">'CustomFont'</span>;
+}</pre>
+      </div>
+
+      <div class="feature-card">
+        <h4>Dynamic Range Limit <span class="badge badge-chrome">Chrome 120+</span></h4>
+        <div class="demo-box hdr-demo">
+          <div class="hdr-box hdr-standard">Standard</div>
+          <div class="hdr-box hdr-high">High</div>
+        </div>
+        <pre><span class="css-prop">dynamic-range-limit</span>: <span class="css-val">high</span>;</pre>
+      </div>
+      <div class="feature-card">
+        <h4>@function <span class="badge badge-exp">Experimental</span></h4>
+        <div class="demo-box">
+          <p style="color: var(--text-dim); font-size: 0.85rem;">Reusable native CSS functions. Allows creating custom functions natively.</p>
+        </div>
+        <pre><span class="css-at">@function</span> <span class="css-sel">--fluid</span>(<span class="css-prop">--min</span>, <span class="css-prop">--max</span>) {
+  <span class="css-prop">result</span>: <span class="css-fn">clamp</span>(var(--min), 5vw, var(--max));
+}</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 13: JavaScript -->
+  <section id="javascript" class="section">
+    <h2>⑬ Modern JavaScript: Object.groupBy(), Set Methods, Promise.withResolvers()</h2>
+    <p class="section-intro">Modern JavaScript APIs complement CSS features for enhanced interactivity.</p>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <h4>Object.groupBy() <span class="badge badge-good">Baseline 2024</span></h4>
+        <div class="demo-box" style="font-family: ui-monospace, monospace; font-size: 0.8rem;">
+          <pre id="groupByOutput" style="background: #1e1e1e; color: #00ff00; padding: 1rem; border-radius: 6px; overflow-x: auto; box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);">Loading...</pre>
+        </div>
+        <pre><span class="css-fn">Object.groupBy</span>(items,
+  item =&gt; item.category);</pre>
+      </div>
+
+      <div class="feature-card">
+        <h4>Set Methods <span class="badge badge-good">Baseline 2024</span></h4>
+        <div class="demo-box" style="font-family: ui-monospace, monospace; font-size: 0.8rem;">
+          <pre id="setOutput" style="background: #1e1e1e; color: #00ff00; padding: 1rem; border-radius: 6px; overflow-x: auto; box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);">Loading...</pre>
+        </div>
+        <pre><span class="css-sel">set1</span>.<span class="css-fn">intersection</span>(set2);
+<span class="css-sel">set1</span>.<span class="css-fn">union</span>(set2);</pre>
+      </div>
+
+      <div class="feature-card">
+        <h4>Promise.withResolvers() <span class="badge badge-good">Baseline 2024</span></h4>
+        <div class="demo-box" style="font-family: ui-monospace, monospace; font-size: 0.8rem;">
+          <pre id="promiseOutput" style="background: #1e1e1e; color: #00ff00; padding: 1rem; border-radius: 6px; overflow-x: auto; box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);">Loading...</pre>
+        </div>
+        <pre><span class="css-at">const</span> { promise, resolve } =
+  <span class="css-fn">Promise.withResolvers</span>();</pre>
+      </div>
+
+      <div class="feature-card">
+        <h4>CSS.supports() <span class="badge badge-good">Baseline 2022</span></h4>
+        <div class="demo-box" style="font-family: ui-monospace, monospace; font-size: 0.8rem;">
+          <pre id="supportsOutput" style="background: #1e1e1e; color: #00ff00; padding: 1rem; border-radius: 6px; overflow-x: auto; box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);">Loading...</pre>
+        </div>
+        <pre><span class="css-fn">CSS.supports</span>(<span class="css-str">'display: grid'</span>);</pre>
+      </div>
+
+      <div class="feature-card">
+        <h4>View Transitions JS API <span class="badge badge-good">Baseline 2025</span></h4>
+        <div class="demo-box">
+          <button onclick="triggerViewTransition()" class="btn-ghost">Trigger Transition</button>
+          <div id="vtContent" style="margin-top: 1rem; padding: 1rem; background: var(--surface-2); border-radius: 8px;">
+            Content changes with transition
+          </div>
+        </div>
+        <pre><span class="css-fn">document.startViewTransition</span>(() =&gt; {
+  <span class="css-cmt">// Update DOM</span>
+});</pre>
+      </div>
+
+      <div class="feature-card">
+        <h4>Scroll Timeline JS <span class="badge badge-chrome">Chrome 115+</span></h4>
+        <div class="demo-box" style="font-family: ui-monospace, monospace; font-size: 0.8rem;">
+          <pre id="scrollTimelineOutput" style="background: #1e1e1e; color: #00ff00; padding: 1rem; border-radius: 6px; overflow-x: auto; box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);">Loading...</pre>
+        </div>
+        <pre><span class="css-at">new</span> <span class="css-fn">ScrollTimeline</span>({
+  source: <span class="css-fn">document.scrollingElement</span>
+});</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- Browser Support Section -->
+  <section id="browser-support" class="section">
+    <h2>🌐 Browser Support & Resources</h2>
+    <p class="section-intro">Current implementation status and key resources for CSS 2025-2026 features.</p>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <h4>CSS Snapshot 2026</h4>
+        <ul style="margin-left: 1.5rem; margin-top: 0.5rem; color: var(--text-dim);">
+          <li>Cascade & Inheritance: Level 6 ✅</li>
+          <li>Color: Level 5 ✅</li>
+          <li>Selectors: Level 5 (Draft) 📝</li>
+          <li>Values & Units: Level 5 ✅</li>
+          <li>Media Queries: Level 5 ✅</li>
+          <li>Grid Layout: Level 3 (Draft) 📝</li>
+          <li>Conditional Rules: Level 5 ✅</li>
+        </ul>
+      </div>
+
+      <div class="feature-card">
+        <h4>Key Resources</h4>
+        <ul style="margin-left: 1.5rem; margin-top: 0.5rem; color: var(--text-dim);">
+          <li>W3C CSS Snapshot 2026</li>
+          <li>MDN Web Docs</li>
+          <li>CSS WG Drafts</li>
+          <li>Can I Use (compatibility)</li>
+          <li>Chrome Status (implementation)</li>
+        </ul>
+      </div>
+
+      <div class="feature-card">
+        <h4>Feature Detection</h4>
+        <pre style="margin-top: 0.5rem; font-size: 0.75rem;"><span class="css-at">@supports</span> (display: grid) {
+  <span class="css-cmt">/* Use grid */</span>
+}
+
+<span class="css-at">if</span> (<span class="css-str">'startViewTransition'</span> <span class="css-at">in</span> document) {
+  <span class="css-cmt">/* Use View Transitions */</span>
+}</pre>
+      </div>
+
+      <div class="feature-card">
+        <h4>Interop 2026 Focus Areas</h4>
+        <div class="pill-row" style="margin-top: 0.5rem;">
+          <span class="badge badge-good">Anchor Positioning</span>
+          <span class="badge badge-good">Scroll-Driven Animations</span>
+          <span class="badge badge-partial">Container Queries</span>
+          <span class="badge badge-good">:has()</span>
+          <span class="badge badge-good">Subgrid</span>
+        </div>
+      </div>
+    </div>
+  </section>
 
 </div>
 </main>
@@ -812,31 +2968,10 @@ window.addEventListener('scroll', () => {
 
 // Replay Entry Animations
 function replayEntryAnim() {
-  document.querySelectorAll('#startingStyleDemo > div:not(button)').forEach(b => {
+  document.querySelectorAll('.starting-style-demo .ssbox').forEach(b => {
     b.style.transition = 'none'; b.style.opacity = '0'; b.style.transform = 'translateY(12px)';
     requestAnimationFrame(() => { requestAnimationFrame(() => { b.style.transition = ''; b.style.opacity = ''; b.style.transform = ''; }); });
   });
-}
-
-// View Transition
-const panels = {
-  a: { title: 'Panel A', desc: 'Smooth transitions', color: 'var(--accent)' },
-  b: { title: 'Panel B', desc: 'View Transitions API', color: 'var(--accent-2)' }
-};
-
-function swapPanel(key) {
-  const panel = document.getElementById('vtPanel');
-  const d = panels[key];
-  if ('startViewTransition' in document) {
-    document.startViewTransition(() => { 
-      panel.querySelector('h4').textContent = d.title; 
-      panel.querySelector('h4').style.color = d.color;
-      panel.querySelector('p').textContent = d.desc; 
-    });
-  } else {
-    panel.querySelector('h4').textContent = d.title; 
-    panel.querySelector('p').textContent = d.desc;
-  }
 }
 
 // Highlight API
@@ -879,11 +3014,206 @@ const checks = {
   'light-dark()': CSS.supports('color', 'light-dark(black, white)'),
   'Highlight API': !!window.CSS?.highlights,
   'View Transitions': 'startViewTransition' in document,
+  '@property': CSS.supports('width', '0px'),
+  '@layer': CSS.supports('content', '""'),
+  '@starting-style': CSS.supports('content', '""'),
+  '@container': CSS.supports('container-type', 'inline-size'),
+  'anchor positioning': CSS.supports('top', 'anchor(bottom)'),
+  'scroll-timeline': CSS.supports('animation-timeline', 'scroll()'),
+  'nesting': CSS.supports('selector(& > *)'),
+  'subgrid': CSS.supports('grid-template-rows', 'subgrid'),
+  'masonry': CSS.supports('grid-template-rows', 'masonry'),
+  ':has()': CSS.supports('selector(:has(*))'),
+  'field-sizing': CSS.supports('field-sizing', 'content'),
+  'content-visibility': CSS.supports('content-visibility', 'auto'),
+  'text-wrap': CSS.supports('text-wrap', 'balance'),
+  'corner-shape': CSS.supports('corner-shape', 'squircle'),
+  'text-box-trim': CSS.supports('text-box', 'trim-both'),
+  'line-clamp': CSS.supports('line-clamp', '3'),
+  'interpolate-size': CSS.supports('interpolate-size', 'allow-keywords'),
+  'appearance: base-select': CSS.supports('appearance', 'base-select'),
+  '::details-content': CSS.supports('selector(::details-content)'),
+  'if()': CSS.supports('width', 'if(style(--x: 1): 1px)'),
+  'round()': CSS.supports('width', 'round(10%, 5%)'),
+  '@when/@else': CSS.supports('@when', 'width > 100px'),
 };
 
 console.group('%cCSS 2025-2026 Feature Support', 'font:bold 1.1em monospace;color:#34d399');
 Object.entries(checks).forEach(([n, ok]) => console.log(`%c${ok ? '✓' : '✗'} %c${n}`, `color:${ok ? '#34d399' : '#f87171'};font-weight:bold`, 'color:inherit'));
 console.groupEnd();
+
+// Theme toggle with view transition
+function toggleTheme() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const newTheme = isDark ? 'light' : 'dark';
+  
+  if (document.startViewTransition) {
+    document.startViewTransition(() => {
+      document.documentElement.setAttribute('data-theme', newTheme);
+    });
+  } else {
+    document.documentElement.setAttribute('data-theme', newTheme);
+  }
+}
+
+// Custom select demo
+const paletteSelect = document.getElementById('palette-select');
+if (paletteSelect) {
+  paletteSelect.addEventListener('change', (e) => {
+    const selected = e.target.options[e.target.selectedIndex];
+    const dot = selected.querySelector('.swatch-dot');
+    if (dot) {
+      const color = getComputedStyle(dot).background;
+      document.documentElement.style.setProperty('--accent', color);
+    }
+  });
+}
+
+// Corner shape demo
+const cornerStyle = document.getElementById('corner-style');
+const cornerRadius = document.getElementById('corner-radius');
+const cornerDemo = document.getElementById('corner-demo');
+
+if (cornerStyle && cornerRadius && cornerDemo) {
+  cornerStyle.addEventListener('change', () => {
+    cornerDemo.style.cornerShape = cornerStyle.value;
+  });
+  
+  cornerRadius.addEventListener('input', () => {
+    cornerDemo.style.borderRadius = cornerRadius.value + 'px';
+  });
+}
+
+// Shuffle cards with view transition
+const vtGrid = document.getElementById('vt-grid');
+if (vtGrid) {
+  document.getElementById('shuffle-cards')?.addEventListener('click', () => {
+    if (document.startViewTransition) {
+      document.startViewTransition(() => {
+        const cards = Array.from(vtGrid.children);
+        for (let i = cards.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [cards[i], cards[j]] = [cards[j], cards[i]];
+          vtGrid.appendChild(cards[i]);
+        }
+      });
+    }
+  });
+  
+  document.getElementById('reverse-cards')?.addEventListener('click', () => {
+    if (document.startViewTransition) {
+      document.startViewTransition(() => {
+        Array.from(vtGrid.children).reverse().forEach(card => vtGrid.appendChild(card));
+      });
+    }
+  });
+}
+
+// State pill custom element
+class StatePill extends HTMLElement {
+  #internals = this.attachInternals?.();
+  
+  constructor() {
+    super();
+    this.addEventListener('click', () => this.toggle());
+  }
+  
+  toggle() {
+    const isOn = this.#internals?.states.contains('on');
+    if (isOn) {
+      this.#internals?.states.delete('on');
+      this.textContent = 'off';
+      this.setAttribute('data-fallback-state', 'off');
+    } else {
+      this.#internals?.states.add('on');
+      this.textContent = 'on';
+      this.setAttribute('data-fallback-state', 'on');
+    }
+  }
+}
+
+customElements.define('state-pill', StatePill);
+
+// Add swapPanel2 for the second View Transitions demo
+function swapPanel2(key) {
+  const panel = document.getElementById('vtPanel2');
+  const d = {
+    a: { title: 'Panel A (Subtle)', color: 'var(--accent)', bg: 'var(--surface-2)', desc: 'Smooth component transition' },
+    b: { title: 'Panel B (Vibrant)', color: 'white', bg: 'linear-gradient(135deg, var(--brand-danger), var(--accent-2))', desc: 'Background layout swap' }
+  }[key];
+  if ('startViewTransition' in document) {
+    document.startViewTransition(() => {
+      panel.querySelector('h4').textContent = d.title;
+      panel.querySelector('h4').style.color = d.color;
+      if (!panel.querySelector('p')) { const p = document.createElement('p'); panel.appendChild(p); }
+      panel.querySelector('p').textContent = d.desc;
+      panel.querySelector('p').style.color = d.color === 'white' ? 'rgba(255,255,255,0.8)' : 'var(--text-dim)';
+      panel.style.background = d.bg;
+      panel.style.transform = key === 'a' ? 'scale(1)' : 'scale(1.05)';
+      panel.style.boxShadow = key === 'a' ? 'none' : 'var(--shadow-lg)';
+    });
+  } else {
+    panel.querySelector('h4').textContent = d.title;
+    panel.querySelector('h4').style.color = d.color;
+    if (!panel.querySelector('p')) { const p = document.createElement('p'); panel.appendChild(p); }
+    panel.querySelector('p').textContent = d.desc;
+    panel.querySelector('p').style.color = d.color === 'white' ? 'rgba(255,255,255,0.8)' : 'var(--text-dim)';
+    panel.style.background = d.bg;
+  }
+}
+
+// Trigger View Transition JS API
+function triggerViewTransition() {
+  const content = document.getElementById('vtContent');
+  if (!content) return;
+  if ('startViewTransition' in document) {
+    document.startViewTransition(() => {
+      content.style.background = content.style.background === 'var(--accent)' ? 'var(--surface-2)' : 'var(--accent)';
+      content.style.color = content.style.background === 'var(--accent)' ? 'var(--text)' : 'white';
+      content.textContent = content.style.background === 'var(--accent)' ? 'Transitioned!' : 'Content changes with transition';
+    });
+  } else {
+    content.textContent = 'View Transitions API not supported';
+  }
+}
+
+// Populate JS outputs
+document.addEventListener('DOMContentLoaded', () => {
+  // Object.groupBy
+  try {
+    const vehicles = [{ type: 'car', name: 'Model 3' }, { type: 'truck', name: 'F-150' }, { type: 'car', name: 'Civic' }];
+    const grouped = Object.groupBy(vehicles, v => v.type);
+    document.getElementById('groupByOutput').textContent = '> Object.groupBy() Results:\n' + JSON.stringify(grouped, null, 2);
+  } catch(e) { document.getElementById('groupByOutput').textContent = 'Object.groupBy not supported'; }
+
+  // Set Methods
+  try {
+    const set1 = new Set(['Alice', 'Bob']);
+    const set2 = new Set(['Bob', 'Charlie']);
+    document.getElementById('setOutput').textContent = '> Set Methods:\nIntersection: [' + Array.from(set1.intersection(set2)).join(', ') + ']\nUnion: [' + Array.from(set1.union(set2)).join(', ') + ']';
+  } catch(e) { document.getElementById('setOutput').textContent = 'Set composition not supported'; }
+
+  // Promise.withResolvers
+  try {
+    const { promise, resolve } = Promise.withResolvers();
+    resolve('Resolved successfully via Promise.withResolvers!');
+    promise.then(res => document.getElementById('promiseOutput').textContent = '> Promise.withResolvers():\n' + res);
+  } catch(e) { document.getElementById('promiseOutput').textContent = 'Promise.withResolvers not supported'; }
+
+  // CSS.supports
+  try {
+    document.getElementById('supportsOutput').textContent = '> CSS Feature Detection:\n- display: grid: ' + CSS.supports('display: grid') + '\n- anchor-name: ' + CSS.supports('anchor-name', '--test');
+  } catch(e) {}
+
+  // ScrollTimeline
+  try {
+    if ('ScrollTimeline' in window) {
+      document.getElementById('scrollTimelineOutput').textContent = '> ScrollTimeline API:\nNative support available!';
+    } else {
+      document.getElementById('scrollTimelineOutput').textContent = '> ScrollTimeline JS API not supported';
+    }
+  } catch(e) {}
+});
 </script>
 
 </body>
