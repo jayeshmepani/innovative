@@ -1,0 +1,3198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Select &amp; Option — Complete HTML/CSS Reference</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;0,9..144,900;1,9..144,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
+:root {
+  --ink:        #0f0e17;
+  --ink-2:      #2a2840;
+  --ink-3:      #5a5880;
+  --surface:    #fafaf8;
+  --surface-2:  #f0efe9;
+  --surface-3:  #e4e2d8;
+  --accent:     #e84f1d;
+  --accent-2:   #f7b731;
+  --accent-3:   #1d9e6f;
+  --accent-4:   #4a3aff;
+  --code-bg:    #1a192e;
+  --code-fg:    #e0dff5;
+  --code-key:   #ff7b9c;
+  --code-val:   #7ee787;
+  --code-sel:   #f7b731;
+  --code-cmt:   #8b8aaa;
+  --code-tag:   #79d4f1;
+  --code-attr:  #d2a8ff;
+
+  --radius-s:   6px;
+  --radius-m:   12px;
+  --radius-l:   20px;
+
+  --shadow-s: 0 2px 8px rgba(15,14,23,.08);
+  --shadow-m: 0 6px 24px rgba(15,14,23,.12);
+  --shadow-l: 0 16px 48px rgba(15,14,23,.15);
+
+  --gap: 2.4rem;
+  --prose: 72ch;
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; font-size: 16px; }
+
+body {
+  font-family: 'Outfit', system-ui, sans-serif;
+  background: var(--surface);
+  color: var(--ink);
+  line-height: 1.7;
+}
+
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+.page-wrap {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  min-height: 100vh;
+}
+
+/* ── Sidebar nav ── */
+.sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  background: var(--ink);
+  color: var(--surface-2);
+  padding: 2rem 1.4rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--ink-3) transparent;
+}
+.sidebar-title {
+  font-family: 'Fraunces', serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--accent-2);
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  margin-bottom: 1.8rem;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+.sidebar-title svg { flex-shrink: 0; }
+.nav-section { margin-bottom: 1.4rem; }
+.nav-section-label {
+  font-size: .68rem;
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  padding-bottom: .4rem;
+  margin-bottom: .4rem;
+  border-bottom: 1px solid #ffffff14;
+}
+.sidebar nav a {
+  display: block;
+  font-size: .83rem;
+  color: #b8b7d0;
+  text-decoration: none;
+  padding: .28rem .5rem;
+  border-radius: 5px;
+  transition: background .15s, color .15s;
+  line-height: 1.5;
+}
+.sidebar nav a:hover { background: #ffffff14; color: #fff; }
+.sidebar nav a.active { background: var(--accent); color: #fff; }
+
+/* ── Main content ── */
+.main-content { min-width: 0; padding: 3.5rem clamp(1.5rem, 5vw, 5rem) 6rem; }
+
+/* ── Hero ── */
+.hero {
+  margin-bottom: 4rem;
+  padding: 3rem 3.5rem;
+  background: var(--ink);
+  border-radius: var(--radius-l);
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 80% 20%, rgba(232,79,29,.35) 0%, transparent 55%),
+    radial-gradient(circle at 10% 90%, rgba(74,58,255,.3) 0%, transparent 50%);
+  pointer-events: none;
+}
+.hero-tag {
+  display: inline-block;
+  background: var(--accent);
+  color: #fff;
+  font-size: .72rem;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  padding: .25rem .75rem;
+  border-radius: 999px;
+  margin-bottom: 1rem;
+}
+.hero h1 {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(2rem, 5vw, 3.4rem);
+  font-weight: 900;
+  line-height: 1.1;
+  margin-bottom: .8rem;
+}
+.hero h1 em { font-style: italic; color: var(--accent-2); }
+.hero p {
+  max-width: 62ch;
+  color: rgba(255,255,255,.72);
+  font-size: 1.05rem;
+}
+.hero-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  margin-top: 1.5rem;
+}
+.hero-pill {
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.15);
+  color: rgba(255,255,255,.8);
+  font-size: .75rem;
+  padding: .3rem .8rem;
+  border-radius: 999px;
+  font-family: 'DM Mono', monospace;
+}
+
+/* ── Section titles ── */
+.section {
+  margin-bottom: 4.5rem;
+  scroll-margin-top: 2rem;
+}
+.section-heading {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  margin-bottom: 1.8rem;
+}
+.section-num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-size: .78rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.section-heading h2 {
+  font-family: 'Fraunces', serif;
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+.subsection { margin-bottom: 3rem; }
+.subsection h3 {
+  font-family: 'Fraunces', serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--ink-2);
+  margin-bottom: 1rem;
+  padding-bottom: .5rem;
+  border-bottom: 2px solid var(--surface-3);
+}
+
+/* ── Prose ── */
+p { margin-bottom: .9rem; max-width: var(--prose); }
+p:last-child { margin-bottom: 0; }
+strong { font-weight: 600; color: var(--ink-2); }
+
+/* ── Inline code ── */
+code {
+  font-family: 'DM Mono', monospace;
+  font-size: .82em;
+  background: var(--surface-2);
+  border: 1px solid var(--surface-3);
+  padding: .1em .42em;
+  border-radius: 4px;
+  color: var(--accent);
+}
+
+/* ── Code blocks ── */
+pre {
+  background: var(--code-bg);
+  border-radius: var(--radius-m);
+  padding: 1.4rem 1.6rem;
+  overflow-x: auto;
+  margin: 1.2rem 0 1.8rem;
+  font-family: 'DM Mono', monospace;
+  font-size: .83rem;
+  line-height: 1.7;
+  color: var(--code-fg);
+  tab-size: 2;
+  scrollbar-width: thin;
+  scrollbar-color: #3a394f transparent;
+}
+pre .ck { color: var(--code-key); }   /* keyword / prop */
+pre .cv { color: var(--code-val); }   /* value / string */
+pre .cc { color: var(--code-cmt); font-style: italic; } /* comment */
+pre .ct { color: var(--code-tag); }   /* tag */
+pre .ca { color: var(--code-attr); }  /* attribute */
+pre .cs { color: var(--code-sel); }   /* selector */
+
+/* ── Tables ── */
+.table-wrap {
+  overflow-x: auto;
+  margin: 1rem 0 2rem;
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-s);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .87rem;
+  background: #fff;
+}
+thead {
+  background: var(--ink);
+  color: #fff;
+}
+thead th {
+  text-align: left;
+  padding: .75rem 1rem;
+  font-weight: 600;
+  font-size: .78rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+tbody tr:nth-child(even) { background: var(--surface-2); }
+tbody td {
+  padding: .65rem 1rem;
+  border-bottom: 1px solid var(--surface-3);
+  vertical-align: top;
+}
+tbody td:first-child {
+  font-family: 'DM Mono', monospace;
+  font-size: .8rem;
+  color: var(--accent);
+  white-space: nowrap;
+}
+tbody td.desc { max-width: 40ch; }
+
+/* ── Badge / tags ── */
+.badge {
+  display: inline-block;
+  font-size: .65rem;
+  font-weight: 700;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  padding: .15rem .55rem;
+  border-radius: 999px;
+}
+.badge-new   { background: #d4f5e9; color: #1d9e6f; }
+.badge-exp   { background: #fef3cd; color: #9a6300; }
+.badge-std   { background: #e0e7ff; color: #3a3aff; }
+.badge-dep   { background: #fee2e2; color: #c0392b; }
+.badge-chrome { background: #e8f4fd; color: #1a73e8; font-size:.62rem; }
+
+/* ── Demo cards ── */
+.demo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1.6rem;
+  margin: 1.5rem 0 2rem;
+}
+.demo-card {
+  background: #fff;
+  border: 1px solid var(--surface-3);
+  border-radius: var(--radius-m);
+  padding: 1.8rem;
+  box-shadow: var(--shadow-s);
+}
+.demo-card-label {
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: .9rem;
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+}
+.demo-card-label::before {
+  content: '';
+  display: block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.demo-card h4 {
+  font-family: 'Fraunces', serif;
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: var(--ink);
+}
+
+/* ── Divider ── */
+hr.fancy {
+  border: none;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent) 0%, var(--accent-4) 50%, transparent 100%);
+  margin: 3rem 0;
+  border-radius: 2px;
+}
+
+/* ── Info box ── */
+.info-box {
+  background: #eff6ff;
+  border-left: 4px solid var(--accent-4);
+  border-radius: 0 var(--radius-m) var(--radius-m) 0;
+  padding: 1rem 1.4rem;
+  margin: 1.2rem 0 1.8rem;
+  font-size: .9rem;
+}
+.info-box.warn {
+  background: #fffbeb;
+  border-color: var(--accent-2);
+}
+.info-box.tip {
+  background: #ecfdf5;
+  border-color: var(--accent-3);
+}
+.info-box strong { display: block; margin-bottom: .3rem; }
+
+/* ── TOC pull quote ── */
+.pull-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  background: var(--surface-2);
+  border: 1px solid var(--surface-3);
+  padding: .4rem 1rem;
+  border-radius: 999px;
+  font-size: .8rem;
+  color: var(--ink-3);
+  margin-bottom: 1.5rem;
+}
+
+/* ============================================================
+   §1  NATIVE SELECT DEMOS
+   ============================================================ */
+
+/* Base reset helper for non-base-select environments */
+.styled-select-classic {
+  appearance: none;
+  -webkit-appearance: none;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235a5880' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 1rem center;
+  border: 2px solid var(--surface-3);
+  border-radius: var(--radius-s);
+  padding: .55rem 2.8rem .55rem 1rem;
+  font-family: inherit;
+  font-size: .9rem;
+  color: var(--ink);
+  cursor: pointer;
+  transition: border-color .2s, box-shadow .2s;
+  width: 100%;
+}
+.styled-select-classic:focus {
+  outline: none;
+  border-color: var(--accent-4);
+  box-shadow: 0 0 0 3px rgba(74,58,255,.18);
+}
+.styled-select-classic:hover { border-color: var(--ink-3); }
+.styled-select-classic:active { transform: translateY(1px); }
+.styled-select-classic:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+  background-color: var(--surface-2);
+}
+.styled-select-classic:optional { border-left: 3px solid transparent; }
+.styled-select-classic:required { border-left: 3px solid var(--accent-2); }
+
+/* ── Attribute selectors: strip arrow for listbox modes ── */
+.styled-select-classic[multiple],
+.styled-select-classic[size],
+.styled-multi[multiple],
+.sized-select[multiple],
+.sized-select[size] {
+  background-image: none;
+  padding-right: .75rem;
+}
+
+/* ── Classic option / optgroup OS-layer colors ── */
+.styled-select-classic option,
+.styled-multi option,
+.sized-select option {
+  color: #0f172a;
+  background: #f8fafc;
+}
+.styled-select-classic option:checked,
+.styled-multi option:checked,
+.sized-select option:checked {
+  font-weight: 700;
+}
+.styled-select-classic option:disabled,
+.styled-multi option:disabled,
+.styled-select-classic optgroup:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+.styled-select-classic optgroup,
+.styled-multi optgroup {
+  font-style: normal;
+  font-weight: 700;
+  color: #1e293b;
+  background: #e2e8f0;
+}
+
+/* Multiple select */
+.styled-multi {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 2px solid var(--surface-3);
+  border-radius: var(--radius-s);
+  padding: .4rem;
+  font-family: inherit;
+  font-size: .88rem;
+  color: var(--ink);
+  width: 100%;
+  height: 140px;
+  overflow-y: auto;
+}
+.styled-multi:focus {
+  outline: none;
+  border-color: var(--accent-4);
+  box-shadow: 0 0 0 3px rgba(74,58,255,.18);
+}
+.styled-multi option { padding: .35rem .6rem; border-radius: 4px; }
+.styled-multi option:checked { background: var(--accent-4); color: #fff; }
+.styled-multi option:hover { background: var(--surface-2); }
+
+/* Size select */
+.sized-select {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 2px solid var(--surface-3);
+  border-radius: var(--radius-s);
+  padding: .4rem .6rem;
+  font-family: inherit;
+  font-size: .88rem;
+  color: var(--ink);
+  width: 100%;
+}
+.sized-select:focus {
+  outline: none;
+  border-color: var(--accent-3);
+  box-shadow: 0 0 0 3px rgba(29,158,111,.2);
+}
+
+/* ── Custom button: all:unset so it inherits nothing ── */
+.bs-custom-btn > button,
+.bs-selected > button,
+.bs-rich > button {
+  all: unset;
+  cursor: default;
+}
+
+/* ── selectedcontent element display ── */
+selectedcontent {
+  display: inline-flex;
+  align-items: center;
+  gap: .55rem;
+  min-width: 0;
+}
+
+/* ── Swatch helper (color dot inside option) ── */
+.opt-swatch {
+  display: inline-block;
+  width: .9rem;
+  height: .9rem;
+  border-radius: 999px;
+  border: 1px solid rgba(0,0,0,.15);
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+/* ── Emoji icon helper ── */
+.opt-emoji {
+  display: inline-block;
+  width: 1.3rem;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+/* ─── §2  BASE-SELECT DEMOS (Chrome 135+) ─── */
+
+/* ── Classic token theme ── */
+.bs-token,
+.bs-token::picker(select) {
+  appearance: base-select;
+}
+.bs-token {
+  --token-h: 44px;
+  display: inline-flex;
+  align-items: center;
+  min-width: 220px;
+  height: var(--token-h);
+  border: 2px solid var(--surface-3);
+  border-radius: 999px;
+  background: #fff;
+  padding: 0 .8rem;
+  font-family: 'Outfit', sans-serif;
+  font-size: .9rem;
+  color: var(--ink);
+  cursor: pointer;
+  transition: border-color .2s, box-shadow .2s;
+}
+.bs-token:hover { border-color: var(--ink-3); }
+.bs-token:focus { outline: none; }
+.bs-token:focus-visible {
+  border-color: var(--accent-4);
+  box-shadow: 0 0 0 3px rgba(74,58,255,.2);
+}
+.bs-token::picker-icon {
+  margin-inline-start: auto;
+  color: var(--ink-3);
+  transition: rotate .2s;
+}
+.bs-token:open::picker-icon { rotate: 180deg; }
+.bs-token::picker(select) {
+  background: #fff;
+  border: 1.5px solid var(--surface-3);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-m);
+  padding: .4rem;
+  min-width: 220px;
+  @starting-style { opacity: 0; transform: translateY(-6px) scale(.97); }
+  opacity: 1;
+  transform: none;
+  transition: opacity .18s, transform .18s;
+}
+.bs-token option {
+  padding: .55rem .85rem;
+  border-radius: var(--radius-s);
+  cursor: pointer;
+  font-size: .9rem;
+}
+.bs-token option:hover { background: var(--surface-2); }
+.bs-token option:checked { background: var(--accent-4); color: #fff; }
+.bs-token option::checkmark { color: rgba(255,255,255,.8); }
+
+/* ── Dark elegant ── */
+.bs-dark,
+.bs-dark::picker(select) { appearance: base-select; }
+.bs-dark {
+  min-width: 230px;
+  background: var(--ink);
+  color: #fff;
+  border: 1.5px solid #3a3960;
+  border-radius: var(--radius-s);
+  padding: .55rem 1rem;
+  font-family: 'Outfit', sans-serif;
+  font-size: .9rem;
+  cursor: pointer;
+  transition: border-color .2s;
+}
+.bs-dark:hover { border-color: var(--accent-4); }
+.bs-dark:focus { outline: none; }
+.bs-dark:focus-visible { box-shadow: 0 0 0 3px rgba(74,58,255,.35); }
+.bs-dark:open { border-color: var(--accent-4); }
+.bs-dark::picker-icon { color: var(--accent-2); transition: rotate .2s; }
+.bs-dark:open::picker-icon { rotate: 180deg; }
+.bs-dark::picker(select) {
+  background: #1a192e;
+  border: 1.5px solid #3a3960;
+  border-radius: var(--radius-s);
+  box-shadow: 0 12px 40px rgba(0,0,0,.45);
+  padding: .35rem;
+  min-width: 230px;
+  @starting-style { opacity: 0; transform: translateY(-8px); }
+  opacity: 1;
+  transform: none;
+  transition: opacity .2s, transform .2s;
+}
+.bs-dark option {
+  padding: .55rem .9rem;
+  border-radius: 4px;
+  color: #ccc8ef;
+  font-size: .9rem;
+}
+.bs-dark option:hover { background: #2c2b44; color: #fff; }
+.bs-dark option:checked { background: var(--accent-4); color: #fff; font-weight: 600; }
+.bs-dark option::checkmark { color: rgba(255,255,255,.7); margin-right: .35rem; }
+
+/* ── Accent flame ── */
+.bs-flame,
+.bs-flame::picker(select) { appearance: base-select; }
+.bs-flame {
+  min-width: 230px;
+  background: linear-gradient(135deg, var(--accent) 0%, #ff8c42 100%);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-s);
+  padding: .6rem 1rem;
+  font-family: 'Outfit', sans-serif;
+  font-size: .9rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(232,79,29,.4);
+  transition: opacity .2s, box-shadow .2s;
+}
+.bs-flame:hover { opacity: .92; box-shadow: 0 6px 20px rgba(232,79,29,.5); }
+.bs-flame:focus { outline: none; }
+.bs-flame:focus-visible { box-shadow: 0 0 0 3px rgba(232,79,29,.4); }
+.bs-flame::picker-icon { color: rgba(255,255,255,.8); transition: rotate .2s; }
+.bs-flame:open::picker-icon { rotate: 180deg; }
+.bs-flame::picker(select) {
+  background: #fff;
+  border: none;
+  border-radius: var(--radius-s);
+  box-shadow: 0 8px 30px rgba(232,79,29,.2);
+  padding: .4rem;
+  min-width: 230px;
+  @starting-style { opacity: 0; transform: translateY(-5px) scale(.98); }
+  opacity: 1;
+  transform: none;
+  transition: opacity .18s, transform .18s;
+}
+.bs-flame option { padding: .55rem .9rem; border-radius: 4px; color: var(--ink); font-size: .9rem; }
+.bs-flame option:hover { background: #fef0ea; }
+.bs-flame option:checked { background: var(--accent); color: #fff; font-weight: 600; }
+.bs-flame option::checkmark { color: rgba(255,255,255,.7); }
+
+/* ── Glass morphism ── */
+.bs-glass,
+.bs-glass::picker(select) { appearance: base-select; }
+.bs-glass {
+  min-width: 240px;
+  background: rgba(255,255,255,.25);
+  backdrop-filter: blur(16px);
+  border: 1.5px solid rgba(255,255,255,.45);
+  border-radius: var(--radius-m);
+  padding: .6rem 1rem;
+  font-family: 'Outfit', sans-serif;
+  font-size: .9rem;
+  color: #fff;
+  cursor: pointer;
+  transition: border-color .2s, background .2s;
+}
+.bs-glass:hover {
+  background: rgba(255,255,255,.35);
+  border-color: rgba(255,255,255,.6);
+}
+.bs-glass:focus { outline: none; }
+.bs-glass:focus-visible { box-shadow: 0 0 0 3px rgba(255,255,255,.3); }
+.bs-glass:open { background: rgba(255,255,255,.35); }
+.bs-glass::picker-icon { color: rgba(255,255,255,.8); transition: rotate .25s; }
+.bs-glass:open::picker-icon { rotate: 180deg; }
+.bs-glass::picker(select) {
+  background: rgba(20,18,40,.75);
+  backdrop-filter: blur(20px);
+  border: 1.5px solid rgba(255,255,255,.2);
+  border-radius: var(--radius-m);
+  box-shadow: 0 12px 40px rgba(0,0,0,.4);
+  padding: .5rem;
+  min-width: 240px;
+  @starting-style { opacity: 0; transform: translateY(-8px) scale(.96); }
+  opacity: 1;
+  transform: none;
+  transition: opacity .2s, transform .2s;
+}
+.bs-glass option {
+  padding: .6rem 1rem;
+  border-radius: var(--radius-s);
+  color: rgba(255,255,255,.85);
+  font-size: .9rem;
+}
+.bs-glass option:hover { background: rgba(255,255,255,.12); }
+.bs-glass option:checked { background: rgba(74,58,255,.55); color: #fff; }
+.bs-glass option::checkmark { color: var(--accent-2); }
+
+.glass-wrap {
+  background: linear-gradient(135deg, #6c63ff 0%, #e84f1d 100%);
+  border-radius: var(--radius-m);
+  padding: 1.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Rich option with icons (base-select) ── */
+.bs-rich,
+.bs-rich::picker(select) { appearance: base-select; }
+.bs-rich {
+  min-width: 260px;
+  border: 2px solid var(--surface-3);
+  border-radius: var(--radius-s);
+  background: #fff;
+  padding: .6rem 1rem;
+  font-family: 'Outfit', sans-serif;
+  font-size: .9rem;
+  color: var(--ink);
+  cursor: pointer;
+}
+.bs-rich:focus { outline: none; }
+.bs-rich:focus-visible { border-color: var(--accent-4); box-shadow: 0 0 0 3px rgba(74,58,255,.18); }
+.bs-rich:hover { border-color: var(--ink-3); }
+.bs-rich::picker-icon { transition: rotate .2s; }
+.bs-rich:open::picker-icon { rotate: 180deg; }
+.bs-rich::picker(select) {
+  background: #fff;
+  border: 1.5px solid var(--surface-3);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-m);
+  padding: .5rem;
+  min-width: 280px;
+  @starting-style { opacity: 0; transform: translateY(-6px); }
+  opacity: 1;
+  transform: none;
+  transition: opacity .2s, transform .2s;
+}
+.bs-rich option {
+  padding: .65rem 1rem;
+  border-radius: var(--radius-s);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .7rem;
+}
+.bs-rich option:hover { background: var(--surface-2); }
+.bs-rich option:checked {
+  background: linear-gradient(135deg, rgba(74,58,255,.1) 0%, rgba(74,58,255,.05) 100%);
+  border-left: 3px solid var(--accent-4);
+}
+.bs-rich option::checkmark {
+  content: "✓";
+  color: var(--accent-4);
+  font-weight: 700;
+  order: 1;          /* push checkmark to far right */
+  margin-left: auto;
+}
+.bs-rich option:disabled { opacity: .55; cursor: not-allowed; }
+.bs-rich optgroup { font-style: normal; font-weight: 700; padding: .3rem .5rem; }
+.bs-rich hr { border: 0; border-top: 1px solid var(--surface-3); margin: .4rem .5rem; }
+
+/* ── Optgroup styled ── */
+.bs-group,
+.bs-group::picker(select) { appearance: base-select; }
+.bs-group {
+  min-width: 240px;
+  border: 2px solid var(--surface-3);
+  border-radius: var(--radius-s);
+  background: #fff;
+  padding: .55rem 1rem;
+  font-family: 'Outfit', sans-serif;
+  font-size: .9rem;
+  color: var(--ink);
+  cursor: pointer;
+}
+.bs-group:focus { outline: none; }
+.bs-group:focus-visible { border-color: var(--accent-3); box-shadow: 0 0 0 3px rgba(29,158,111,.2); }
+.bs-group::picker-icon { color: var(--accent-3); transition: rotate .2s; }
+.bs-group:open::picker-icon { rotate: 180deg; }
+.bs-group::picker(select) {
+  background: #fff;
+  border: 1.5px solid var(--surface-3);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-m);
+  padding: .5rem;
+  min-width: 260px;
+  @starting-style { opacity: 0; transform: translateY(-5px); }
+  opacity: 1;
+  transform: none;
+  transition: opacity .18s, transform .18s;
+}
+.bs-group optgroup {
+  border: 1.5px solid var(--surface-3);
+  border-radius: var(--radius-s);
+  margin-bottom: .4rem;
+  overflow: hidden;
+  background: var(--surface);
+}
+.bs-group optgroup legend,
+.bs-group optgroup[label]::before {
+  font-size: .72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--ink-3);
+  padding: .4rem .9rem .25rem;
+  display: block;
+  background: var(--surface-2);
+}
+.bs-group option { padding: .5rem .9rem; border-radius: 0; color: var(--ink); font-size: .88rem; }
+.bs-group option:hover { background: var(--surface-2); }
+.bs-group option:checked { background: var(--accent-3); color: #fff; }
+.bs-group option::checkmark { color: rgba(255,255,255,.8); }
+.bs-group option:last-child { border-bottom-left-radius: var(--radius-s); border-bottom-right-radius: var(--radius-s); }
+
+/* ── Custom picker icon ── */
+.bs-custom-icon,
+.bs-custom-icon::picker(select) { appearance: base-select; }
+.bs-custom-icon {
+  min-width: 220px;
+  border: 2px solid var(--surface-3);
+  border-radius: var(--radius-s);
+  background: #fff;
+  padding: .55rem 1rem;
+  font-family: 'Outfit', sans-serif;
+  font-size: .9rem;
+  color: var(--ink);
+  cursor: pointer;
+}
+.bs-custom-icon:focus { outline: none; }
+.bs-custom-icon:focus-visible { border-color: var(--accent-2); box-shadow: 0 0 0 3px rgba(247,183,49,.25); }
+.bs-custom-icon::picker-icon {
+  content: "⌄";
+  font-size: 1.1rem;
+  color: var(--accent-2);
+  font-weight: 700;
+  transition: rotate .2s ease;
+}
+.bs-custom-icon:open::picker-icon { rotate: 180deg; }
+.bs-custom-icon::picker(select) {
+  background: #fff;
+  border: 1.5px solid var(--surface-3);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-m);
+  padding: .5rem;
+  min-width: 220px;
+  @starting-style { opacity: 0; transform: translateY(-4px); }
+  opacity: 1;
+  transform: none;
+  transition: opacity .15s, transform .15s;
+}
+.bs-custom-icon option {
+  padding: .55rem .85rem;
+  border-radius: var(--radius-s);
+  color: var(--ink);
+  font-size: .9rem;
+}
+.bs-custom-icon option:hover { background: var(--surface-2); }
+.bs-custom-icon option:checked { background: #fffbeb; color: var(--ink); font-weight: 600; border-left: 3px solid var(--accent-2); }
+.bs-custom-icon option::checkmark { content: "★"; color: var(--accent-2); }
+
+/* ── Custom button ── */
+.bs-custom-btn,
+.bs-custom-btn::picker(select) { appearance: base-select; }
+.bs-custom-btn {
+  min-width: 240px;
+  font-family: 'Outfit', sans-serif;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+.bs-custom-btn button {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  background: linear-gradient(135deg, #e0e7ff 0%, #dbeafe 100%);
+  border: 2px solid #a5b4fc;
+  border-radius: var(--radius-s);
+  padding: .5rem .9rem;
+  cursor: pointer;
+  gap: .6rem;
+  font-family: 'Outfit', sans-serif;
+  font-size: .9rem;
+  font-weight: 500;
+  color: var(--accent-4);
+}
+.bs-custom-btn:open button {
+  background: linear-gradient(135deg, #c7d2fe 0%, #bfdbfe 100%);
+  border-color: var(--accent-4);
+}
+.bs-custom-btn button .btn-icon { font-size: 1.1rem; flex-shrink: 0; }
+.bs-custom-btn button selectedcontent { flex: 1; }
+.bs-custom-btn button .btn-arrow {
+  margin-left: auto;
+  font-size: .8rem;
+  transition: rotate .2s;
+}
+.bs-custom-btn:open button .btn-arrow { rotate: 180deg; }
+.bs-custom-btn::picker(select) {
+  background: #fff;
+  border: 2px solid #a5b4fc;
+  border-radius: var(--radius-s);
+  box-shadow: var(--shadow-m);
+  padding: .4rem;
+  min-width: 240px;
+  @starting-style { opacity: 0; transform: translateY(-6px); }
+  opacity: 1;
+  transform: none;
+  transition: opacity .18s, transform .18s;
+}
+.bs-custom-btn option {
+  padding: .55rem .9rem;
+  border-radius: var(--radius-s);
+  color: var(--ink);
+  font-size: .9rem;
+}
+.bs-custom-btn option:hover { background: #e0e7ff; }
+.bs-custom-btn option:checked { background: var(--accent-4); color: #fff; font-weight: 600; }
+.bs-custom-btn option::checkmark { color: rgba(255,255,255,.8); }
+
+/* ── selectedcontent demo ── */
+.bs-selected,
+.bs-selected::picker(select) { appearance: base-select; }
+.bs-selected {
+  min-width: 260px;
+  border: 2px solid var(--surface-3);
+  border-radius: var(--radius-s);
+  background: #fff;
+  padding: .5rem 1rem;
+  font-family: 'Outfit', sans-serif;
+  font-size: .9rem;
+  color: var(--ink);
+  cursor: pointer;
+}
+.bs-selected:focus { outline: none; }
+.bs-selected:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(232,79,29,.2); }
+.bs-selected::picker-icon { color: var(--ink-3); transition: rotate .2s; }
+.bs-selected:open::picker-icon { rotate: 180deg; }
+.bs-selected button { display: flex; align-items: center; gap: .6rem; width: 100%; background: none; border: none; padding: 0; cursor: pointer; font: inherit; color: inherit; }
+.bs-selected button selectedcontent .opt-icon { font-size: 1.3rem; }
+.bs-selected button selectedcontent .opt-desc { display: none; }
+.bs-selected::picker(select) {
+  background: #fff;
+  border: 1.5px solid var(--surface-3);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-m);
+  padding: .5rem;
+  min-width: 280px;
+  @starting-style { opacity: 0; transform: translateY(-5px); }
+  opacity: 1;
+  transform: none;
+  transition: opacity .18s, transform .18s;
+}
+.bs-selected option {
+  padding: .65rem .9rem;
+  border-radius: var(--radius-s);
+  display: flex;
+  align-items: flex-start;
+  gap: .7rem;
+}
+.bs-selected option:hover { background: var(--surface-2); }
+.bs-selected option:checked { background: rgba(232,79,29,.07); }
+.bs-selected option .opt-icon { font-size: 1.4rem; flex-shrink: 0; }
+.bs-selected option .opt-desc { font-size: .75rem; color: var(--ink-3); display: block; margin-top: .1rem; }
+.bs-selected option::checkmark { content: "●"; color: var(--accent); font-size: .7rem; margin-left: auto; align-self: center; }
+
+/* ── HR separator in picker ── */
+.bs-hr,
+.bs-hr::picker(select) { appearance: base-select; }
+.bs-hr {
+  min-width: 220px;
+  border: 2px solid var(--surface-3);
+  border-radius: var(--radius-s);
+  background: #fff;
+  padding: .55rem 1rem;
+  font-family: 'Outfit', sans-serif;
+  font-size: .9rem;
+  color: var(--ink);
+  cursor: pointer;
+}
+.bs-hr:focus { outline: none; }
+.bs-hr:focus-visible { border-color: var(--accent-4); box-shadow: 0 0 0 3px rgba(74,58,255,.18); }
+.bs-hr::picker-icon { color: var(--ink-3); transition: rotate .2s; }
+.bs-hr:open::picker-icon { rotate: 180deg; }
+.bs-hr::picker(select) {
+  background: #fff;
+  border: 1.5px solid var(--surface-3);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-m);
+  padding: .5rem;
+  min-width: 240px;
+  @starting-style { opacity: 0; transform: translateY(-5px); }
+  opacity: 1;
+  transform: none;
+  transition: opacity .18s, transform .18s;
+}
+.bs-hr option { padding: .5rem .85rem; border-radius: var(--radius-s); color: var(--ink); font-size: .9rem; }
+.bs-hr option:hover { background: var(--surface-2); }
+.bs-hr option:checked { background: var(--accent-4); color: #fff; }
+.bs-hr option::checkmark { color: rgba(255,255,255,.8); }
+.bs-hr hr { margin: .4rem .5rem; border: none; border-top: 1.5px solid var(--surface-3); }
+
+/* ── @starting-style animation showcase ── */
+.bs-animated,
+.bs-animated::picker(select) { appearance: base-select; }
+.bs-animated {
+  min-width: 230px;
+  border: 2px solid #d4b8ff;
+  border-radius: var(--radius-s);
+  background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+  padding: .55rem 1rem;
+  font-family: 'Outfit', sans-serif;
+  font-size: .9rem;
+  color: #4a1d96;
+  cursor: pointer;
+}
+.bs-animated:focus { outline: none; }
+.bs-animated:focus-visible { box-shadow: 0 0 0 3px rgba(139,92,246,.3); }
+.bs-animated::picker-icon { color: #7c3aed; transition: rotate .25s cubic-bezier(.34,1.56,.64,1); }
+.bs-animated:open::picker-icon { rotate: 180deg; }
+.bs-animated::picker(select) {
+  background: #fff;
+  border: 2px solid #d4b8ff;
+  border-radius: var(--radius-m);
+  box-shadow: 0 8px 30px rgba(124,58,237,.2);
+  padding: .5rem;
+  min-width: 230px;
+  @starting-style {
+    opacity: 0;
+    transform: translateY(-10px) scale(.93);
+    filter: blur(4px);
+  }
+  opacity: 1;
+  transform: none;
+  filter: none;
+  transition: opacity .25s cubic-bezier(.34,1.56,.64,1),
+              transform .25s cubic-bezier(.34,1.56,.64,1),
+              filter .25s;
+}
+.bs-animated option { padding: .55rem .9rem; border-radius: var(--radius-s); color: #4a1d96; font-size: .9rem; }
+.bs-animated option:hover { background: #f3e8ff; }
+.bs-animated option:checked { background: #7c3aed; color: #fff; }
+.bs-animated option::checkmark { content: "✦"; color: #fbbf24; font-size: .8rem; }
+
+/* ── Checkbox custom ::checkmark showcase ── */
+.checkmark-showcase option::checkmark { color: var(--accent-3); content: "✓"; font-weight: 700; }
+
+/* ============================================================
+   §3  DATALIST
+   ============================================================ */
+.dl-input {
+  width: 100%;
+  border: 2px solid var(--surface-3);
+  border-radius: var(--radius-s);
+  padding: .55rem 1rem;
+  font-family: 'Outfit', sans-serif;
+  font-size: .9rem;
+  color: var(--ink);
+  transition: border-color .2s, box-shadow .2s;
+}
+.dl-input:focus {
+  outline: none;
+  border-color: var(--accent-4);
+  box-shadow: 0 0 0 3px rgba(74,58,255,.18);
+}
+
+/* ============================================================
+   §4  FORM INTEGRATION
+   ============================================================ */
+.form-demo {
+  background: #fff;
+  border: 1.5px solid var(--surface-3);
+  border-radius: var(--radius-m);
+  padding: 2rem;
+  box-shadow: var(--shadow-s);
+  max-width: 500px;
+}
+.form-row {
+  margin-bottom: 1.2rem;
+}
+.form-row label {
+  display: block;
+  font-size: .85rem;
+  font-weight: 600;
+  color: var(--ink-2);
+  margin-bottom: .45rem;
+}
+.form-hint { font-size: .78rem; color: var(--ink-3); margin-top: .3rem; }
+
+/* Validation states */
+.select-valid {
+  appearance: none;
+  -webkit-appearance: none;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%231d9e6f' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 1rem center;
+  border: 2px solid var(--accent-3);
+  border-radius: var(--radius-s);
+  padding: .55rem 2.8rem .55rem 1rem;
+  font-family: inherit;
+  font-size: .9rem;
+  color: var(--ink);
+  width: 100%;
+  cursor: pointer;
+}
+.select-valid:focus { outline: none; box-shadow: 0 0 0 3px rgba(29,158,111,.2); }
+
+.select-invalid {
+  appearance: none;
+  -webkit-appearance: none;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23c0392b' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 1rem center;
+  border: 2px solid #ef4444;
+  border-radius: var(--radius-s);
+  padding: .55rem 2.8rem .55rem 1rem;
+  font-family: inherit;
+  font-size: .9rem;
+  color: var(--ink);
+  width: 100%;
+  cursor: pointer;
+  background-color: #fef2f2;
+}
+.select-invalid:focus { outline: none; box-shadow: 0 0 0 3px rgba(192,57,43,.2); }
+
+/* user-valid / user-invalid */
+.select-userval {
+  appearance: none;
+  -webkit-appearance: none;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235a5880' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 1rem center;
+  border: 2px solid var(--surface-3);
+  border-radius: var(--radius-s);
+  padding: .55rem 2.8rem .55rem 1rem;
+  font-family: inherit;
+  font-size: .9rem;
+  color: var(--ink);
+  width: 100%;
+  cursor: pointer;
+  transition: border-color .2s;
+}
+.select-userval:focus { outline: none; }
+.select-userval:user-valid { border-color: var(--accent-3); background-color: #ecfdf5; }
+.select-userval:user-invalid { border-color: #ef4444; background-color: #fef2f2; }
+.select-userval:focus-visible { box-shadow: 0 0 0 3px rgba(74,58,255,.18); }
+
+/* ============================================================
+   §5  CSS PSEUDO DEMO AREA
+   ============================================================ */
+.pseudo-demo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.4rem;
+  margin: 1.2rem 0 2rem;
+}
+.pseudo-card {
+  background: #fff;
+  border: 1.5px solid var(--surface-3);
+  border-radius: var(--radius-m);
+  padding: 1.4rem;
+  box-shadow: var(--shadow-s);
+}
+.pseudo-card-title {
+  font-family: 'DM Mono', monospace;
+  font-size: .8rem;
+  font-weight: 500;
+  color: var(--accent-4);
+  margin-bottom: .8rem;
+  display: block;
+}
+
+/* focus pseudo demo */
+.focus-demo {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 2px solid var(--surface-3);
+  border-radius: var(--radius-s);
+  padding: .5rem 1rem;
+  width: 100%;
+  font-family: 'Outfit', sans-serif;
+  font-size: .88rem;
+  color: var(--ink);
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%235a5880' stroke-width='1.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right .8rem center;
+  padding-right: 2.4rem;
+  transition: border-color .2s, box-shadow .2s, background-color .2s;
+}
+.focus-demo:focus { outline: none; }
+.focus-demo:focus-visible {
+  border-color: var(--accent-4);
+  box-shadow: 0 0 0 3px rgba(74,58,255,.22);
+  background-color: #f5f4ff;
+}
+.focus-demo:hover { border-color: var(--ink-3); }
+
+/* disabled pseudo demo */
+.disabled-demo {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 2px solid var(--surface-3);
+  border-radius: var(--radius-s);
+  padding: .5rem 2.4rem .5rem 1rem;
+  width: 100%;
+  font-family: 'Outfit', sans-serif;
+  font-size: .88rem;
+  color: #9ca3af;
+  background: var(--surface-2) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%239ca3af' stroke-width='1.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right .8rem center;
+  cursor: not-allowed;
+  opacity: .7;
+}
+.disabled-demo:disabled { cursor: not-allowed; }
+
+/* required pseudo demo */
+.required-demo {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 2px solid var(--surface-3);
+  border-radius: var(--radius-s);
+  padding: .5rem 2.4rem .5rem 1rem;
+  width: 100%;
+  font-family: 'Outfit', sans-serif;
+  font-size: .88rem;
+  color: var(--ink);
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%235a5880' stroke-width='1.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right .8rem center;
+  cursor: pointer;
+}
+.required-demo:required { border-color: #f59e0b; background-color: #fffbeb; }
+.required-demo:focus { outline: none; box-shadow: 0 0 0 3px rgba(245,158,11,.2); }
+
+/* ============================================================
+   §6  MISC LAYOUT AIDS
+   ============================================================ */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.6rem; }
+.two-col-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.6rem; }
+
+@media (max-width: 900px) {
+  .page-wrap { grid-template-columns: 1fr; }
+  .sidebar { position: static; height: auto; }
+  .two-col, .two-col-3 { grid-template-columns: 1fr; }
+}
+
+.label-block {
+  display: block;
+  font-size: .83rem;
+  font-weight: 600;
+  color: var(--ink-2);
+  margin-bottom: .45rem;
+}
+.mt-s { margin-top: .6rem; }
+.mt-m { margin-top: 1.2rem; }
+.mb-m { margin-bottom: 1.2rem; }
+
+/* ── chips (for attributes listing) ── */
+.chip-list { display: flex; flex-wrap: wrap; gap: .5rem; margin: .8rem 0 1.4rem; }
+.chip {
+  font-family: 'DM Mono', monospace;
+  font-size: .77rem;
+  background: var(--surface-2);
+  border: 1px solid var(--surface-3);
+  padding: .25rem .8rem;
+  border-radius: 999px;
+  color: var(--ink-2);
+}
+.chip.new { background: #d4f5e9; border-color: #6ee7b7; color: #065f46; }
+.chip.exp { background: #fef3cd; border-color: #fcd34d; color: #78350f; }
+
+/* ── appearance: none showcase ── */
+.appearance-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin: 1rem 0 1.5rem;
+}
+.appearance-cell {
+  background: #fff;
+  border: 1.5px solid var(--surface-3);
+  border-radius: var(--radius-s);
+  padding: 1rem;
+  text-align: center;
+}
+.appearance-cell label {
+  display: block;
+  font-size: .72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--ink-3);
+  margin-bottom: .6rem;
+}
+.appearance-cell select { max-width: 100%; }
+
+select.app-auto { appearance: auto; }
+select.app-none {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 2px solid var(--ink);
+  border-radius: 0;
+  padding: .35rem .6rem;
+  font-family: 'DM Mono', monospace;
+  font-size: .8rem;
+  background: #fff;
+  color: var(--ink);
+  width: 100%;
+}
+select.app-base { appearance: base-select; min-width: 0; width: 100%; font-size: .85rem; }
+
+/* scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--surface-3); border-radius: 99px; }
+
+/* ============================================================
+   §7  ASSOCIATED ELEMENTS
+   ============================================================ */
+
+/* ── fieldset / legend ── */
+fieldset.demo-fieldset {
+  border: 1.5px solid var(--surface-3);
+  border-radius: var(--radius-m);
+  padding: 1.4rem 1.6rem;
+  background: rgba(250,250,248,.6);
+  margin: 0 0 1.4rem;
+}
+fieldset.demo-fieldset legend {
+  font-size: .83rem;
+  font-weight: 700;
+  color: var(--ink-2);
+  padding: 0 .5rem;
+  letter-spacing: .04em;
+}
+
+/* ── control-wrap: :focus-within hint highlight ── */
+.control-wrap { position: relative; }
+.control-wrap:focus-within .form-hint { color: var(--accent-4); }
+
+/* ── kbd keys ── */
+kbd {
+  display: inline-block;
+  border: 1px solid var(--surface-3);
+  border-bottom-width: 2px;
+  border-radius: 6px;
+  padding: .15rem .5rem;
+  background: var(--surface-2);
+  color: var(--ink-2);
+  font-family: 'DM Mono', monospace;
+  font-size: .8rem;
+  line-height: 1.5;
+}
+
+/* ── button.action (submit/reset/disabled) ── */
+button.action {
+  min-height: 2.6rem;
+  padding: .55rem 1.2rem;
+  border-radius: var(--radius-s);
+  border: 1.5px solid var(--surface-3);
+  color: var(--ink);
+  background: var(--surface-2);
+  font-family: 'Outfit', sans-serif;
+  font-size: .88rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color .15s, box-shadow .15s, transform .12s;
+}
+button.action:hover { border-color: var(--ink-3); background: var(--surface-3); }
+button.action:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(74,58,255,.2); }
+button.action:active { transform: translateY(1px); }
+button.action:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+button.action.primary {
+  background: var(--accent-4);
+  border-color: var(--accent-4);
+  color: #fff;
+}
+button.action.primary:hover { background: #3a2ae0; border-color: #3a2ae0; }
+
+/* ── output / meter / progress ── */
+output {
+  display: inline-block;
+  font-family: 'DM Mono', monospace;
+  font-size: .88rem;
+  background: var(--surface-2);
+  border: 1.5px solid var(--surface-3);
+  border-radius: var(--radius-s);
+  padding: .35rem .75rem;
+  color: var(--ink-2);
+}
+meter, progress {
+  width: 100%;
+  height: 10px;
+  border-radius: 999px;
+  overflow: hidden;
+}
+.assoc-row { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; margin: .6rem 0; }
+</style>
+</head>
+<body>
+
+<div class="page-wrap">
+
+<!-- ====================================================
+     SIDEBAR
+     ==================================================== -->
+<aside class="sidebar">
+  <div class="sidebar-title">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 9h8M8 12h5M8 15h6"/></svg>
+    Select Reference
+  </div>
+
+  <nav>
+    <div class="nav-section">
+      <div class="nav-section-label">Elements</div>
+      <a href="#s1">&lt;select&gt; Element</a>
+      <a href="#s2">&lt;option&gt; Element</a>
+      <a href="#s3">&lt;optgroup&gt; Element</a>
+      <a href="#s4">&lt;datalist&gt; Element</a>
+      <a href="#s5">&lt;selectedcontent&gt;</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-label">Attributes</div>
+      <a href="#s6">select Attributes</a>
+      <a href="#s7">option Attributes</a>
+      <a href="#s8">optgroup Attributes</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-label">CSS</div>
+      <a href="#s9">appearance: base-select</a>
+      <a href="#s10">Pseudo-Classes</a>
+      <a href="#s11">Pseudo-Elements</a>
+      <a href="#s12">appearance Values</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-label">Live Demos</div>
+      <a href="#d1">Classic Styling</a>
+      <a href="#d2">base-select Themes</a>
+      <a href="#d3">Rich Options</a>
+      <a href="#d4">Custom Button</a>
+      <a href="#d5">Animations</a>
+      <a href="#d6">Form + Fieldset</a>
+      <a href="#d7">Datalist Demos</a>
+      <a href="#d8">Associated Elements</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-label">Reference</div>
+      <a href="#s13">Keyboard Behaviour</a>
+      <a href="#s14">Accessibility Notes</a>
+      <a href="#s15">Browser Support</a>
+      <a href="#d8">Associated Elements</a>
+    </div>
+  </nav>
+</aside>
+
+<!-- ====================================================
+     MAIN
+     ==================================================== -->
+<main class="main-content">
+
+  <!-- HERO -->
+  <header class="hero">
+    <span class="hero-tag">HTML · CSS · 2025/26</span>
+    <h1><em>&lt;select&gt;</em> &amp; Option<br>Complete Reference</h1>
+    <p>Every element, every attribute, every pseudo-class and pseudo-element — including the new <code>appearance: base-select</code> API and fully custom UI patterns in pure HTML &amp; CSS.</p>
+    <div class="hero-pills">
+      <span class="hero-pill">&lt;select&gt;</span>
+      <span class="hero-pill">&lt;option&gt;</span>
+      <span class="hero-pill">&lt;optgroup&gt;</span>
+      <span class="hero-pill">&lt;datalist&gt;</span>
+      <span class="hero-pill">&lt;selectedcontent&gt;</span>
+      <span class="hero-pill">&lt;fieldset&gt;</span>
+      <span class="hero-pill">&lt;output&gt;</span>
+      <span class="hero-pill">&lt;kbd&gt;</span>
+      <span class="hero-pill">::picker(select)</span>
+      <span class="hero-pill">::picker-icon</span>
+      <span class="hero-pill">::checkmark</span>
+      <span class="hero-pill">:open</span>
+      <span class="hero-pill">:optional</span>
+      <span class="hero-pill">[multiple]</span>
+      <span class="hero-pill">[size]</span>
+      <span class="hero-pill">appearance: base-select</span>
+    </div>
+  </header>
+
+  <!-- ══════════════════════════════════════════════════════
+       §1  <select>
+       ══════════════════════════════════════════════════════ -->
+  <section class="section" id="s1">
+    <div class="section-heading">
+      <div class="section-num">1</div>
+      <h2>&lt;select&gt; Element</h2>
+    </div>
+
+    <p>The <code>&lt;select&gt;</code> element creates a drop-down list (or scrollable list with <code>multiple</code>/<code>size</code>). It is a <strong>form-associated</strong>, <strong>labelable</strong> element and participates in constraint validation.</p>
+
+    <div class="info-box">
+      <strong>Content model</strong>
+      In classic mode, permitted children are <code>&lt;option&gt;</code>, <code>&lt;optgroup&gt;</code>, and <code>&lt;hr&gt;</code>. With <code>appearance: base-select</code> opted in, the HTML parser is extended to also allow <code>&lt;button&gt;</code> (as the first child), <code>&lt;div&gt;</code>, <code>&lt;span&gt;</code>, <code>&lt;img&gt;</code>, <code>&lt;svg&gt;</code>, and most other elements inside <code>&lt;option&gt;</code> and as direct children.
+    </div>
+
+    <h3 class="subsection"><code>&lt;select&gt;</code> — Anatomy</h3>
+    <pre><span class="cc">&lt;!-- Minimal --&gt;</span>
+<span class="ct">&lt;select</span> <span class="ca">name</span>=<span class="cv">"fruit"</span> <span class="ca">id</span>=<span class="cv">"fruit"</span><span class="ct">&gt;</span>
+  <span class="ct">&lt;option</span> <span class="ca">value</span>=<span class="cv">""</span><span class="ct">&gt;</span>Choose a fruit<span class="ct">&lt;/option&gt;</span>
+  <span class="ct">&lt;option</span> <span class="ca">value</span>=<span class="cv">"apple"</span><span class="ct">&gt;</span>Apple<span class="ct">&lt;/option&gt;</span>
+  <span class="ct">&lt;option</span> <span class="ca">value</span>=<span class="cv">"mango"</span> <span class="ca">selected</span><span class="ct">&gt;</span>Mango<span class="ct">&lt;/option&gt;</span>
+<span class="ct">&lt;/select&gt;</span>
+
+<span class="cc">&lt;!-- Full attributes --&gt;</span>
+<span class="ct">&lt;select</span>
+  <span class="ca">id</span>=<span class="cv">"my-select"</span>
+  <span class="ca">name</span>=<span class="cv">"my-select"</span>
+  <span class="ca">form</span>=<span class="cv">"my-form"</span>
+  <span class="ca">multiple</span>
+  <span class="ca">size</span>=<span class="cv">"5"</span>
+  <span class="ca">disabled</span>
+  <span class="ca">required</span>
+  <span class="ca">autofocus</span>
+  <span class="ca">autocomplete</span>=<span class="cv">"country-name"</span>
+  <span class="ca">aria-label</span>=<span class="cv">"Select your country"</span>
+  <span class="ca">aria-required</span>=<span class="cv">"true"</span>
+  <span class="ca">tabindex</span>=<span class="cv">"0"</span>
+<span class="ct">&gt;</span>
+  <span class="ct">&lt;option</span> <span class="ca">value</span>=<span class="cv">""</span><span class="ct">&gt;</span>-- Select --<span class="ct">&lt;/option&gt;</span>
+  <span class="ct">&lt;option</span> <span class="ca">value</span>=<span class="cv">"in"</span><span class="ct">&gt;</span>India<span class="ct">&lt;/option&gt;</span>
+  <span class="ct">&lt;option</span> <span class="ca">value</span>=<span class="cv">"us"</span><span class="ct">&gt;</span>United States<span class="ct">&lt;/option&gt;</span>
+<span class="ct">&lt;/select&gt;</span>
+
+<span class="cc">&lt;!-- With optgroup + hr divider --&gt;</span>
+<span class="ct">&lt;select</span> <span class="ca">name</span>=<span class="cv">"food"</span><span class="ct">&gt;</span>
+  <span class="ct">&lt;option</span> <span class="ca">value</span>=<span class="cv">""</span><span class="ct">&gt;</span>Choose food<span class="ct">&lt;/option&gt;</span>
+  <span class="ct">&lt;hr&gt;</span>
+  <span class="ct">&lt;optgroup</span> <span class="ca">label</span>=<span class="cv">"Fruit"</span><span class="ct">&gt;</span>
+    <span class="ct">&lt;option</span> <span class="ca">value</span>=<span class="cv">"apple"</span><span class="ct">&gt;</span>Apple<span class="ct">&lt;/option&gt;</span>
+    <span class="ct">&lt;option</span> <span class="ca">value</span>=<span class="cv">"mango"</span><span class="ct">&gt;</span>Mango<span class="ct">&lt;/option&gt;</span>
+  <span class="ct">&lt;/optgroup&gt;</span>
+  <span class="ct">&lt;hr&gt;</span>
+  <span class="ct">&lt;optgroup</span> <span class="ca">label</span>=<span class="cv">"Vegetables"</span><span class="ct">&gt;</span>
+    <span class="ct">&lt;option</span> <span class="ca">value</span>=<span class="cv">"carrot"</span><span class="ct">&gt;</span>Carrot<span class="ct">&lt;/option&gt;</span>
+  <span class="ct">&lt;/optgroup&gt;</span>
+<span class="ct">&lt;/select&gt;</span></pre>
+  </section>
+
+  <hr class="fancy">
+
+  <!-- ══════════════════════════════════════════════════════
+       §2  <option>
+       ══════════════════════════════════════════════════════ -->
+  <section class="section" id="s2">
+    <div class="section-heading">
+      <div class="section-num">2</div>
+      <h2>&lt;option&gt; Element</h2>
+    </div>
+
+    <p>Defines a single selectable item inside a <code>&lt;select&gt;</code>, <code>&lt;optgroup&gt;</code>, or <code>&lt;datalist&gt;</code>. In <code>base-select</code> mode the element can contain arbitrary HTML including images and SVG.</p>
+
+    <pre><span class="cc">&lt;!-- All option attributes --&gt;</span>
+<span class="ct">&lt;option</span>
+  <span class="ca">value</span>=<span class="cv">"red"</span>          <span class="cc">&lt;!-- value submitted with form --&gt;</span>
+  <span class="ca">label</span>=<span class="cv">"Red Color"</span>   <span class="cc">&lt;!-- visible label override --&gt;</span>
+  <span class="ca">selected</span>            <span class="cc">&lt;!-- initially selected --&gt;</span>
+  <span class="ca">disabled</span>            <span class="cc">&lt;!-- unselectable --&gt;</span>
+<span class="ct">&gt;</span>Red<span class="ct">&lt;/option&gt;</span>
+
+<span class="cc">&lt;!-- Rich content (base-select only) --&gt;</span>
+<span class="ct">&lt;option</span> <span class="ca">value</span>=<span class="cv">"html"</span><span class="ct">&gt;</span>
+  <span class="ct">&lt;svg</span> <span class="ca">aria-hidden</span>=<span class="cv">"true"</span> <span class="ca">width</span>=<span class="cv">"16"</span> <span class="ca">height</span>=<span class="cv">"16"</span><span class="ct">&gt;</span>…<span class="ct">&lt;/svg&gt;</span>
+  <span class="ct">&lt;span&gt;</span>HTML<span class="ct">&lt;/span&gt;</span>
+  <span class="ct">&lt;span</span> <span class="ca">class</span>=<span class="cv">"desc"</span><span class="ct">&gt;</span>Markup language<span class="ct">&lt;/span&gt;</span>
+<span class="ct">&lt;/option&gt;</span>
+
+<span class="cc">&lt;!-- In datalist: value attribute is the suggestion --&gt;</span>
+<span class="ct">&lt;option</span> <span class="ca">value</span>=<span class="cv">"Firefox"</span><span class="ct">&gt;&lt;/option&gt;</span></pre>
+  </section>
+
+  <hr class="fancy">
+
+  <!-- ══════════════════════════════════════════════════════
+       §3  <optgroup>
+       ══════════════════════════════════════════════════════ -->
+  <section class="section" id="s3">
+    <div class="section-heading">
+      <div class="section-num">3</div>
+      <h2>&lt;optgroup&gt; Element</h2>
+    </div>
+
+    <p>Groups related <code>&lt;option&gt;</code> elements inside a <code>&lt;select&gt;</code>. Cannot be nested. In <code>base-select</code> mode a <code>&lt;legend&gt;</code> element may be used as the group label instead of the <code>label</code> attribute, enabling full CSS styling of the heading.</p>
+
+    <pre><span class="cc">&lt;!-- Classic optgroup --&gt;</span>
+<span class="ct">&lt;optgroup</span> <span class="ca">label</span>=<span class="cv">"Swedish Cars"</span><span class="ct">&gt;</span>
+  <span class="ct">&lt;option</span> <span class="ca">value</span>=<span class="cv">"volvo"</span><span class="ct">&gt;</span>Volvo<span class="ct">&lt;/option&gt;</span>
+  <span class="ct">&lt;option</span> <span class="ca">value</span>=<span class="cv">"saab"</span><span class="ct">&gt;</span>Saab<span class="ct">&lt;/option&gt;</span>
+<span class="ct">&lt;/optgroup&gt;</span>
+
+<span class="cc">&lt;!-- Disabled group --&gt;</span>
+<span class="ct">&lt;optgroup</span> <span class="ca">label</span>=<span class="cv">"Archived"</span> <span class="ca">disabled</span><span class="ct">&gt;</span>
+  <span class="ct">&lt;option</span> <span class="ca">value</span>=<span class="cv">"old"</span><span class="ct">&gt;</span>Old Model<span class="ct">&lt;/option&gt;</span>
+<span class="ct">&lt;/optgroup&gt;</span>
+
+<span class="cc">&lt;!-- base-select: &lt;legend&gt; as styled label --&gt;</span>
+<span class="ct">&lt;optgroup</span><span class="ct">&gt;</span>
+  <span class="ct">&lt;legend&gt;</span>🌿 Plant-Based<span class="ct">&lt;/legend&gt;</span>
+  <span class="ct">&lt;option</span> <span class="ca">value</span>=<span class="cv">"tofu"</span><span class="ct">&gt;</span>Tofu<span class="ct">&lt;/option&gt;</span>
+  <span class="ct">&lt;option</span> <span class="ca">value</span>=<span class="cv">"tempeh"</span><span class="ct">&gt;</span>Tempeh<span class="ct">&lt;/option&gt;</span>
+<span class="ct">&lt;/optgroup&gt;</span></pre>
+  </section>
+
+  <hr class="fancy">
+
+  <!-- ══════════════════════════════════════════════════════
+       §4  <datalist>
+       ══════════════════════════════════════════════════════ -->
+  <section class="section" id="s4">
+    <div class="section-heading">
+      <div class="section-num">4</div>
+      <h2>&lt;datalist&gt; Element</h2>
+    </div>
+
+    <p><code>&lt;datalist&gt;</code> provides a list of predefined <em>suggestions</em> for <code>&lt;input&gt;</code> via the <code>list</code> attribute. It is <strong>not</strong> a replacement for <code>&lt;select&gt;</code> — the user can still type any value. Styling is browser-controlled and very limited.</p>
+
+    <pre><span class="cc">&lt;!-- Text autocomplete --&gt;</span>
+<span class="ct">&lt;label</span> <span class="ca">for</span>=<span class="cv">"browser"</span><span class="ct">&gt;</span>Browser:<span class="ct">&lt;/label&gt;</span>
+<span class="ct">&lt;input</span> <span class="ca">list</span>=<span class="cv">"browsers"</span> <span class="ca">id</span>=<span class="cv">"browser"</span> <span class="ca">name</span>=<span class="cv">"browser"</span><span class="ct">&gt;</span>
+<span class="ct">&lt;datalist</span> <span class="ca">id</span>=<span class="cv">"browsers"</span><span class="ct">&gt;</span>
+  <span class="ct">&lt;option</span> <span class="ca">value</span>=<span class="cv">"Chrome"</span><span class="ct">&gt;&lt;/option&gt;</span>
+  <span class="ct">&lt;option</span> <span class="ca">value</span>=<span class="cv">"Firefox"</span><span class="ct">&gt;&lt;/option&gt;</span>
+  <span class="ct">&lt;option</span> <span class="ca">value</span>=<span class="cv">"Safari"</span><span class="ct">&gt;&lt;/option&gt;</span>
+  <span class="ct">&lt;option</span> <span class="ca">value</span>=<span class="cv">"Edge"</span><span class="ct">&gt;&lt;/option&gt;</span>
+<span class="ct">&lt;/datalist&gt;</span>
+
+<span class="cc">&lt;!-- Color picker swatches --&gt;</span>
+<span class="ct">&lt;input</span> <span class="ca">type</span>=<span class="cv">"color"</span> <span class="ca">list</span>=<span class="cv">"swatches"</span><span class="ct">&gt;</span>
+<span class="ct">&lt;datalist</span> <span class="ca">id</span>=<span class="cv">"swatches"</span><span class="ct">&gt;</span>
+  <span class="ct">&lt;option</span> <span class="ca">value</span>=<span class="cv">"#e84f1d"</span><span class="ct">&gt;&lt;/option&gt;</span>
+  <span class="ct">&lt;option</span> <span class="ca">value</span>=<span class="cv">"#4a3aff"</span><span class="ct">&gt;&lt;/option&gt;</span>
+  <span class="ct">&lt;option</span> <span class="ca">value</span>=<span class="cv">"#1d9e6f"</span><span class="ct">&gt;&lt;/option&gt;</span>
+<span class="ct">&lt;/datalist&gt;</span>
+
+<span class="cc">&lt;!-- Range tick marks --&gt;</span>
+<span class="ct">&lt;input</span> <span class="ca">type</span>=<span class="cv">"range"</span> <span class="ca">min</span>=<span class="cv">"0"</span> <span class="ca">max</span>=<span class="cv">"100"</span> <span class="ca">list</span>=<span class="cv">"ticks"</span><span class="ct">&gt;</span>
+<span class="ct">&lt;datalist</span> <span class="ca">id</span>=<span class="cv">"ticks"</span><span class="ct">&gt;</span>
+  <span class="ct">&lt;option</span> <span class="ca">value</span>=<span class="cv">"0"</span><span class="ct">&gt;&lt;/option&gt;</span>
+  <span class="ct">&lt;option</span> <span class="ca">value</span>=<span class="cv">"25"</span><span class="ct">&gt;&lt;/option&gt;</span>
+  <span class="ct">&lt;option</span> <span class="ca">value</span>=<span class="cv">"50"</span><span class="ct">&gt;&lt;/option&gt;</span>
+  <span class="ct">&lt;option</span> <span class="ca">value</span>=<span class="cv">"75"</span><span class="ct">&gt;&lt;/option&gt;</span>
+  <span class="ct">&lt;option</span> <span class="ca">value</span>=<span class="cv">"100"</span><span class="ct">&gt;&lt;/option&gt;</span>
+<span class="ct">&lt;/datalist&gt;</span></pre>
+  </section>
+
+  <hr class="fancy">
+
+  <!-- ══════════════════════════════════════════════════════
+       §5  <selectedcontent>
+       ══════════════════════════════════════════════════════ -->
+  <section class="section" id="s5">
+    <div class="section-heading">
+      <div class="section-num">5</div>
+      <h2>&lt;selectedcontent&gt; <span class="badge badge-new">New</span> <span class="badge badge-chrome">Chrome 135+</span></h2>
+    </div>
+
+    <p>A new HTML element that, when placed inside the <code>&lt;button&gt;</code> child of a <code>base-select</code> <code>&lt;select&gt;</code>, automatically mirrors (clones) the inner HTML of the currently selected <code>&lt;option&gt;</code>. It enables you to show rich content (icons, descriptions) inside the closed select button — and to style it differently than the picker dropdown.</p>
+
+    <div class="info-box">
+      <strong>Progressive enhancement</strong>
+      Non-supporting browsers completely ignore the <code>&lt;button&gt;&lt;selectedcontent&gt;&lt;/selectedcontent&gt;&lt;/button&gt;</code> structure and fall back to the plain text of the selected option. No JS needed.
+    </div>
+
+    <pre><span class="ct">&lt;select</span> <span class="ca">name</span>=<span class="cv">"tech"</span> <span class="ca">class</span>=<span class="cv">"my-select"</span><span class="ct">&gt;</span>
+  <span class="cc">&lt;!-- Custom button with cloned content --&gt;</span>
+  <span class="ct">&lt;button&gt;</span>
+    <span class="ct">&lt;selectedcontent&gt;&lt;/selectedcontent&gt;</span>
+  <span class="ct">&lt;/button&gt;</span>
+
+  <span class="ct">&lt;option</span> <span class="ca">value</span>=<span class="cv">"html"</span><span class="ct">&gt;</span>
+    <span class="ct">&lt;span</span> <span class="ca">class</span>=<span class="cv">"icon"</span><span class="ct">&gt;</span>🌐<span class="ct">&lt;/span&gt;</span>
+    <span class="ct">&lt;span</span> <span class="ca">class</span>=<span class="cv">"name"</span><span class="ct">&gt;</span>HTML<span class="ct">&lt;/span&gt;</span>
+    <span class="ct">&lt;span</span> <span class="ca">class</span>=<span class="cv">"desc"</span><span class="ct">&gt;</span>HyperText Markup Language<span class="ct">&lt;/span&gt;</span>
+  <span class="ct">&lt;/option&gt;</span>
+  <span class="ct">&lt;option</span> <span class="ca">value</span>=<span class="cv">"css"</span><span class="ct">&gt;</span>
+    <span class="ct">&lt;span</span> <span class="ca">class</span>=<span class="cv">"icon"</span><span class="ct">&gt;</span>🎨<span class="ct">&lt;/span&gt;</span>
+    <span class="ct">&lt;span</span> <span class="ca">class</span>=<span class="cv">"name"</span><span class="ct">&gt;</span>CSS<span class="ct">&lt;/span&gt;</span>
+    <span class="ct">&lt;span</span> <span class="ca">class</span>=<span class="cv">"desc"</span><span class="ct">&gt;</span>Cascading Style Sheets<span class="ct">&lt;/span&gt;</span>
+  <span class="ct">&lt;/option&gt;</span>
+<span class="ct">&lt;/select&gt;</span>
+
+<span class="cs">/* Hide the description inside the button but show it in the picker */</span>
+<span class="ck">selectedcontent</span> <span class="cs">.desc</span> { <span class="ck">display</span>: <span class="cv">none</span>; }
+<span class="ck">option</span> <span class="cs">.desc</span>            { <span class="ck">display</span>: <span class="cv">block</span>; <span class="ck">font-size</span>: <span class="cv">.75rem</span>; <span class="ck">color</span>: <span class="cv">#888</span>; }</pre>
+  </section>
+
+  <hr class="fancy">
+
+  <!-- ══════════════════════════════════════════════════════
+       §6  SELECT ATTRIBUTES TABLE
+       ══════════════════════════════════════════════════════ -->
+  <section class="section" id="s6">
+    <div class="section-heading">
+      <div class="section-num">6</div>
+      <h2>&lt;select&gt; Attributes</h2>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Attribute</th><th>Type</th><th class="desc">Description</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>name</td><td>String</td><td class="desc">Key used when the form data is submitted.</td><td><span class="badge badge-std">Standard</span></td></tr>
+          <tr><td>id</td><td>String</td><td class="desc">Unique identifier; links <code>&lt;label for="…"&gt;</code>.</td><td><span class="badge badge-std">Global</span></td></tr>
+          <tr><td>disabled</td><td>Boolean</td><td class="desc">Makes the control non-interactive. Inheritable from containing <code>&lt;fieldset&gt;</code>.</td><td></td></tr>
+          <tr><td>multiple</td><td>Boolean</td><td class="desc">Allows multiple simultaneous selections. Renders as a listbox instead of a dropdown.</td><td>❌ not supported with <code>base-select</code> yet</td></tr>
+          <tr><td>required</td><td>Boolean</td><td class="desc">Form cannot be submitted unless an option with a non-empty value is selected.</td><td></td></tr>
+          <tr><td>size</td><td>Integer</td><td class="desc">Number of visible rows. Default is 1 (dropdown); ≥2 shows a listbox.</td><td>❌ not supported with <code>base-select</code> yet</td></tr>
+          <tr><td>autofocus</td><td>Boolean</td><td class="desc">Focuses the element automatically when the page loads. Only one per document.</td><td></td></tr>
+          <tr><td>form</td><td>ID ref</td><td class="desc">Associates this element with a <code>&lt;form&gt;</code> anywhere on the page (owner form).</td><td></td></tr>
+          <tr><td>autocomplete</td><td>Token string</td><td class="desc">Hint to the user-agent's autofill feature (e.g. <code>country-name</code>, <code>address-level1</code>).</td><td></td></tr>
+          <tr><td>tabindex</td><td>Integer</td><td class="desc">Controls sequential focus order.</td><td><span class="badge badge-std">Global</span></td></tr>
+          <tr><td>aria-label</td><td>String</td><td class="desc">Accessible name when no visible label is present.</td><td><span class="badge badge-std">ARIA</span></td></tr>
+          <tr><td>aria-labelledby</td><td>ID refs</td><td class="desc">Points to element(s) that label the select.</td><td><span class="badge badge-std">ARIA</span></td></tr>
+          <tr><td>aria-describedby</td><td>ID refs</td><td class="desc">Points to element(s) that describe/hint the select.</td><td><span class="badge badge-std">ARIA</span></td></tr>
+          <tr><td>aria-required</td><td>Bool string</td><td class="desc">Communicates required state to assistive tech.</td><td><span class="badge badge-std">ARIA</span></td></tr>
+          <tr><td>aria-invalid</td><td>Bool string</td><td class="desc">Communicates validation failure.</td><td><span class="badge badge-std">ARIA</span></td></tr>
+          <tr><td>data-*</td><td>Any</td><td class="desc">Custom data attributes for scripting/styling hooks.</td><td><span class="badge badge-std">Global</span></td></tr>
+          <tr><td>class / style</td><td>String</td><td class="desc">CSS class and inline style; critical for custom styling.</td><td><span class="badge badge-std">Global</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <hr class="fancy">
+
+  <!-- ══════════════════════════════════════════════════════
+       §7  OPTION ATTRIBUTES TABLE
+       ══════════════════════════════════════════════════════ -->
+  <section class="section" id="s7">
+    <div class="section-heading">
+      <div class="section-num">7</div>
+      <h2>&lt;option&gt; Attributes</h2>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Attribute</th><th>Type</th><th class="desc">Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>value</td><td>String</td><td class="desc">Value submitted with the form. If omitted, the text content is used as the value.</td></tr>
+          <tr><td>label</td><td>String</td><td class="desc">Alternative visible label shown in the dropdown. If omitted, the text content is shown.</td></tr>
+          <tr><td>selected</td><td>Boolean</td><td class="desc">Marks the option as pre-selected. Only one per non-<code>multiple</code> select.</td></tr>
+          <tr><td>disabled</td><td>Boolean</td><td class="desc">Makes this specific option unselectable (greyed out).</td></tr>
+          <tr><td>data-*</td><td>Any</td><td class="desc">Custom data hooks. Useful for JS logic or CSS <code>attr()</code> tricks.</td></tr>
+          <tr><td>class / style</td><td>String</td><td class="desc">CSS class and inline style. In <code>base-select</code> mode these are fully styleable.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <hr class="fancy">
+
+  <!-- ══════════════════════════════════════════════════════
+       §8  OPTGROUP ATTRIBUTES
+       ══════════════════════════════════════════════════════ -->
+  <section class="section" id="s8">
+    <div class="section-heading">
+      <div class="section-num">8</div>
+      <h2>&lt;optgroup&gt; Attributes</h2>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Attribute</th><th>Type</th><th class="desc">Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>label</td><td>String</td><td class="desc"><strong>Required.</strong> The visible heading of the group. In <code>base-select</code>, the <code>&lt;legend&gt;</code> child overrides this and is fully styleable.</td></tr>
+          <tr><td>disabled</td><td>Boolean</td><td class="desc">Disables all <code>&lt;option&gt;</code> children in one go.</td></tr>
+          <tr><td>data-*</td><td>Any</td><td class="desc">Custom data attributes.</td></tr>
+          <tr><td>class / style</td><td>String</td><td class="desc">CSS class and inline style. Fully styleable in <code>base-select</code> mode.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <hr class="fancy">
+
+  <!-- ══════════════════════════════════════════════════════
+       §9  appearance: base-select
+       ══════════════════════════════════════════════════════ -->
+  <section class="section" id="s9">
+    <div class="section-heading">
+      <div class="section-num">9</div>
+      <h2><code>appearance: base-select</code> <span class="badge badge-new">New</span></h2>
+    </div>
+
+    <p>The opt-in CSS value that unlocks the Customizable Select Element API. It must be set on <strong>both</strong> the <code>&lt;select&gt;</code> and its <code>::picker(select)</code> pseudo-element. Setting it only on the <code>&lt;select&gt;</code> styles just the button; not setting it on the picker leaves the OS-rendered dropdown unchanged.</p>
+
+    <pre><span class="cc">/* Minimum opt-in — apply to BOTH */</span>
+<span class="cs">select</span>,
+<span class="cs">::picker(select)</span> {
+  <span class="ck">appearance</span>: <span class="cv">base-select</span>;
+}
+
+<span class="cc">/* Or with nesting */</span>
+<span class="cs">select</span> {
+  <span class="ck">appearance</span>: <span class="cv">base-select</span>;
+  <span class="ck">&amp;::picker(select)</span> {
+    <span class="ck">appearance</span>: <span class="cv">base-select</span>;
+  }
+}
+
+<span class="cc">/* Progressive enhancement check */</span>
+<span class="cs">@supports</span> (<span class="ck">appearance</span>: <span class="cv">base-select</span>) {
+  <span class="cs">select</span>, <span class="cs">::picker(select)</span> {
+    <span class="ck">appearance</span>: <span class="cv">base-select</span>;
+    <span class="cc">/* custom styles here */</span>
+  }
+}</pre>
+
+    <p>What <code>base-select</code> unlocks:</p>
+    <div class="chip-list">
+      <span class="chip new">::picker(select)</span>
+      <span class="chip new">::picker-icon</span>
+      <span class="chip new">::checkmark</span>
+      <span class="chip new">:open</span>
+      <span class="chip new">&lt;button&gt; first child</span>
+      <span class="chip new">&lt;selectedcontent&gt;</span>
+      <span class="chip new">Rich HTML in &lt;option&gt;</span>
+      <span class="chip new">Top-layer picker (popover)</span>
+      <span class="chip new">Anchor positioning</span>
+      <span class="chip new">@starting-style animation</span>
+      <span class="chip new">&lt;legend&gt; in &lt;optgroup&gt;</span>
+    </div>
+
+    <div class="info-box warn">
+      <strong>⚠ Limitations (as of early 2026)</strong>
+      <code>multiple</code> and <code>size</code> attributes are not yet supported with <code>base-select</code>. Touch/mobile OS pickers are replaced by the web-rendered picker (no native mobile sheet). Only Chromium-based browsers (Chrome/Edge 135+) currently ship full support.
+    </div>
+  </section>
+
+  <hr class="fancy">
+
+  <!-- ══════════════════════════════════════════════════════
+       §10  PSEUDO-CLASSES
+       ══════════════════════════════════════════════════════ -->
+  <section class="section" id="s10">
+    <div class="section-heading">
+      <div class="section-num">10</div>
+      <h2>Pseudo-Classes</h2>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Pseudo-Class</th><th>Applies to</th><th class="desc">Description</th><th>Mode</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>:hover</td><td>select, option</td><td class="desc">Pointer is over the element.</td><td>Both</td></tr>
+          <tr><td>:focus</td><td>select</td><td class="desc">Element has keyboard/programmatic focus.</td><td>Both</td></tr>
+          <tr><td>:focus-visible</td><td>select</td><td class="desc">Element has focus AND the user agent determines that a visible focus indicator should be shown (keyboard nav).</td><td>Both</td></tr>
+          <tr><td>:focus-within</td><td>select, form</td><td class="desc">Element or any descendant has focus. Useful for parent label styling.</td><td>Both</td></tr>
+          <tr><td>:active</td><td>select</td><td class="desc">Element is being activated (pressed).</td><td>Both</td></tr>
+          <tr><td>:disabled</td><td>select, option, optgroup</td><td class="desc">Element is disabled.</td><td>Both</td></tr>
+          <tr><td>:enabled</td><td>select, option</td><td class="desc">Element is not disabled.</td><td>Both</td></tr>
+          <tr><td>:required</td><td>select</td><td class="desc">Has the <code>required</code> attribute.</td><td>Both</td></tr>
+          <tr><td>:optional</td><td>select</td><td class="desc">Does not have the <code>required</code> attribute.</td><td>Both</td></tr>
+          <tr><td>:valid</td><td>select</td><td class="desc">Currently passes constraint validation.</td><td>Both</td></tr>
+          <tr><td>:invalid</td><td>select</td><td class="desc">Currently fails constraint validation.</td><td>Both</td></tr>
+          <tr><td>:user-valid</td><td>select</td><td class="desc">Valid after the user has interacted with the control (prevents eager red borders).</td><td>Both</td></tr>
+          <tr><td>:user-invalid</td><td>select</td><td class="desc">Invalid after the user has interacted with the control.</td><td>Both</td></tr>
+          <tr><td>:checked</td><td>option</td><td class="desc">The option is currently selected. In <code>base-select</code> mode, fully styleable.</td><td>Both†</td></tr>
+          <tr><td>:open <span class="badge badge-new">New</span></td><td>select</td><td class="desc">The picker dropdown is open. Only meaningful with <code>base-select</code>.</td><td>base-select</td></tr>
+          <tr><td>:not(:open)</td><td>select</td><td class="desc">Picker is closed.</td><td>base-select</td></tr>
+          <tr><td>:read-only</td><td>select</td><td class="desc">Not applicable to select (selects are always read-write or disabled), but recognized.</td><td>—</td></tr>
+          <tr><td>:default</td><td>option</td><td class="desc">The option that was initially selected when the page loaded.</td><td>Both</td></tr>
+          <tr><td>:indeterminate</td><td>—</td><td class="desc">Not applicable to select/option.</td><td>—</td></tr>
+          <tr><td>:placeholder-shown</td><td>—</td><td class="desc">Not applicable (no placeholder on select). Use <code>[value=""]</code> hack instead.</td><td>—</td></tr>
+          <tr><td colspan="4" style="background:var(--surface-2);font-size:.73rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);padding:.5rem 1rem;">Attribute Selectors (related)</td></tr>
+          <tr><td>[multiple]</td><td>select</td><td class="desc">Targets <code>&lt;select multiple&gt;</code>. Use to strip the custom arrow and adjust padding for listbox mode.</td><td>Both</td></tr>
+          <tr><td>[size]</td><td>select</td><td class="desc">Targets <code>&lt;select size="n"&gt;</code>. Same treatment as <code>[multiple]</code> — remove background-image arrow.</td><td>Both</td></tr>
+          <tr><td>[disabled]</td><td>select, option, optgroup</td><td class="desc">Attribute selector version of <code>:disabled</code>. Same effect, same specificity.</td><td>Both</td></tr>
+          <tr><td>[required]</td><td>select</td><td class="desc">Attribute selector for the presence of <code>required</code>. Identical to <code>:required</code>.</td><td>Both</td></tr>
+          <tr><td>[value=""]</td><td>option</td><td class="desc">Targets the empty placeholder option — useful to hide it or style the select with an "unselected" hint.</td><td>Both</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>† <code>:checked</code> on <code>&lt;option&gt;</code> historically had very limited styling support in browsers; <code>base-select</code> mode makes it fully customisable.</p>
+
+    <h3>Pseudo-class code examples</h3>
+    <pre><span class="cc">/* Open/closed toggle styles */</span>
+<span class="cs">select:open</span>              { <span class="ck">border-color</span>: <span class="cv">navy</span>; }
+<span class="cs">select:open::picker-icon</span>  { <span class="ck">rotate</span>: <span class="cv">180deg</span>; }
+
+<span class="cc">/* Focus visibility */</span>
+<span class="cs">select:focus</span>         { <span class="ck">outline</span>: <span class="cv">none</span>; }
+<span class="cs">select:focus-visible</span> { <span class="ck">outline</span>: <span class="cv">3px solid royalblue</span>; <span class="ck">outline-offset</span>: <span class="cv">2px</span>; }
+
+<span class="cc">/* Disabled state */</span>
+<span class="cs">select:disabled</span>          { <span class="ck">opacity</span>: <span class="cv">.5</span>; <span class="ck">cursor</span>: <span class="cv">not-allowed</span>; }
+<span class="cs">option:disabled</span>          { <span class="ck">color</span>: <span class="cv">#aaa</span>; }
+<span class="cs">optgroup:disabled option</span> { <span class="ck">color</span>: <span class="cv">#bbb</span>; }
+
+<span class="cc">/* Constraint validation */</span>
+<span class="cs">select:required</span>      { <span class="ck">border-left</span>: <span class="cv">4px solid orange</span>; }
+<span class="cs">select:valid</span>         { <span class="ck">border-color</span>: <span class="cv">green</span>; }
+<span class="cs">select:invalid</span>       { <span class="ck">border-color</span>: <span class="cv">red</span>; }
+<span class="cs">select:user-valid</span>    { <span class="ck">border-color</span>: <span class="cv">green</span>; <span class="ck">background</span>: <span class="cv">#ecfdf5</span>; }
+<span class="cs">select:user-invalid</span>  { <span class="ck">border-color</span>: <span class="cv">red</span>; <span class="ck">background</span>: <span class="cv">#fef2f2</span>; }
+
+<span class="cc">/* Checked option */</span>
+<span class="cs">option:checked</span>                { <span class="ck">background</span>: <span class="cv">royalblue</span>; <span class="ck">color</span>: <span class="cv">white</span>; }
+<span class="cs">option:not(:checked)</span>          { <span class="ck">color</span>: <span class="cv">#333</span>; }
+<span class="cs">option:hover</span>                   { <span class="ck">background</span>: <span class="cv">#eef</span>; }
+
+<span class="cc">/* :optional — no required attr */</span>
+<span class="cs">select:optional</span>      { <span class="ck">border-left</span>: <span class="cv">3px solid transparent</span>; }
+
+<span class="cc">/* :active — press feedback */</span>
+<span class="cs">select:active</span>        { <span class="ck">transform</span>: <span class="cv">translateY(1px)</span>; }
+
+<span class="cc">/* Attribute selectors — strip arrow for listbox modes */</span>
+<span class="cs">select[multiple]</span>,
+<span class="cs">select[size]</span> {
+  <span class="ck">background-image</span>: <span class="cv">none</span>;
+  <span class="ck">padding-right</span>: <span class="cv">var(--pad-x)</span>;
+}
+
+<span class="cc">/* Classic option + optgroup OS colors */</span>
+<span class="cs">select option</span>               { <span class="ck">color</span>: <span class="cv">#0f172a</span>; <span class="ck">background</span>: <span class="cv">#f8fafc</span>; }
+<span class="cs">select option:checked</span>        { <span class="ck">font-weight</span>: <span class="cv">700</span>; }
+<span class="cs">select option:disabled</span>       { <span class="ck">opacity</span>: <span class="cv">.6</span>; }
+<span class="cs">select optgroup</span>              { <span class="ck">font-style</span>: <span class="cv">normal</span>; <span class="ck">font-weight</span>: <span class="cv">700</span>; }
+<span class="cs">select optgroup:disabled</span>     { <span class="ck">opacity</span>: <span class="cv">.6</span>; }
+
+<span class="cc">/* :focus-within on parent to highlight label */</span>
+<span class="cs">.field:has(select:focus-visible) label</span> {
+  <span class="ck">color</span>: <span class="cv">royalblue</span>;
+}
+<span class="cs">.field:has(select:user-invalid) label</span> {
+  <span class="ck">color</span>: <span class="cv">red</span>;
+}
+<span class="cc">/* :focus-within on wrapper to highlight hint text */</span>
+<span class="cs">.control-wrap:focus-within .hint</span> {
+  <span class="ck">color</span>: <span class="cv">royalblue</span>;
+}</pre>
+  </section>
+
+  <hr class="fancy">
+
+  <!-- ══════════════════════════════════════════════════════
+       §11  PSEUDO-ELEMENTS
+       ══════════════════════════════════════════════════════ -->
+  <section class="section" id="s11">
+    <div class="section-heading">
+      <div class="section-num">11</div>
+      <h2>Pseudo-Elements</h2>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Pseudo-Element</th><th>On</th><th class="desc">Description</th><th>Mode</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>::picker(select) <span class="badge badge-new">New</span></td><td>select</td><td class="desc">Targets the popover dropdown container (the listbox). Lives in the top layer. Automatically anchor-positioned to the select button.</td><td>base-select</td></tr>
+          <tr><td>::picker-icon <span class="badge badge-new">New</span></td><td>select</td><td class="desc">The disclosure arrow/chevron inside the select button. Replace it by setting <code>content</code>.</td><td>base-select</td></tr>
+          <tr><td>::checkmark <span class="badge badge-new">New</span></td><td>option</td><td class="desc">The checkmark placed next to the currently selected option inside the picker. <code>visibility: hidden</code> on non-checked options by default; use <code>visibility: visible</code> to override.</td><td>base-select</td></tr>
+          <tr><td>::before / ::after</td><td>option (base-select), select</td><td class="desc">Generated content pseudo-elements. In <code>base-select</code> mode, fully works on <code>&lt;option&gt;</code>. In classic mode, limited support.</td><td>base-select†</td></tr>
+          <tr><td>::placeholder</td><td>—</td><td class="desc">Not applicable to <code>&lt;select&gt;</code>.</td><td>—</td></tr>
+          <tr><td>::file-selector-button</td><td>—</td><td class="desc">Not applicable to <code>&lt;select&gt;</code>.</td><td>—</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Pseudo-element code examples</h3>
+    <pre><span class="cc">/* ── ::picker(select) ── */</span>
+<span class="cs">::picker(select)</span> {
+  <span class="ck">appearance</span>: <span class="cv">base-select</span>;
+  <span class="ck">background</span>: <span class="cv">white</span>;
+  <span class="ck">border</span>: <span class="cv">2px solid #ddd</span>;
+  <span class="ck">border-radius</span>: <span class="cv">12px</span>;
+  <span class="ck">box-shadow</span>: <span class="cv">0 8px 32px rgba(0,0,0,.15)</span>;
+  <span class="ck">padding</span>: <span class="cv">.5rem</span>;
+
+  <span class="cc">/* Entrance animation via @starting-style */</span>
+  <span class="cs">@starting-style</span> {
+    <span class="ck">opacity</span>: <span class="cv">0</span>;
+    <span class="ck">transform</span>: <span class="cv">translateY(-8px) scale(.95)</span>;
+  }
+  <span class="ck">opacity</span>: <span class="cv">1</span>;
+  <span class="ck">transform</span>: <span class="cv">none</span>;
+  <span class="ck">transition</span>: <span class="cv">opacity .2s, transform .2s</span>;
+}
+
+<span class="cc">/* ── ::picker-icon ── */</span>
+<span class="cs">select::picker-icon</span> {
+  <span class="ck">content</span>: <span class="cv">"▾"</span>;             <span class="cc">/* replace default arrow */</span>
+  <span class="ck">font-size</span>: <span class="cv">1.1rem</span>;
+  <span class="ck">color</span>: <span class="cv">steelblue</span>;
+  <span class="ck">transition</span>: <span class="cv">rotate .2s ease</span>;
+}
+<span class="cs">select:open::picker-icon</span> { <span class="ck">rotate</span>: <span class="cv">180deg</span>; }
+
+<span class="cc">/* Hide icon entirely */</span>
+<span class="cs">select::picker-icon</span> { <span class="ck">display</span>: <span class="cv">none</span>; }
+
+<span class="cc">/* ── ::checkmark ── */</span>
+<span class="cs">option::checkmark</span> {
+  <span class="ck">content</span>: <span class="cv">"✓"</span>;             <span class="cc">/* custom checkmark char */</span>
+  <span class="ck">color</span>: <span class="cv">royalblue</span>;
+  <span class="ck">font-weight</span>: <span class="cv">700</span>;
+  <span class="ck">margin-inline-start</span>: <span class="cv">auto</span>; <span class="cc">/* push to right */</span>
+}
+
+<span class="cc">/* Hide checkmark */</span>
+<span class="cs">option::checkmark</span> { <span class="ck">display</span>: <span class="cv">none</span>; }
+
+<span class="cc">/* Show a marker for UN-checked options too */</span>
+<span class="cs">option:not(:checked)::checkmark</span> {
+  <span class="ck">visibility</span>: <span class="cv">visible</span>;   <span class="cc">/* override hidden default */</span>
+  <span class="ck">content</span>: <span class="cv">"○"</span>;
+  <span class="ck">color</span>: <span class="cv">#ccc</span>;
+}
+
+<span class="cc">/* ── option::before / option::after ── */</span>
+<span class="cs">option::before</span> {
+  <span class="ck">content</span>: <span class="cv">"📁 "</span>;
+}
+
+<span class="cc">/* ── Anchor positioning of picker ── */</span>
+<span class="cs">::picker(select)</span> {
+  <span class="ck">position-area</span>: <span class="cv">bottom span-right</span>; <span class="cc">/* position below + left-aligned */</span>
+  <span class="ck">position-try-fallbacks</span>: <span class="cv">flip-block, flip-inline, flip-block flip-inline</span>;
+}</pre>
+  </section>
+
+  <hr class="fancy">
+
+  <!-- ══════════════════════════════════════════════════════
+       §12  appearance VALUES
+       ══════════════════════════════════════════════════════ -->
+  <section class="section" id="s12">
+    <div class="section-heading">
+      <div class="section-num">12</div>
+      <h2><code>appearance</code> Property Values</h2>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Value</th><th class="desc">Behaviour on &lt;select&gt;</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>auto</td><td class="desc">Browser default. Renders with OS/platform native UI. Most properties unoverrideable.</td></tr>
+          <tr><td>none</td><td class="desc">Strips most native styling. The open dropdown still uses the OS picker. Background, border, padding are now fully styleable on the button. Common pre-2025 workaround.</td></tr>
+          <tr><td>base-select <span class="badge badge-new">New</span></td><td class="desc">Full opt-in to the Customizable Select API. Removes all OS styling. Exposes <code>::picker(select)</code>, <code>::picker-icon</code>, <code>::checkmark</code>, <code>:open</code>. Picker is in the top layer via popover. Must be applied to both <code>select</code> and <code>::picker(select)</code>.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="appearance-grid">
+      <div class="appearance-cell">
+        <label>appearance: auto</label>
+        <select class="app-auto">
+          <option>Option A</option>
+          <option>Option B</option>
+          <option>Option C</option>
+        </select>
+      </div>
+      <div class="appearance-cell">
+        <label>appearance: none</label>
+        <select class="app-none">
+          <option>Option A</option>
+          <option>Option B</option>
+          <option>Option C</option>
+        </select>
+      </div>
+      <div class="appearance-cell">
+        <label>appearance: base-select</label>
+        <select class="app-base">
+          <option>Option A</option>
+          <option>Option B</option>
+          <option>Option C</option>
+        </select>
+      </div>
+    </div>
+  </section>
+
+  <hr class="fancy">
+
+  <!-- ══════════════════════════════════════════════════════
+       LIVE DEMOS
+       ══════════════════════════════════════════════════════ -->
+
+  <section class="section" id="d1">
+    <div class="section-heading">
+      <div class="section-num">▶</div>
+      <h2>Classic Styling Demos</h2>
+    </div>
+    <p>Pre-<code>base-select</code> techniques using <code>appearance: none</code> + custom background-image arrows. Work in all browsers.</p>
+
+    <div class="demo-grid">
+
+      <div class="demo-card">
+        <div class="demo-card-label">Default / unstyled</div>
+        <h4>Browser Default</h4>
+        <label class="label-block" for="def1">Choose a framework</label>
+        <select id="def1">
+          <option value="">-- Select --</option>
+          <option value="react">React</option>
+          <option value="vue">Vue</option>
+          <option value="svelte">Svelte</option>
+          <option value="angular">Angular</option>
+        </select>
+      </div>
+
+      <div class="demo-card">
+        <div class="demo-card-label">appearance: none + custom arrow</div>
+        <h4>Styled Classic</h4>
+        <label class="label-block" for="styled1">Choose a language</label>
+        <select id="styled1" class="styled-select-classic">
+          <option value="">-- Select --</option>
+          <option value="js">JavaScript</option>
+          <option value="ts">TypeScript</option>
+          <option value="py">Python</option>
+          <option value="rs">Rust</option>
+          <option value="go">Go</option>
+        </select>
+      </div>
+
+      <div class="demo-card">
+        <div class="demo-card-label">disabled state</div>
+        <h4>Disabled Select</h4>
+        <label class="label-block" for="dis1">Region (disabled)</label>
+        <select id="dis1" class="styled-select-classic" disabled>
+          <option value="asia">Asia</option>
+          <option value="eu">Europe</option>
+        </select>
+      </div>
+
+      <div class="demo-card">
+        <div class="demo-card-label">multiple + size attribute</div>
+        <h4>Multi-Select Listbox</h4>
+        <label class="label-block" for="multi1">Hold Ctrl/⌘ for multi</label>
+        <select id="multi1" class="styled-multi" multiple size="5">
+          <option value="html">HTML</option>
+          <option value="css" selected>CSS</option>
+          <option value="js" selected>JavaScript</option>
+          <option value="wasm">WASM</option>
+          <option value="ts">TypeScript</option>
+          <option value="rs">Rust</option>
+        </select>
+      </div>
+
+      <div class="demo-card">
+        <div class="demo-card-label">size attribute (no multiple)</div>
+        <h4>Sized Select</h4>
+        <label class="label-block" for="sized1">Visible rows: 4</label>
+        <select id="sized1" class="sized-select" size="4">
+          <option value="a">Alpha</option>
+          <option value="b" selected>Beta</option>
+          <option value="c">Gamma</option>
+          <option value="d">Delta</option>
+          <option value="e">Epsilon</option>
+        </select>
+      </div>
+
+      <div class="demo-card">
+        <div class="demo-card-label">optgroup + hr separator</div>
+        <h4>Grouped with Dividers</h4>
+        <label class="label-block" for="grouped1">Favourite food</label>
+        <select id="grouped1" class="styled-select-classic">
+          <option value="">-- Choose --</option>
+          <hr>
+          <optgroup label="🍎 Fruit">
+            <option value="apple">Apple</option>
+            <option value="mango">Mango</option>
+            <option value="grape">Grape</option>
+          </optgroup>
+          <hr>
+          <optgroup label="🥦 Vegetables">
+            <option value="carrot">Carrot</option>
+            <option value="broccoli">Broccoli</option>
+          </optgroup>
+          <hr>
+          <optgroup label="🍖 Meat" disabled>
+            <option value="beef">Beef</option>
+            <option value="chicken">Chicken</option>
+          </optgroup>
+        </select>
+      </div>
+
+    </div>
+  </section>
+
+  <hr class="fancy">
+
+  <!-- base-select themes -->
+  <section class="section" id="d2">
+    <div class="section-heading">
+      <div class="section-num">▶</div>
+      <h2>base-select Themes <span class="badge badge-chrome">Chrome 135+</span></h2>
+    </div>
+    <p>All demos below use <code>appearance: base-select</code>. They degrade gracefully — non-supporting browsers show the default select.</p>
+
+    <div class="demo-grid">
+
+      <div class="demo-card">
+        <div class="demo-card-label">Pill token style</div>
+        <h4>Token Select</h4>
+        <label class="label-block" for="token1">Package manager</label>
+        <select id="token1" class="bs-token">
+          <option value="npm">npm</option>
+          <option value="pnpm">pnpm</option>
+          <option value="yarn">Yarn</option>
+          <option value="bun">Bun</option>
+          <option value="deno">Deno</option>
+        </select>
+      </div>
+
+      <div class="demo-card">
+        <div class="demo-card-label">Dark / elevated</div>
+        <h4>Dark Select</h4>
+        <label class="label-block" for="dark1" style="color:var(--ink)">Theme</label>
+        <select id="dark1" class="bs-dark">
+          <option value="system">System Default</option>
+          <option value="dark" selected>Dark Mode</option>
+          <option value="light">Light Mode</option>
+          <option value="amoled">AMOLED Black</option>
+        </select>
+      </div>
+
+      <div class="demo-card">
+        <div class="demo-card-label">Accent flame gradient</div>
+        <h4>Flame Select</h4>
+        <label class="label-block" for="flame1">Priority level</label>
+        <select id="flame1" class="bs-flame">
+          <option value="low">🟢 Low Priority</option>
+          <option value="med" selected>🟡 Medium Priority</option>
+          <option value="high">🔴 High Priority</option>
+          <option value="crit">🚨 Critical</option>
+        </select>
+      </div>
+
+      <div class="demo-card" style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);border:none;">
+        <div class="demo-card-label" style="color:rgba(255,255,255,.7)">Glass morphism</div>
+        <h4 style="color:#fff">Glass Select</h4>
+        <label class="label-block" style="color:rgba(255,255,255,.85)" for="glass1">Environment</label>
+        <select id="glass1" class="bs-glass">
+          <option value="prod">Production</option>
+          <option value="stage">Staging</option>
+          <option value="dev" selected>Development</option>
+          <option value="local">Localhost</option>
+        </select>
+      </div>
+
+      <div class="demo-card">
+        <div class="demo-card-label">HR dividers in picker</div>
+        <h4>Divider Select</h4>
+        <label class="label-block" for="hr1">File type</label>
+        <select id="hr1" class="bs-hr">
+          <option value="">-- Choose type --</option>
+          <hr>
+          <option value="doc">📄 Document</option>
+          <option value="img">🖼 Image</option>
+          <option value="vid">🎬 Video</option>
+          <hr>
+          <option value="arc">📦 Archive</option>
+          <option value="bin">⚙ Binary</option>
+        </select>
+      </div>
+
+      <div class="demo-card">
+        <div class="demo-card-label">Spring animation</div>
+        <h4>Animated Entry</h4>
+        <label class="label-block" for="anim1">Select with spring</label>
+        <select id="anim1" class="bs-animated">
+          <option value="css">CSS Animation</option>
+          <option value="js">JS Animation</option>
+          <option value="waapi">Web Animations API</option>
+          <option value="spring">Spring Physics</option>
+        </select>
+      </div>
+
+    </div>
+  </section>
+
+  <hr class="fancy">
+
+  <!-- Rich options -->
+  <section class="section" id="d3">
+    <div class="section-heading">
+      <div class="section-num">▶</div>
+      <h2>Rich Options &amp; Optgroups</h2>
+    </div>
+
+    <div class="demo-grid">
+
+      <div class="demo-card">
+        <div class="demo-card-label">Emoji icons in options</div>
+        <h4>Rich Options</h4>
+        <label class="label-block" for="rich1">Choose a transport</label>
+        <select id="rich1" class="bs-rich">
+          <option value="car">🚗 Car — personal vehicle</option>
+          <option value="train" selected>🚂 Train — rail transport</option>
+          <option value="plane">✈️ Plane — air travel</option>
+          <option value="bike">🚴 Bicycle — eco friendly</option>
+          <option value="boat">⛵ Boat — waterway</option>
+        </select>
+      </div>
+
+      <div class="demo-card">
+        <div class="demo-card-label">Styled optgroups</div>
+        <h4>Grouped Picker</h4>
+        <label class="label-block" for="grp1">Category</label>
+        <select id="grp1" class="bs-group">
+          <optgroup label="🌿 Greens">
+            <option value="broc">Broccoli</option>
+            <option value="spin">Spinach</option>
+            <option value="kale">Kale</option>
+          </optgroup>
+          <optgroup label="🍊 Citrus">
+            <option value="ora">Orange</option>
+            <option value="lem">Lemon</option>
+            <option value="grf">Grapefruit</option>
+          </optgroup>
+          <optgroup label="🍇 Berries">
+            <option value="straw">Strawberry</option>
+            <option value="blue">Blueberry</option>
+          </optgroup>
+        </select>
+      </div>
+
+      <div class="demo-card">
+        <div class="demo-card-label">Custom star ::checkmark</div>
+        <h4>Custom Checkmark</h4>
+        <label class="label-block" for="ck1">Rating</label>
+        <select id="ck1" class="bs-custom-icon checkmark-showcase">
+          <option value="1">⭐ One Star</option>
+          <option value="2">⭐⭐ Two Stars</option>
+          <option value="3" selected>⭐⭐⭐ Three Stars</option>
+          <option value="4">⭐⭐⭐⭐ Four Stars</option>
+          <option value="5">⭐⭐⭐⭐⭐ Five Stars</option>
+        </select>
+      </div>
+
+      <div class="demo-card">
+        <div class="demo-card-label">selectedcontent with icons + desc</div>
+        <h4>Rich selectedcontent</h4>
+        <label class="label-block" for="sel1">Choose stack</label>
+        <select id="sel1" class="bs-selected">
+          <button>
+            <selectedcontent></selectedcontent>
+          </button>
+          <option value="html">
+            <span class="opt-icon">🌐</span>
+            <span>HTML</span>
+            <span class="opt-desc">HyperText Markup Language — the web's foundation</span>
+          </option>
+          <option value="css">
+            <span class="opt-icon">🎨</span>
+            <span>CSS</span>
+            <span class="opt-desc">Cascading Style Sheets — visual presentation</span>
+          </option>
+          <option value="js">
+            <span class="opt-icon">⚡</span>
+            <span>JavaScript</span>
+            <span class="opt-desc">The scripting language of the web</span>
+          </option>
+          <option value="ts">
+            <span class="opt-icon">🔷</span>
+            <span>TypeScript</span>
+            <span class="opt-desc">Typed superset of JavaScript</span>
+          </option>
+          <option value="wasm">
+            <span class="opt-icon">⚙️</span>
+            <span>WebAssembly</span>
+            <span class="opt-desc">Binary instruction format for near-native speed</span>
+          </option>
+        </select>
+      </div>
+
+      <div class="demo-card">
+        <div class="demo-card-label">.swatch color dots inside options</div>
+        <h4>Color Swatch Options</h4>
+        <label class="label-block" for="swatch1">Accent colour</label>
+        <select id="swatch1" class="bs-rich">
+          <button><selectedcontent></selectedcontent></button>
+          <option value="">Pick an accent color</option>
+          <option value="cyan" selected>
+            <span class="opt-swatch" style="background:#22d3ee"></span>
+            Cyan
+          </option>
+          <option value="violet">
+            <span class="opt-swatch" style="background:#8b5cf6"></span>
+            Violet
+          </option>
+          <option value="emerald">
+            <span class="opt-swatch" style="background:#10b981"></span>
+            Emerald
+          </option>
+          <option value="rose" disabled>
+            <span class="opt-swatch" style="background:#f43f5e"></span>
+            Rose (disabled)
+          </option>
+        </select>
+        <p class="form-hint mt-s">Demonstrates <code>.opt-swatch</code> spans + <code>option:disabled</code> inside base-select.</p>
+      </div>
+
+      <div class="demo-card">
+        <div class="demo-card-label">.opt-emoji spans + hr + optgroup</div>
+        <h4>Emoji + Groups + HR</h4>
+        <label class="label-block" for="emoji1">Theme</label>
+        <select id="emoji1" class="bs-rich">
+          <button><selectedcontent></selectedcontent></button>
+          <option value="system" selected>
+            <span class="opt-emoji">🖥️</span> System
+          </option>
+          <option value="light">
+            <span class="opt-emoji">☀️</span> Light
+          </option>
+          <option value="dark">
+            <span class="opt-emoji">🌙</span> Dark
+          </option>
+          <hr>
+          <optgroup label="High contrast">
+            <option value="contrast-light">
+              <span class="opt-emoji">⬜</span> Contrast Light
+            </option>
+            <option value="contrast-dark" disabled>
+              <span class="opt-emoji">⬛</span> Contrast Dark (disabled)
+            </option>
+          </optgroup>
+        </select>
+        <p class="form-hint mt-s">Covers <code>&lt;button&gt;</code> first child, <code>selectedcontent</code>, <code>&lt;hr&gt;</code>, <code>&lt;optgroup&gt;</code>, disabled option.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <hr class="fancy">
+
+  <!-- Custom button -->
+  <section class="section" id="d4">
+    <div class="section-heading">
+      <div class="section-num">▶</div>
+      <h2>Custom &lt;button&gt; Inside &lt;select&gt;</h2>
+    </div>
+    <p>With <code>base-select</code> you can place a <code>&lt;button&gt;</code> as the first child of <code>&lt;select&gt;</code> to completely replace the default button rendering. It is inert (children non-focusable) and receives all the same pseudo-classes as the select.</p>
+
+    <div class="demo-grid">
+      <div class="demo-card">
+        <div class="demo-card-label">Custom styled button</div>
+        <h4>Indigo Button Select</h4>
+        <label class="label-block" for="cbtn1">Report type</label>
+        <select id="cbtn1" class="bs-custom-btn">
+          <button>
+            <span class="btn-icon">📊</span>
+            <selectedcontent></selectedcontent>
+            <span class="btn-arrow">▾</span>
+          </button>
+          <option value="weekly">Weekly Summary</option>
+          <option value="monthly">Monthly Report</option>
+          <option value="quarterly">Quarterly Review</option>
+          <option value="annual">Annual Overview</option>
+        </select>
+      </div>
+    </div>
+
+    <pre><span class="ct">&lt;select</span> <span class="ca">class</span>=<span class="cv">"my-select"</span><span class="ct">&gt;</span>
+  <span class="ct">&lt;button&gt;</span>                          <span class="cc">&lt;!-- replaces default button UI --&gt;</span>
+    <span class="ct">&lt;span</span> <span class="ca">class</span>=<span class="cv">"icon"</span><span class="ct">&gt;</span>📊<span class="ct">&lt;/span&gt;</span>
+    <span class="ct">&lt;selectedcontent&gt;&lt;/selectedcontent&gt;</span> <span class="cc">&lt;!-- cloned selected option --&gt;</span>
+    <span class="ct">&lt;span</span> <span class="ca">class</span>=<span class="cv">"arrow"</span><span class="ct">&gt;</span>▾<span class="ct">&lt;/span&gt;</span>
+  <span class="ct">&lt;/button&gt;</span>
+
+  <span class="ct">&lt;option</span> <span class="ca">value</span>=<span class="cv">"weekly"</span><span class="ct">&gt;</span>Weekly Summary<span class="ct">&lt;/option&gt;</span>
+  <span class="ct">&lt;option</span> <span class="ca">value</span>=<span class="cv">"monthly"</span><span class="ct">&gt;</span>Monthly Report<span class="ct">&lt;/option&gt;</span>
+<span class="ct">&lt;/select&gt;</span>
+
+<span class="cc">/* Rotate the manual arrow when open */</span>
+<span class="cs">.my-select:open .arrow</span> { <span class="ck">rotate</span>: <span class="cv">180deg</span>; }
+<span class="cs">.my-select:open</span> { <span class="ck">border-color</span>: <span class="cv">royalblue</span>; }
+
+<span class="cc">/* NOTE: ::picker-icon is hidden automatically when a custom button is present */</span></pre>
+  </section>
+
+  <hr class="fancy">
+
+  <!-- Animations -->
+  <section class="section" id="d5">
+    <div class="section-heading">
+      <div class="section-num">▶</div>
+      <h2>Picker Animations with @starting-style</h2>
+    </div>
+    <p>Since <code>::picker(select)</code> lives in the top layer with <code>display:none</code> when closed, normal CSS transitions don't work for the enter animation. The <code>@starting-style</code> at-rule (CSS Transitions Level 2) defines the initial style when the picker is first displayed — enabling enter transitions.</p>
+
+    <pre><span class="cs">::picker(select)</span> {
+  <span class="ck">appearance</span>: <span class="cv">base-select</span>;
+
+  <span class="cc">/* Define target (resting) state */</span>
+  <span class="ck">opacity</span>: <span class="cv">1</span>;
+  <span class="ck">transform</span>: <span class="cv">translateY(0)</span>;
+  <span class="ck">filter</span>: <span class="cv">blur(0)</span>;
+  <span class="ck">transition</span>:
+    <span class="cv">opacity .2s ease,
+    transform .2s cubic-bezier(.34, 1.56, .64, 1),
+    filter .2s ease,
+    overlay .2s ease allow-discrete,
+    display .2s ease allow-discrete</span>;
+
+  <span class="cc">/* Initial state when first shown */</span>
+  <span class="cs">@starting-style</span> {
+    <span class="ck">opacity</span>: <span class="cv">0</span>;
+    <span class="ck">transform</span>: <span class="cv">translateY(-10px) scale(.93)</span>;
+    <span class="ck">filter</span>: <span class="cv">blur(4px)</span>;
+  }
+}
+
+<span class="cc">/* Spring-bounce using cubic-bezier */</span>
+<span class="cs">::picker(select)</span> {
+  <span class="ck">transition</span>: <span class="cv">transform .35s cubic-bezier(.34, 1.56, .64, 1), opacity .2s</span>;
+  <span class="cs">@starting-style</span> { <span class="ck">opacity</span>: <span class="cv">0</span>; <span class="ck">transform</span>: <span class="cv">scale(.8) translateY(-12px)</span>; }
+}
+
+<span class="cc">/* Slide from top */</span>
+<span class="cs">::picker(select)</span> {
+  <span class="ck">transition</span>: <span class="cv">transform .18s ease-out, opacity .15s</span>;
+  <span class="cs">@starting-style</span> { <span class="ck">opacity</span>: <span class="cv">0</span>; <span class="ck">transform</span>: <span class="cv">translateY(-16px)</span>; }
+}</pre>
+  </section>
+
+  <hr class="fancy">
+
+  <!-- Form integration -->
+  <section class="section" id="d6">
+    <div class="section-heading">
+      <div class="section-num">▶</div>
+      <h2>Form Integration, Fieldset &amp; Validation</h2>
+    </div>
+    <p>Demonstrates <code>&lt;fieldset&gt;</code>, <code>&lt;legend&gt;</code>, <code>form=</code> cross-association, <code>:focus-within</code> hint colouring, <code>:optional</code>, <code>:required</code>, <code>:valid</code>, <code>:invalid</code>, <code>:user-valid</code>/<code>:user-invalid</code>, and form submit/reset buttons.</p>
+
+    <!-- ── standalone off-page form (demonstrates form= attribute) ── -->
+    <form id="standalone-form-demo" action="#" method="post"></form>
+
+    <form action="#" method="get" autocomplete="on">
+      <fieldset class="demo-fieldset">
+        <legend>1) Classic native — all form attributes in play</legend>
+
+        <div class="form-row">
+          <label for="fc-country">Country <span style="color:var(--accent)">*</span></label>
+          <div class="control-wrap">
+            <select id="fc-country" name="country" class="styled-select-classic" required autocomplete="country-name">
+              <option value="">Select your country</option>
+              <option value="in">🇮🇳 India</option>
+              <option value="us">🇺🇸 United States</option>
+              <option value="gb">🇬🇧 United Kingdom</option>
+              <option value="de">🇩🇪 Germany</option>
+              <option value="jp">🇯🇵 Japan</option>
+              <option value="au">🇦🇺 Australia</option>
+            </select>
+            <p class="form-hint">Covers <code>required</code>, <code>autocomplete</code>, <code>:required</code>, <code>:invalid</code>, <code>:focus-within</code> on wrapper.</p>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label for="fc-role">Role</label>
+          <div class="control-wrap">
+            <select id="fc-role" name="role" class="styled-select-classic" autocomplete="organization-title">
+              <option value="">Select role</option>
+              <optgroup label="Engineering">
+                <option value="fe">Frontend Engineer</option>
+                <option value="be">Backend Engineer</option>
+                <option value="fs">Fullstack Engineer</option>
+              </optgroup>
+              <optgroup label="Design">
+                <option value="ux">UX Designer</option>
+                <option value="ui">UI Designer</option>
+              </optgroup>
+              <optgroup label="Management" disabled>
+                <option value="pm">Product Manager</option>
+                <option value="em">Engineering Manager</option>
+              </optgroup>
+            </select>
+            <p class="form-hint">:optional (no required attr) — transparent left border. <code>optgroup[disabled]</code> shown.</p>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label for="fc-exp">Experience (disabled)</label>
+          <div class="control-wrap">
+            <select id="fc-exp" name="exp" class="styled-select-classic" disabled>
+              <option value="jr" selected>Junior (0–2 yrs)</option>
+              <option value="mid">Mid (2–5 yrs)</option>
+              <option value="sr">Senior (5+ yrs)</option>
+            </select>
+            <p class="form-hint">Covers <code>:disabled</code>, <code>cursor: not-allowed</code>, reduced opacity.</p>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label for="fc-misc">Cross-form association (<code>form=</code>)</label>
+          <div class="control-wrap">
+            <select
+              id="fc-misc"
+              name="misc"
+              class="styled-select-classic"
+              form="standalone-form-demo"
+              required
+              aria-label="Example using form= attribute to associate with an off-page form"
+            >
+              <option value="">Choose one</option>
+              <option value="one">One</option>
+              <option value="two">Two</option>
+              <option value="three">Three</option>
+            </select>
+            <p class="form-hint">This select belongs to <code>id="standalone-form-demo"</code> defined elsewhere in the page via <code>form="standalone-form-demo"</code>.</p>
+          </div>
+        </div>
+
+        <div class="assoc-row" style="margin-top:.8rem;">
+          <button class="action primary" type="submit">Submit form</button>
+          <button class="action" type="reset">Reset</button>
+          <button class="action" type="button" disabled>Disabled button</button>
+        </div>
+      </fieldset>
+
+      <fieldset class="demo-fieldset">
+        <legend>2) Validation pseudo-classes live demo</legend>
+
+        <div class="two-col">
+          <div>
+            <div class="form-row">
+              <label for="v1">:valid</label>
+              <select id="v1" class="select-valid">
+                <option value="ok" selected>Valid Option ✓</option>
+                <option value="ok2">Also Valid</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label for="v2">:invalid (empty + required)</label>
+              <select id="v2" class="select-invalid" required>
+                <option value="">-- required --</option>
+                <option value="a">Option A</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <div class="form-row">
+              <label for="v3">:user-valid / :user-invalid</label>
+              <select id="v3" class="select-userval" required>
+                <option value="">-- interact first --</option>
+                <option value="good">Good Value</option>
+              </select>
+              <p class="form-hint">Interact then blur to trigger <code>:user-valid</code> / <code>:user-invalid</code>.</p>
+            </div>
+            <div class="form-row" style="margin-bottom:0">
+              <label for="req1">:required — amber left border</label>
+              <select id="req1" class="required-demo" required>
+                <option value="">-- required --</option>
+                <option value="x">Choice X</option>
+                <option value="y">Choice Y</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+    </form>
+  </section>
+
+  <hr class="fancy">
+
+  <!-- Datalist demos -->
+  <section class="section" id="d7">
+    <div class="section-heading">
+      <div class="section-num">▶</div>
+      <h2>Datalist Demos</h2>
+    </div>
+
+    <div class="demo-grid">
+      <div class="demo-card">
+        <div class="demo-card-label">Text autocomplete</div>
+        <h4>Browser Autocomplete</h4>
+        <label class="label-block" for="dl1">Favourite framework</label>
+        <input list="frameworks" id="dl1" name="dl1" class="dl-input" placeholder="Start typing…">
+        <datalist id="frameworks">
+          <option value="React"></option>
+          <option value="Vue"></option>
+          <option value="Svelte"></option>
+          <option value="Angular"></option>
+          <option value="Solid"></option>
+          <option value="Qwik"></option>
+          <option value="Astro"></option>
+          <option value="Next.js"></option>
+          <option value="Remix"></option>
+        </datalist>
+      </div>
+
+      <div class="demo-card">
+        <div class="demo-card-label">With labels</div>
+        <h4>Labelled Suggestions</h4>
+        <label class="label-block" for="dl2">Country</label>
+        <input list="countries-dl" id="dl2" class="dl-input" placeholder="Search countries…">
+        <datalist id="countries-dl">
+          <option value="India" label="🇮🇳 IN"></option>
+          <option value="United States" label="🇺🇸 US"></option>
+          <option value="United Kingdom" label="🇬🇧 GB"></option>
+          <option value="Germany" label="🇩🇪 DE"></option>
+          <option value="Japan" label="🇯🇵 JP"></option>
+          <option value="Brazil" label="🇧🇷 BR"></option>
+          <option value="Canada" label="🇨🇦 CA"></option>
+        </datalist>
+      </div>
+
+      <div class="demo-card">
+        <div class="demo-card-label">Range ticks via datalist</div>
+        <h4>Range with Ticks</h4>
+        <label class="label-block" for="dl3">Zoom level</label>
+        <input type="range" min="0" max="200" step="25" list="zoom-ticks" id="dl3" style="width:100%">
+        <datalist id="zoom-ticks">
+          <option value="0" label="0%"></option>
+          <option value="50" label="50%"></option>
+          <option value="100" label="100%"></option>
+          <option value="150" label="150%"></option>
+          <option value="200" label="200%"></option>
+        </datalist>
+        <p class="form-hint" style="margin-top:.4rem">Tick marks at 0, 50, 100, 150, 200</p>
+      </div>
+
+      <div class="demo-card">
+        <div class="demo-card-label">Color swatches</div>
+        <h4>Color Picker Swatches</h4>
+        <label class="label-block" for="dl4">Brand colour</label>
+        <input type="color" list="brand-colors" id="dl4" style="width:100%;height:48px;border:none;cursor:pointer;border-radius:8px;">
+        <datalist id="brand-colors">
+          <option value="#e84f1d"></option>
+          <option value="#f7b731"></option>
+          <option value="#1d9e6f"></option>
+          <option value="#4a3aff"></option>
+          <option value="#0f0e17"></option>
+          <option value="#fafaf8"></option>
+        </datalist>
+        <p class="form-hint" style="margin-top:.5rem">Click the colour swatch — predefined brand colours appear</p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="fancy">
+
+  <!-- ══════════════════════════════════════════════════════
+       d8  ASSOCIATED ELEMENTS
+       ══════════════════════════════════════════════════════ -->
+  <section class="section" id="d8">
+    <div class="section-heading">
+      <div class="section-num">▶</div>
+      <h2>Associated Elements</h2>
+    </div>
+    <p>These HTML elements are commonly used alongside <code>&lt;select&gt;</code> and are part of the complete picture: <code>&lt;label&gt;</code>, <code>&lt;fieldset&gt;</code>, <code>&lt;legend&gt;</code>, <code>&lt;form&gt;</code>, <code>&lt;button&gt;</code>, <code>&lt;output&gt;</code>, <code>&lt;meter&gt;</code>, <code>&lt;progress&gt;</code>, and <code>&lt;kbd&gt;</code>.</p>
+
+    <div class="demo-grid">
+
+      <div class="demo-card">
+        <div class="demo-card-label">&lt;label&gt; association patterns</div>
+        <h4>label + for / wrap</h4>
+        <pre style="font-size:.76rem;margin:0 0 .8rem;"><span class="cc">&lt;!-- Pattern 1: for= --&gt;</span>
+<span class="ct">&lt;label</span> <span class="ca">for</span>=<span class="cv">"s"</span><span class="ct">&gt;</span>Label<span class="ct">&lt;/label&gt;</span>
+<span class="ct">&lt;select</span> <span class="ca">id</span>=<span class="cv">"s"</span><span class="ct">&gt;</span>…<span class="ct">&lt;/select&gt;</span>
+
+<span class="cc">&lt;!-- Pattern 2: wrap --&gt;</span>
+<span class="ct">&lt;label&gt;</span>
+  Label
+  <span class="ct">&lt;select&gt;</span>…<span class="ct">&lt;/select&gt;</span>
+<span class="ct">&lt;/label&gt;</span></pre>
+        <label class="label-block" for="assoc-label1">Wrapped label (click here)</label>
+        <select id="assoc-label1" class="styled-select-classic">
+          <option value="a">Alpha</option>
+          <option value="b">Beta</option>
+          <option value="c">Gamma</option>
+        </select>
+      </div>
+
+      <div class="demo-card">
+        <div class="demo-card-label">&lt;fieldset&gt; + &lt;legend&gt;</div>
+        <h4>Fieldset Grouping</h4>
+        <fieldset class="demo-fieldset">
+          <legend>Preferences</legend>
+          <div class="form-row">
+            <label class="label-block" for="assoc-fs1">Colour scheme</label>
+            <select id="assoc-fs1" class="styled-select-classic">
+              <option value="system">System</option>
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
+            </select>
+          </div>
+          <div class="form-row" style="margin-bottom:0">
+            <label class="label-block" for="assoc-fs2">Language</label>
+            <select id="assoc-fs2" class="styled-select-classic">
+              <option value="en">English</option>
+              <option value="hi">Hindi</option>
+              <option value="ja">Japanese</option>
+              <option value="de">German</option>
+            </select>
+          </div>
+        </fieldset>
+        <p class="form-hint">Disabling a <code>&lt;fieldset&gt;</code> disables all its selects at once.</p>
+      </div>
+
+      <div class="demo-card">
+        <div class="demo-card-label">&lt;button&gt; type=submit / reset / button</div>
+        <h4>Form Buttons</h4>
+        <p style="font-size:.85rem;color:var(--ink-3);margin-bottom:.8rem;">All three <code>type</code> values shown, including <code>disabled</code>.</p>
+        <div class="assoc-row">
+          <button class="action primary" type="submit">Submit</button>
+          <button class="action" type="reset">Reset</button>
+          <button class="action" type="button">Button</button>
+          <button class="action" type="button" disabled>Disabled</button>
+        </div>
+        <pre style="font-size:.76rem;margin:.8rem 0 0;"><span class="ct">&lt;button</span> <span class="ca">type</span>=<span class="cv">"submit"</span><span class="ct">&gt;</span>Submit<span class="ct">&lt;/button&gt;</span>
+<span class="ct">&lt;button</span> <span class="ca">type</span>=<span class="cv">"reset"</span><span class="ct">&gt;</span>Reset<span class="ct">&lt;/button&gt;</span>
+<span class="ct">&lt;button</span> <span class="ca">type</span>=<span class="cv">"button"</span> <span class="ca">disabled</span><span class="ct">&gt;</span>Disabled<span class="ct">&lt;/button&gt;</span></pre>
+      </div>
+
+      <div class="demo-card">
+        <div class="demo-card-label">&lt;output&gt; — selected value display</div>
+        <h4>output Element</h4>
+        <p style="font-size:.85rem;color:var(--ink-3);margin-bottom:.8rem;">An <code>&lt;output&gt;</code> element reflects the result of a form computation. Pair with a select via <code>for=</code>.</p>
+        <label class="label-block" for="assoc-out1">Pick a size</label>
+        <select id="assoc-out1" class="styled-select-classic" oninput="document.getElementById('out1').value=this.value">
+          <option value="xs">XS — Extra Small</option>
+          <option value="s">S — Small</option>
+          <option value="m" selected>M — Medium</option>
+          <option value="l">L — Large</option>
+          <option value="xl">XL — Extra Large</option>
+        </select>
+        <div class="assoc-row" style="margin-top:.8rem;">
+          <span style="font-size:.82rem;color:var(--ink-3);">Selected:</span>
+          <output id="out1" for="assoc-out1">m</output>
+        </div>
+      </div>
+
+      <div class="demo-card">
+        <div class="demo-card-label">&lt;meter&gt; + &lt;progress&gt;</div>
+        <h4>Meter &amp; Progress</h4>
+        <p style="font-size:.85rem;color:var(--ink-3);margin-bottom:.8rem;">Often used alongside selects in forms to visualise quantities or status.</p>
+        <label class="label-block">meter (disk usage, 70%)</label>
+        <meter value="70" min="0" max="100" low="30" high="80" optimum="20" style="margin-bottom:.7rem;display:block;"></meter>
+        <label class="label-block">progress (loading, 45%)</label>
+        <progress value="45" max="100"></progress>
+        <pre style="font-size:.76rem;margin:.8rem 0 0;"><span class="ct">&lt;meter</span> <span class="ca">value</span>=<span class="cv">"70"</span> <span class="ca">min</span>=<span class="cv">"0"</span> <span class="ca">max</span>=<span class="cv">"100"</span>
+       <span class="ca">low</span>=<span class="cv">"30"</span> <span class="ca">high</span>=<span class="cv">"80"</span> <span class="ca">optimum</span>=<span class="cv">"20"</span><span class="ct">&gt;&lt;/meter&gt;</span>
+<span class="ct">&lt;progress</span> <span class="ca">value</span>=<span class="cv">"45"</span> <span class="ca">max</span>=<span class="cv">"100"</span><span class="ct">&gt;&lt;/progress&gt;</span></pre>
+      </div>
+
+      <div class="demo-card">
+        <div class="demo-card-label">&lt;kbd&gt; keyboard shortcuts</div>
+        <h4>kbd — Keyboard Keys</h4>
+        <p style="font-size:.85rem;color:var(--ink-3);margin-bottom:.9rem;">Use <code>&lt;kbd&gt;</code> to document keyboard interactions in select UI documentation.</p>
+        <div style="display:grid;gap:.55rem;font-size:.85rem;">
+          <div><kbd>Space</kbd> / <kbd>Enter</kbd> — open / confirm</div>
+          <div><kbd>↑</kbd> <kbd>↓</kbd> — navigate options</div>
+          <div><kbd>Esc</kbd> — close without changing</div>
+          <div><kbd>Tab</kbd> — move focus away</div>
+          <div><kbd>Home</kbd> / <kbd>End</kbd> — first / last option</div>
+          <div><kbd>A</kbd>–<kbd>Z</kbd> — typeahead jump</div>
+        </div>
+      </div>
+
+    </div>
+
+    <h3 style="font-family:'Fraunces',serif;font-size:1.1rem;margin:1.5rem 0 .8rem;">Related elements quick reference</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Element</th><th>Role with &lt;select&gt;</th><th>Key attributes</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>&lt;label&gt;</td><td>Provides accessible name; clicking it focuses the select</td><td><code>for</code> (id ref)</td></tr>
+          <tr><td>&lt;fieldset&gt;</td><td>Groups related controls; disabling it disables all children</td><td><code>disabled</code>, <code>form</code></td></tr>
+          <tr><td>&lt;legend&gt;</td><td>Caption for <code>&lt;fieldset&gt;</code>; also used as optgroup label in base-select</td><td>—</td></tr>
+          <tr><td>&lt;form&gt;</td><td>Owner form; selects submit their value within it</td><td><code>action</code>, <code>method</code>, <code>autocomplete</code>, <code>novalidate</code></td></tr>
+          <tr><td>&lt;button&gt;</td><td>Submit / reset / trigger; also used as base-select custom button child</td><td><code>type</code>, <code>disabled</code>, <code>form</code></td></tr>
+          <tr><td>&lt;output&gt;</td><td>Displays computed / selected value</td><td><code>for</code> (id refs), <code>form</code>, <code>name</code></td></tr>
+          <tr><td>&lt;meter&gt;</td><td>Scalar gauge (e.g. score from select)</td><td><code>value</code>, <code>min</code>, <code>max</code>, <code>low</code>, <code>high</code>, <code>optimum</code></td></tr>
+          <tr><td>&lt;progress&gt;</td><td>Task completion indicator</td><td><code>value</code>, <code>max</code></td></tr>
+          <tr><td>&lt;kbd&gt;</td><td>Documents keyboard interactions in select UI guides</td><td>—</td></tr>
+          <tr><td>&lt;datalist&gt;</td><td>Provides autocomplete suggestions for <code>&lt;input list="…"&gt;</code></td><td><code>id</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <hr class="fancy">
+
+  <!-- ══════════════════════════════════════════════════════
+       §13  KEYBOARD
+       ══════════════════════════════════════════════════════ -->
+  <section class="section" id="s13">
+    <div class="section-heading">
+      <div class="section-num">13</div>
+      <h2>Keyboard Behaviour</h2>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Key</th><th>Picker closed</th><th>Picker open</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Space</td><td>Opens picker (base-select)</td><td>Typeahead / selects focused option</td></tr>
+          <tr><td>Enter</td><td>Submits form (if exists)</td><td>Selects focused option &amp; closes</td></tr>
+          <tr><td>↑ / ↓</td><td>Opens picker (base-select); changes value (classic)</td><td>Moves focus between options</td></tr>
+          <tr><td>← / →</td><td>Opens picker (base-select)</td><td>Moves focus (base-select)</td></tr>
+          <tr><td>Escape</td><td>—</td><td>Closes picker without changing selection</td></tr>
+          <tr><td>Tab</td><td>Moves focus away</td><td>Closes picker &amp; moves focus</td></tr>
+          <tr><td>Home / End</td><td>—</td><td>First / last option</td></tr>
+          <tr><td>Page Up/Down</td><td>—</td><td>Jump multiple options</td></tr>
+          <tr><td>Letter keys</td><td>Jump to matching option (classic)</td><td>Typeahead search</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <hr class="fancy">
+
+  <!-- ══════════════════════════════════════════════════════
+       §14  ACCESSIBILITY
+       ══════════════════════════════════════════════════════ -->
+  <section class="section" id="s14">
+    <div class="section-heading">
+      <div class="section-num">14</div>
+      <h2>Accessibility Notes</h2>
+    </div>
+
+    <div class="info-box tip">
+      <strong>✅ Always associate a &lt;label&gt;</strong>
+      Use <code>&lt;label for="id"&gt;</code> or wrap the select inside the label. Never omit it — if you must, add <code>aria-label</code> or <code>aria-labelledby</code>.
+    </div>
+
+    <div class="info-box">
+      <strong>📋 ARIA roles</strong>
+      A native <code>&lt;select&gt;</code> maps to the <code>combobox</code> role. <code>&lt;option&gt;</code> maps to <code>option</code>. <code>&lt;optgroup&gt;</code> maps to <code>group</code>. These are correct by default — do not override unless you have a very good reason.
+    </div>
+
+    <div class="info-box warn">
+      <strong>⚠ Rich content in base-select</strong>
+      Adding non-text content (images, SVGs, spans) inside <code>&lt;option&gt;</code> that aren't hidden from the accessibility tree causes the picker's ARIA role to change from <code>listbox</code> to <code>dialog</code>. Always use <code>aria-hidden="true"</code> on decorative children, and ensure the option's accessible name is a clean text string.
+    </div>
+
+    <pre><span class="cc">&lt;!-- Correct: accessible rich option --&gt;</span>
+<span class="ct">&lt;option</span> <span class="ca">value</span>=<span class="cv">"js"</span><span class="ct">&gt;</span>
+  <span class="ct">&lt;img</span> <span class="ca">src</span>=<span class="cv">"js.svg"</span> <span class="ca">alt</span>=<span class="cv">""</span> <span class="ca">aria-hidden</span>=<span class="cv">"true"</span> <span class="ca">width</span>=<span class="cv">"16"</span><span class="ct">&gt;</span>
+  <span class="ct">&lt;span&gt;</span>JavaScript<span class="ct">&lt;/span&gt;</span>
+  <span class="ct">&lt;span</span> <span class="ca">aria-hidden</span>=<span class="cv">"true"</span> <span class="ca">class</span>=<span class="cv">"desc"</span><span class="ct">&gt;</span>Scripting language<span class="ct">&lt;/span&gt;</span>
+<span class="ct">&lt;/option&gt;</span>
+
+<span class="cc">&lt;!-- aria-describedby hint text --&gt;</span>
+<span class="ct">&lt;label</span> <span class="ca">for</span>=<span class="cv">"lang"</span><span class="ct">&gt;</span>Language<span class="ct">&lt;/label&gt;</span>
+<span class="ct">&lt;select</span> <span class="ca">id</span>=<span class="cv">"lang"</span> <span class="ca">aria-describedby</span>=<span class="cv">"lang-hint"</span> <span class="ca">required</span><span class="ct">&gt;</span>…<span class="ct">&lt;/select&gt;</span>
+<span class="ct">&lt;p</span> <span class="ca">id</span>=<span class="cv">"lang-hint"</span><span class="ct">&gt;</span>Select the primary programming language for this project.<span class="ct">&lt;/p&gt;</span></pre>
+  </section>
+
+  <hr class="fancy">
+
+  <!-- ══════════════════════════════════════════════════════
+       §15  BROWSER SUPPORT
+       ══════════════════════════════════════════════════════ -->
+  <section class="section" id="s15">
+    <div class="section-heading">
+      <div class="section-num">15</div>
+      <h2>Browser Support</h2>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Feature</th><th>Chrome/Edge</th><th>Firefox</th><th>Safari</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>&lt;select&gt;, &lt;option&gt;, &lt;optgroup&gt;</td><td>✅ All versions</td><td>✅ All versions</td><td>✅ All versions</td></tr>
+          <tr><td>&lt;datalist&gt;</td><td>✅ 20+</td><td>✅ 4+</td><td>✅ 12.1+</td></tr>
+          <tr><td>&lt;hr&gt; inside &lt;select&gt;</td><td>✅ 119+</td><td>✅ 122+</td><td>✅ 17+</td></tr>
+          <tr><td>appearance: none on select</td><td>✅</td><td>✅</td><td>✅</td></tr>
+          <tr><td>option:checked</td><td>✅ base-select</td><td>⚠️ Limited</td><td>⚠️ Limited</td></tr>
+          <tr><td>appearance: base-select</td><td>✅ 135+</td><td>🔬 In progress</td><td>🔬 In progress</td></tr>
+          <tr><td>::picker(select)</td><td>✅ 135+</td><td>🔬 In progress</td><td>❌ Not yet</td></tr>
+          <tr><td>::picker-icon</td><td>✅ 135+</td><td>🔬 In progress</td><td>❌ Not yet</td></tr>
+          <tr><td>::checkmark</td><td>✅ 135+</td><td>🔬 In progress</td><td>❌ Not yet</td></tr>
+          <tr><td>:open</td><td>✅ 135+</td><td>🔬 In progress</td><td>❌ Not yet</td></tr>
+          <tr><td>&lt;selectedcontent&gt;</td><td>✅ 135+</td><td>🔬 In progress</td><td>❌ Not yet</td></tr>
+          <tr><td>&lt;button&gt; first child of select</td><td>✅ 135+</td><td>🔬 In progress</td><td>❌ Not yet</td></tr>
+          <tr><td>@starting-style (picker animation)</td><td>✅ 117+</td><td>✅ 129+</td><td>✅ 17.5+</td></tr>
+          <tr><td>:user-valid / :user-invalid</td><td>✅ 119+</td><td>✅ 119+</td><td>✅ 16.5+</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="info-box tip">
+      <strong>📐 Progressive Enhancement Strategy</strong>
+      Always write the <code>base-select</code> styles inside <code>@supports (appearance: base-select) { … }</code>. This ensures unsupported browsers continue to render the classic select while progressively gaining the rich custom UI in supporting browsers. The HTML markup is backwards-compatible: browsers that don't understand <code>base-select</code> strip unknown children from <code>&lt;option&gt;</code> and ignore the <code>&lt;button&gt;</code>/<code>&lt;selectedcontent&gt;</code> structure.
+    </div>
+
+    <pre><span class="cc">/* Safe progressive enhancement pattern */</span>
+<span class="cs">select</span> {
+  <span class="cc">/* Classic styles for all browsers */</span>
+  <span class="ck">appearance</span>: <span class="cv">none</span>;
+  <span class="ck">border</span>: <span class="cv">2px solid #ddd</span>;
+  <span class="ck">border-radius</span>: <span class="cv">6px</span>;
+  <span class="ck">padding</span>: <span class="cv">.5rem 2.5rem .5rem 1rem</span>;
+  <span class="ck">background</span>: <span class="cv">#fff url("arrow.svg") no-repeat right 1rem center</span>;
+}
+
+<span class="cs">@supports</span> (<span class="ck">appearance</span>: <span class="cv">base-select</span>) {
+  <span class="cs">select</span>, <span class="cs">::picker(select)</span> {
+    <span class="ck">appearance</span>: <span class="cv">base-select</span>;
+  }
+
+  <span class="cs">select</span> {
+    <span class="cc">/* Override classic styles */</span>
+    <span class="ck">background</span>: <span class="cv">white</span>;
+    <span class="ck">padding-inline-end</span>: <span class="cv">1rem</span>;
+  }
+
+  <span class="cs">::picker(select)</span> {
+    <span class="ck">background</span>: <span class="cv">white</span>;
+    <span class="ck">border</span>: <span class="cv">1.5px solid #ddd</span>;
+    <span class="ck">border-radius</span>: <span class="cv">12px</span>;
+    <span class="ck">box-shadow</span>: <span class="cv">var(--shadow-m)</span>;
+    <span class="cs">@starting-style</span> { <span class="ck">opacity</span>: <span class="cv">0</span>; <span class="ck">transform</span>: <span class="cv">translateY(-6px)</span>; }
+    <span class="ck">transition</span>: <span class="cv">opacity .2s, transform .2s</span>;
+  }
+}</pre>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════
+       COMPLETE QUICK-REFERENCE CHEATSHEET
+       ══════════════════════════════════════════════════════ -->
+  <hr class="fancy">
+
+  <section class="section">
+    <div class="section-heading">
+      <div class="section-num">★</div>
+      <h2>Quick-Reference Cheatsheet</h2>
+    </div>
+
+    <pre><span class="cc">/* ═══════════════════════════════════════════════════════
+   ELEMENTS
+   ═══════════════════════════════════════════════════════ */</span>
+
+<span class="ct">&lt;select&gt;</span>           <span class="cc">— dropdown / listbox form control</span>
+<span class="ct">&lt;option&gt;</span>           <span class="cc">— one selectable item</span>
+<span class="ct">&lt;optgroup&gt;</span>         <span class="cc">— named group of options</span>
+<span class="ct">&lt;datalist&gt;</span>         <span class="cc">— autocomplete hint list for &lt;input list="…"&gt;</span>
+<span class="ct">&lt;selectedcontent&gt;</span>  <span class="cc">— (new) clones selected option into button — base-select only</span>
+<span class="ct">&lt;hr&gt;</span>               <span class="cc">— visual divider inside &lt;select&gt; / &lt;datalist&gt;</span>
+<span class="ct">&lt;legend&gt;</span>           <span class="cc">— (new) styled label for &lt;optgroup&gt; — base-select only</span>
+
+<span class="cc">/* ═══════════════════════════════════════════════════════
+   SELECT ATTRIBUTES
+   ═══════════════════════════════════════════════════════ */</span>
+
+<span class="ca">name</span>           <span class="cc">— form submission key</span>
+<span class="ca">id</span>             <span class="cc">— for label association</span>
+<span class="ca">disabled</span>       <span class="cc">— non-interactive</span>
+<span class="ca">multiple</span>       <span class="cc">— allow multi-select (not with base-select)</span>
+<span class="ca">required</span>       <span class="cc">— constraint validation</span>
+<span class="ca">size</span>           <span class="cc">— visible rows (not with base-select)</span>
+<span class="ca">autofocus</span>      <span class="cc">— focus on page load</span>
+<span class="ca">form</span>           <span class="cc">— owner form id</span>
+<span class="ca">autocomplete</span>   <span class="cc">— autofill hint token</span>
+<span class="ca">tabindex</span>       <span class="cc">— focus order</span>
+<span class="ca">aria-label</span>     <span class="cc">— accessible name</span>
+
+<span class="cc">/* ═══════════════════════════════════════════════════════
+   OPTION ATTRIBUTES
+   ═══════════════════════════════════════════════════════ */</span>
+
+<span class="ca">value</span>          <span class="cc">— submitted value (falls back to text content)</span>
+<span class="ca">label</span>          <span class="cc">— display label override</span>
+<span class="ca">selected</span>       <span class="cc">— pre-selected</span>
+<span class="ca">disabled</span>       <span class="cc">— unselectable</span>
+
+<span class="cc">/* ═══════════════════════════════════════════════════════
+   OPTGROUP ATTRIBUTES
+   ═══════════════════════════════════════════════════════ */</span>
+
+<span class="ca">label</span>          <span class="cc">— required group heading</span>
+<span class="ca">disabled</span>       <span class="cc">— disables all child options</span>
+
+<span class="cc">/* ═══════════════════════════════════════════════════════
+   CSS — PSEUDO-CLASSES
+   ═══════════════════════════════════════════════════════ */</span>
+
+<span class="cs">select:hover</span>           <span class="cs">select:focus</span>            <span class="cs">select:focus-visible</span>
+<span class="cs">select:focus-within</span>    <span class="cs">select:active</span>           <span class="cs">select:disabled</span>
+<span class="cs">select:enabled</span>         <span class="cs">select:required</span>         <span class="cs">select:optional</span>
+<span class="cs">select:valid</span>           <span class="cs">select:invalid</span>          <span class="cs">select:user-valid</span>
+<span class="cs">select:user-invalid</span>    <span class="cs">select:open</span>             <span class="cc">/* base-select only */</span>
+<span class="cs">option:checked</span>         <span class="cs">option:disabled</span>         <span class="cs">option:hover</span>
+<span class="cs">option:default</span>         <span class="cs">option:not(:checked)</span>
+
+<span class="cc">/* ═══════════════════════════════════════════════════════
+   CSS — ATTRIBUTE SELECTORS
+   ═══════════════════════════════════════════════════════ */</span>
+
+<span class="cs">select[multiple]</span>       <span class="cc">/* strip arrow, adjust padding for listbox */</span>
+<span class="cs">select[size]</span>           <span class="cc">/* same — single-select listbox */</span>
+<span class="cs">select[disabled]</span>       <span class="cc">/* same as :disabled */</span>
+<span class="cs">select[required]</span>       <span class="cc">/* same as :required */</span>
+<span class="cs">option[disabled]</span>       <span class="cc">/* unselectable option */</span>
+<span class="cs">optgroup[disabled]</span>     <span class="cc">/* entire group disabled */</span>
+<span class="cs">option[value=""]</span>       <span class="cc">/* placeholder / empty option */</span>
+<span class="cs">option[selected]</span>       <span class="cc">/* initially selected option (HTML attribute) */</span>
+
+<span class="cc">/* ═══════════════════════════════════════════════════════
+   CSS — PSEUDO-ELEMENTS
+   ═══════════════════════════════════════════════════════ */</span>
+
+<span class="cs">::picker(select)</span>     <span class="cc">/* picker dropdown — base-select only */</span>
+<span class="cs">::picker-icon</span>        <span class="cc">/* chevron arrow icon — base-select only */</span>
+<span class="cs">option::checkmark</span>    <span class="cc">/* selected indicator — base-select only */</span>
+<span class="cs">option::before</span>       <span class="cc">/* generated content — base-select only */</span>
+<span class="cs">option::after</span>        <span class="cc">/* generated content — base-select only */</span>
+
+<span class="cc">/* ═══════════════════════════════════════════════════════
+   appearance PROPERTY VALUES
+   ═══════════════════════════════════════════════════════ */</span>
+
+<span class="ck">appearance</span>: <span class="cv">auto</span>         <span class="cc">/* OS native */</span>
+<span class="ck">appearance</span>: <span class="cv">none</span>         <span class="cc">/* strip native, picker still OS */</span>
+<span class="ck">appearance</span>: <span class="cv">base-select</span>  <span class="cc">/* full custom — Chrome/Edge 135+ */</span>
+
+<span class="cc">/* ═══════════════════════════════════════════════════════
+   ASSOCIATED ELEMENTS
+   ═══════════════════════════════════════════════════════ */</span>
+
+<span class="ct">&lt;label&gt;</span>      <span class="cc">— accessible name via for= or wrapping</span>
+<span class="ct">&lt;fieldset&gt;</span>   <span class="cc">— group controls; disabled= disables all children</span>
+<span class="ct">&lt;legend&gt;</span>     <span class="cc">— fieldset caption; base-select: optgroup label</span>
+<span class="ct">&lt;form&gt;</span>       <span class="cc">— owner; select uses form= to associate off-page</span>
+<span class="ct">&lt;button&gt;</span>     <span class="cc">— type=submit/reset/button; base-select: custom button child</span>
+<span class="ct">&lt;output&gt;</span>     <span class="cc">— display computed / selected value (for=, name=)</span>
+<span class="ct">&lt;meter&gt;</span>      <span class="cc">— scalar gauge (value, min, max, low, high, optimum)</span>
+<span class="ct">&lt;progress&gt;</span>   <span class="cc">— task completion (value, max)</span>
+<span class="ct">&lt;kbd&gt;</span>        <span class="cc">— document keyboard interactions in select UI guides</span>
+
+<span class="cc">/* ═══════════════════════════════════════════════════════
+   MINIMUM BASE-SELECT OPT-IN
+   ═══════════════════════════════════════════════════════ */</span>
+
+<span class="cs">select</span>, <span class="cs">::picker(select)</span> { <span class="ck">appearance</span>: <span class="cv">base-select</span>; }</pre>
+  </section>
+
+</main>
+</div><!-- .page-wrap -->
+
+<!-- Active nav highlight (CSS only: :target on sections is handled via scroll) -->
+<script>
+// Minimal nav highlight — no behaviour dep, just cosmetic
+const links = document.querySelectorAll('.sidebar nav a');
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      links.forEach(l => l.classList.remove('active'));
+      const a = document.querySelector(`.sidebar nav a[href="#${e.target.id}"]`);
+      if (a) a.classList.add('active');
+    }
+  });
+}, { rootMargin: '-30% 0px -60% 0px' });
+document.querySelectorAll('.section[id]').forEach(s => io.observe(s));
+</script>
+
+</body>
+</html>
